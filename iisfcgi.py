@@ -13,7 +13,8 @@ from flup.server import fcgi
 class IISWSGIServer(fcgi.WSGIServer):
 
     def _setupSocket(self):
-        return FileSocket()
+        stdout = os.fdopen(sys.stdin.fileno(), 'w', 0)
+        return FileSocket(None, stdout)
 
     def run(self):
         """Support IIS's non-compliant FCGI protocol."""
