@@ -24,7 +24,7 @@ class IISWSGIServer(fcgi.WSGIServer):
 
         sock = self._setupSocket()
 
-        ret = self.threaded_run(sock)
+        ret = self.run_threaded(sock)
 
         self._cleanupSocket(sock)
         self.shutdown()
