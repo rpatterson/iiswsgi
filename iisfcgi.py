@@ -5,12 +5,12 @@ import os
 
 from filesocket import FileSocket
 
-from flup.server import threadedserver
+from flup.server import singleserver
 from flup.server import fcgi_base
-from flup.server import fcgi
+from flup.server import fcgi_single
 
 
-class IISWSGIServer(fcgi.WSGIServer):
+class IISWSGIServer(fcgi_single.WSGIServer):
 
     def _setupSocket(self):
         stdout = os.fdopen(sys.stdin.fileno(), 'w', 0)
@@ -25,14 +25,14 @@ class IISWSGIServer(fcgi.WSGIServer):
 
         sock = self._setupSocket()
 
-        ret = self.run_threaded(sock)
+        ret = self.run_single(sock)
 
         self._cleanupSocket(sock)
         self.shutdown()
 
         return ret
 
-    def run_threaded(self, sock, timeout=1.0):
+    def run_single(self, sock, timeout=1.0):
         """
         Read from stdin in rather than using `select.select()` because
         Windows only supports `select.select()` on sockets not files.
@@ -49,7 +49,7 @@ class IISWSGIServer(fcgi.WSGIServer):
             self._installSignalHandlers()
 
         # Set close-on-exec
-        threadedserver.setCloseOnExec(sock)
+        singleserver.setCloseOnExec(sock)
         
         # Main loop.
         while self._keepGoing:
@@ -58,13 +58,12 @@ class IISWSGIServer(fcgi.WSGIServer):
             if r:
                 # Hand off to Connection.
                 conn = self._jobClass(sock, '<IIS_FCGI>', *self._jobArgs)
-                self._threadPool.addJob(conn, allowQueuing=False)
+                conn.run()
 
             self._mainloopPeriodic()
 
         # Restore signal handlers.
-        if not sys.platform.startswith('win'):
-            self._restoreSignalHandlers()
+        self._restoreSignalHandlers()
 
         # Return bool based on whether or not SIGHUP was received.
         return self._hupReceived
