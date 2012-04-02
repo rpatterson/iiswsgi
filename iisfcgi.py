@@ -1,6 +1,7 @@
 """Serve WSGI apps using IIS's modified FastCGI support."""
 
 import sys
+import os
 
 from filesocket import FileSocket
 
@@ -14,11 +15,29 @@ class IISWSGIServer(fcgi.WSGIServer):
     def _setupSocket(self):
         return FileSocket()
 
-    def run(self, sock, timeout=1.0):
+    def run(self):
+        """Support IIS's non-compliant FCGI protocol."""
+        self._web_server_addrs = os.environ.get('FCGI_WEB_SERVER_ADDRS')
+        if self._web_server_addrs is not None:
+            self._web_server_addrs = map(lambda x: x.strip(),
+                                         self._web_server_addrs.split(','))
+
+        sock = self._setupSocket()
+
+        ret = self.threaded_run(sock)
+
+        self._cleanupSocket(sock)
+        self.shutdown()
+
+        return ret
+
+    def run_threaded(self, sock, timeout=1.0):
         """
-        The main loop. Pass a socket that is ready to accept() client
-        connections. Return value will be True or False indiciating whether
-        or not the loop was exited due to SIGHUP.
+        Read from stdin in rather than using `select.select()` because
+        Windows only supports `select.select()` on sockets not files.
+        Also, pass the FileSocket instance in instead of accepting a
+        connection and a child socket because IIS does all
+        communication over stdin/stdout.
         """
         # Set up signal handlers.
         self._keepGoing = True
