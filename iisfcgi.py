@@ -6,6 +6,7 @@ import struct
 import select
 import socket
 import errno
+import optparse
 import logging
 
 from filesocket import FileSocket
@@ -188,3 +189,81 @@ class IISWSGIServer(fcgi_single.WSGIServer):
         """Make IIS provided environment sane for WSGI."""
         super(IISWSGIServer, self)._sanitizeEnv(environ)
         environ['SCRIPT_NAME'] = ''
+
+
+response_template = """\
+<html>
+  <head>
+    <title>Test IIS FastCGI WSGI Application</title>
+  </head>
+  <body>
+    <h1>Test IIS FastCGI WSGI Application</h1>
+    <table>
+      <thead>
+        <tr><th>Key</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+%s
+      </tbody>
+    </table>
+  </body>
+</html>
+"""
+row_template = """\
+        <tr><td>%s</td><td>%s</td></tr>"""
+
+def test_app(environ, start_response,
+             response_template=response_template, row_template=row_template):
+    """Render the WSGI environment as an HTML table."""
+    rows = '\n'.join((row_template % item) for item in environ.iteritems())
+    response = response_template % rows
+    start_response('200 OK', [('Content-Type', 'text/html'),
+                              ('Content-Length', str(len(response)))])
+    yield response
+
+
+def make_test_app(global_config):
+    return test_app
+
+
+def loadapp_option(option, opt, value, parser):
+    from paste.deploy import loadapp
+    config = os.path.abspath(value)
+    setattr(parser.values, 'config', config)
+    app = loadapp('config:%s'%(config,))
+    setattr(parser.values, option.dest, app)
+
+
+def ep_app_option(option, opt, value, parser):
+    import pkg_resources
+    ep = pkg_resources.EntryPoint.parse('app='+value)
+    app = ep.load(require=False)
+    setattr(parser.values, option.dest, app)
+
+
+def run(args=None):
+    """Run a WSGI app as an IIS FastCGI process."""
+    logging.basicConfig(level=logging.INFO)
+    options, args = parser.parse_args(args=args)
+    if args:
+        parser.error('Got unrecognized arugments: %r' % args)
+    server = IISWSGIServer(options.app)
+    logger.info('Starting FCGI server with app %r' % options.app)
+    server.run()
+
+
+parser = optparse.OptionParser(description=run.__doc__)
+parser.add_option(
+    "-c", "--config", metavar="FILE", type="string",
+    dest='app', action="callback", callback=loadapp_option,
+    help="Load the  the WSGI app from paster config FILE.")
+parser.add_option(
+    "-a", "--app", metavar="ENTRY_POINT", default=test_app, type="string",
+    dest='app', action="callback", callback=ep_app_option,
+    help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
+    "  The default is a simple test app that displays the WSGI environment."
+    "  [default: iisfcgi:test_app]")
+
+
+if __name__ == '__main__':
+    run()

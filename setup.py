@@ -18,4 +18,7 @@ setup(name='iisfcgi',
       author_email='me@rpatterson.net',
       url='http://github.com/rpatterson/iisfcgi',
       license='GPL',
-      install_requires=['filesocket', 'flup'])
+      install_requires=['filesocket', 'flup'],
+      extras_require=dict(config=['PasteDeploy']),
+      entry_points={'console_scripts': ['iisfcgi = iisfcgi:run'],
+                    'paste.app_factory': ['test_app = iisfcgi:make_test_app']})
