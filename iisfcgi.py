@@ -188,6 +188,7 @@ class IISWSGIServer(fcgi_single.WSGIServer):
     def _sanitizeEnv(self, environ):
         """Make IIS provided environment sane for WSGI."""
         super(IISWSGIServer, self)._sanitizeEnv(environ)
+        # IIS pases the path as the script name
         environ['SCRIPT_NAME'] = ''
 
 
