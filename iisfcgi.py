@@ -17,7 +17,7 @@ if __debug__:
     from flup.server.fcgi_base import _debug
 
 
-class IISRecord(fcgi_base.Connection):
+class IISRecord(fcgi_base.Record):
 
     def read(self, sock, header_len=None):
         """Read and decode a Record from a socket."""
