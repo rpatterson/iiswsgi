@@ -58,13 +58,18 @@ class IISRecord(fcgi_base.Record):
 
 
 class IISConnection(fcgi_base.Connection):
+
+    def __init__(self, sock, addr, init_header, server, timeout):
+        super(IISConnection, self).__init__(sock, addr, server, timeout)
+        self._init_header = init_header
         
-    def run(self, header_len):
+    def run(self):
         """Begin processing data from the socket."""
         self._keepGoing = True
+        init_header = self._init_header
         while self._keepGoing:
             try:
-                self.process_input(header_len)
+                self.process_input(init_header)
             except (EOFError, KeyboardInterrupt):
                 break
             except (select.error, socket.error), e:
@@ -72,9 +77,11 @@ class IISConnection(fcgi_base.Connection):
                     break
                 raise
 
+            init_header = None
+
         self._cleanupSocket()
 
-    def process_input(self, header_len=None):
+    def process_input(self, init_header=None):
         """Attempt to read a single Record from the socket and process it."""
         # Currently, any children Request threads notify this Connection
         # that it is no longer needed by closing the Connection's socket.
@@ -83,7 +90,7 @@ class IISConnection(fcgi_base.Connection):
         if not self._keepGoing:
             return
         rec = IISRecord()
-        rec.read(self._sock, header_len)
+        rec.read(self._sock, init_header)
 
         if rec.type == fcgi_base.FCGI_GET_VALUES:
             self._do_get_values(rec)
@@ -156,8 +163,10 @@ class IISWSGIServer(fcgi_single.WSGIServer):
 
             if r:
                 # Hand off to Connection.
-                conn = self._jobClass(sock, '<IIS_FCGI>', *self._jobArgs)
-                conn.run((r, fcgi_base.FCGI_HEADER_LEN))
+                conn = self._jobClass(sock, '<IIS_FCGI>',
+                                      (r, fcgi_base.FCGI_HEADER_LEN),
+                                      *self._jobArgs)
+                conn.run()
 
             self._mainloopPeriodic()
 
