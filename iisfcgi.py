@@ -61,8 +61,8 @@ class IISRecord(fcgi_base.Record):
 
 class IISConnection(fcgi_base.Connection):
 
-    def __init__(self, sock, addr, init_header, server, timeout):
-        super(IISConnection, self).__init__(sock, addr, server, timeout)
+    def __init__(self, sock, addr, init_header, *args):
+        super(IISConnection, self).__init__(sock, addr, *args)
         self._init_header = init_header
         
     def run(self):
