@@ -199,7 +199,7 @@ response_template = """\
   </head>
   <body>
     <h1>Test IIS FastCGI WSGI Application</h1>
-    <table>
+    <table border="1">
       <thead>
         <tr><th>Key</th><th>Value</th></tr>
       </thead>
@@ -211,7 +211,7 @@ response_template = """\
 </html>
 """
 row_template = """\
-        <tr><td>%s</td><td>%s</td></tr>"""
+        <tr><th>%s</th><td>%s</td></tr>"""
 
 def test_app(environ, start_response,
              response_template=response_template, row_template=row_template):
