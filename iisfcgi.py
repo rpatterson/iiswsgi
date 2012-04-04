@@ -6,8 +6,7 @@ import struct
 import select
 import socket
 import errno
-
-import msvcrt
+import logging
 
 from filesocket import FileSocket
 
@@ -17,6 +16,8 @@ from flup.server import fcgi_single
 
 if __debug__:
     from flup.server.fcgi_base import _debug
+
+logger = logging.getLogger('iisfcgi')
 
 
 class IISRecord(fcgi_base.Record):
@@ -121,7 +122,11 @@ class IISWSGIServer(fcgi_single.WSGIServer):
         self._jobClass = IISConnection
 
     def _setupSocket(self):
-        msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
+        try:
+            import msvcrt
+            msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
+        except ImportError:
+            logger.exception('msvcrt module not available')
         stdout = os.fdopen(sys.stdin.fileno(), 'w', 0)
         return FileSocket(None, stdout)
 
