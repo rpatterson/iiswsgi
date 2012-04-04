@@ -116,7 +116,7 @@ class IISWSGIServer(fcgi_single.WSGIServer):
     def __init__(self, *args, **kw):
         """Use the modified Connection class that doesn't use `select()`"""
         super(IISWSGIServer, self).__init__(*args, **kw)
-        self._connectionClass = IISConnection
+        self._jobClass = IISConnection
 
     def _setupSocket(self):
         stdout = os.fdopen(sys.stdin.fileno(), 'w', 0)
