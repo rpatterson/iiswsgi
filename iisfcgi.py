@@ -178,3 +178,8 @@ class IISWSGIServer(fcgi_single.WSGIServer):
 
         # Return bool based on whether or not SIGHUP was received.
         return self._hupReceived
+
+    def _sanitizeEnv(self, environ):
+        """Make IIS provided environment sane for WSGI."""
+        super(IISWSGIServer, self)._sanitizeEnv(environ)
+        environ['SCRIPT_NAME'] = ''
