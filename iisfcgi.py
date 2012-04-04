@@ -7,6 +7,8 @@ import select
 import socket
 import errno
 
+import msvcrt
+
 from filesocket import FileSocket
 
 from flup.server import singleserver
@@ -119,6 +121,7 @@ class IISWSGIServer(fcgi_single.WSGIServer):
         self._jobClass = IISConnection
 
     def _setupSocket(self):
+        msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
         stdout = os.fdopen(sys.stdin.fileno(), 'w', 0)
         return FileSocket(None, stdout)
 
