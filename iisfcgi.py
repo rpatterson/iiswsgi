@@ -8,6 +8,7 @@ import socket
 import errno
 import optparse
 import logging
+import subprocess
 
 from filesocket import FileSocket
 
@@ -264,6 +265,50 @@ parser.add_option(
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
     "  [default: iisfcgi:test_app]")
+
+
+appcmd_cmd = "\%IIS_BIN\%\AppCmd set config /section:system.webServer/fastCGI /+[%s]"
+app_attr_defaults = dict(
+    fullPath='%SystemDrive%\Python27\python.exe',
+    arguments='-u %APPL_PHYSICAL_PATH%\bin\iisfcgi-script.py -c %APPL_PHYSICAL_PATH%\production.ini',
+    activityTimeout='600', requestTimeout='600', idleTimeout='604800',
+    monitorChangesTo='%APPL_PHYSICAL_PATH%\production.ini')
+
+msdeploy_cmd = "msdeploy.exe -verb:sync -source:package=’%InstallerFile%‘ -dest:auto"
+
+def deploy(appcmd_cmd=appcmd_cmd, app_attr_defaults=app_attr_defaults,
+           msdeploy_cmd=msdeploy_cmd, **application_attrs):
+    """
+    Install an IIS FastCGI application and deploy a Web Deploy package.
+
+    This is intended to be used as an alternat install command for a
+    Web Deploy package such as in a `<installers><installer><cmdline>`
+    element in a Web Platform Installer feed.  Since a Web Deploy
+    package has no way internally to modify the global IIS config, but
+    FastCGI apps need to have a global <fastCgi><application> element
+    installled, this script will install the FastCGI app globally into
+    IIS and then do what would have otherwise been done with the Web
+    Deploy zip package.
+    """
+    app_attrs = app_attr_defaults.copy()
+    app_attrs.update(application_attrs)
+    appcmd_cmd = appcmd_cmd % ",".join(
+        "%s='%s'" % item for item in app_attrs.iteritems())
+    logger.info('Installing IIS FastCGI application: %r' % appcmd_cmd)
+    appcmd = subprocess.Popen(appcmd_cmd, shell=True)
+    stdoutdata, stderrdata = appcmd.communicate(None)
+    if stdoutdata:
+        logger.info(stdoutdata)
+    if stderrdata:
+        logger.info(stderrdata)
+
+    logger.info('Deploying Web Deploy package: %r' % msdeploy_cmd)
+    msdeploy = subprocess.Popen(msdeploy_cmd, shell=True)
+    stdoutdata, stderrdata = msdeploy.communicate(None)
+    if stdoutdata:
+        logger.info(stdoutdata)
+    if stderrdata:
+        logger.info(stderrdata)
 
 
 if __name__ == '__main__':
