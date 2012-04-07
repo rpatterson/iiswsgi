@@ -20,6 +20,7 @@ setup(name='iisfcgi',
       license='GPL',
       install_requires=['filesocket', 'flup'],
       extras_require=dict(config=['PasteDeploy']),
-      entry_points={'console_scripts': ['iisfcgi = iisfcgi:run',
-                                        'iisfcgi_deploy = iisfcgi:deploy'],
+      entry_points={'console_scripts':
+                        ['iisfcgi = iisfcgi:run',
+                         'iisfcgi_deploy = iisfcgi:deploy_console'],
                     'paste.app_factory': ['test_app = iisfcgi:make_test_app']})

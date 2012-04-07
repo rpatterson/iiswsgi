@@ -311,5 +311,14 @@ def deploy(appcmd_cmd=appcmd_cmd, app_attr_defaults=app_attr_defaults,
         logger.info(stderrdata)
 
 
+def deploy_console(args=None):
+    logging.basicConfig(level=logging.INFO)
+    try:
+        deploy()
+    except:
+        logger.exception('Exception running %r' % deploy)
+        raise
+
+
 if __name__ == '__main__':
     run()
