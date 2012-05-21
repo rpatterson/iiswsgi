@@ -1,3 +1,5 @@
 .installed.cfg
 bin/
 develop-eggs/
+dist/
+build/
