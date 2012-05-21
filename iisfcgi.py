@@ -267,14 +267,14 @@ parser.add_option(
     "  [default: iisfcgi:test_app]")
 
 
-appcmd_cmd = "\%IIS_BIN\%\AppCmd set config /section:system.webServer/fastCGI /+[%s]"
+appcmd_cmd = r"%%IIS_BIN%%\AppCmd set config /section:system.webServer/fastCGI /+[%s]"
 app_attr_defaults = dict(
-    fullPath='%SystemDrive%\Python27\python.exe',
-    arguments='-u %APPL_PHYSICAL_PATH%\bin\iisfcgi-script.py -c %APPL_PHYSICAL_PATH%\production.ini',
+    fullPath=r'%SystemDrive%\Python27\python.exe',
+    arguments=r'-u %APPL_PHYSICAL_PATH%\bin\iisfcgi-script.py -c %APPL_PHYSICAL_PATH%\production.ini',
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
-    monitorChangesTo='%APPL_PHYSICAL_PATH%\production.ini')
+    monitorChangesTo=r'%APPL_PHYSICAL_PATH%\production.ini')
 
-msdeploy_cmd = "msdeploy.exe -verb:sync -source:package=’%InstallerFile%‘ -dest:auto"
+msdeploy_cmd = r"msdeploy.exe -verb:sync -source:package='%InstallerFile%' -dest:auto"
 
 def deploy(appcmd_cmd=appcmd_cmd, app_attr_defaults=app_attr_defaults,
            msdeploy_cmd=msdeploy_cmd, **application_attrs):
