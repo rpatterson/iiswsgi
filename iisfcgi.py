@@ -239,6 +239,7 @@ def loadapp_option(option, opt, value, parser):
 
 
 def ep_app_option(option, opt, value, parser):
+    setattr(parser.values, 'entry_point', value)
     import pkg_resources
     ep = pkg_resources.EntryPoint.parse('app='+value)
     app = ep.load(require=False)
@@ -248,7 +249,10 @@ def ep_app_option(option, opt, value, parser):
 def run(args=None):
     """Run a WSGI app as an IIS FastCGI process."""
     options, args = parser.parse_args(args=args)
-    if args:
+    if options.config and options.entry_point:
+        parser.error("Use only one of '--config=%s' or '--entry-point=%s'"
+                     % (options.config, options.entry_point))
+    elif args:
         parser.error('Got unrecognized arugments: %r' % args)
 
     server = IISWSGIServer(options.app)
@@ -272,8 +276,8 @@ parser.add_option(
     dest='app', action="callback", callback=loadapp_option,
     help="Load the  the WSGI app from paster config FILE.")
 parser.add_option(
-    "-a", "--app", metavar="ENTRY_POINT", default=test_app, type="string",
-    dest='app', action="callback", callback=ep_app_option,
+    "-e", "--entry-point", metavar="ENTRY_POINT", default=test_app,
+    type="string", dest='app', action="callback", callback=ep_app_option,
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
     "  [default: iisfcgi:test_app]")
