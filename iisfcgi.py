@@ -7,8 +7,10 @@ import select
 import socket
 import errno
 import optparse
-import logging
 import subprocess
+
+import logging
+from logging import handlers
 
 from filesocket import FileSocket
 
@@ -245,13 +247,23 @@ def ep_app_option(option, opt, value, parser):
 
 def run(args=None):
     """Run a WSGI app as an IIS FastCGI process."""
-    logging.basicConfig(level=logging.INFO)
     options, args = parser.parse_args(args=args)
     if args:
         parser.error('Got unrecognized arugments: %r' % args)
+
     server = IISWSGIServer(options.app)
+
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+    handler = handlers.NTEventLogHandler('IISFCGI - %s' % getattr(
+        options.app, '__name__', options.app))
+    root.addHandler(handler)
     logger.info('Starting FCGI server with app %r' % options.app)
-    server.run()
+    try:
+        server.run()
+    except BaseException:
+        logger.exception('server.run() raised an exception')
+        raise
 
 
 parser = optparse.OptionParser(description=run.__doc__)
