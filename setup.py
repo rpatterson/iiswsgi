@@ -20,7 +20,7 @@ setup(name='iisfcgi',
       license='GPL',
       install_requires=['flup'],
       extras_require=dict(config=['PasteDeploy']),
-      package_data={'iisfcgi': ['*.ini']},
+      scripts=['test.ini'],
       entry_points={'console_scripts':
                         ['iisfcgi = iisfcgi:run',
                          'iisfcgi_deploy = iisfcgi:deploy_console'],
