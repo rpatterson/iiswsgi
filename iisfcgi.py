@@ -21,6 +21,7 @@ from flup.server import fcgi_single
 if __debug__:
     from flup.server.fcgi_base import _debug
 
+root = logging.getLogger()
 logger = logging.getLogger('iisfcgi')
 
 
@@ -230,10 +231,17 @@ def make_test_app(global_config):
     return test_app
 
 
+def setup_logger(name):
+    handler = handlers.NTEventLogHandler('IISFCGI - %s' % name)
+    root.addHandler(handler)
+
+
 def loadapp_option(option, opt, value, parser):
     from paste.deploy import loadapp
     config = os.path.abspath(value)
     setattr(parser.values, 'config', config)
+    setup_logger(config)
+    logger.info('Loading WSGI app from config file %r' % config)
     app = loadapp('config:%s'%(config,))
     setattr(parser.values, option.dest, app)
 
@@ -242,14 +250,18 @@ def ep_app_option(option, opt, value, parser):
     setattr(parser.values, 'entry_point', value)
     import pkg_resources
     ep = pkg_resources.EntryPoint.parse('app='+value)
+    setup_logger(value)
+    logger.info('Loading WSGI app from entry_point %r' % value)
     app = ep.load(require=False)
     setattr(parser.values, option.dest, app)
 
 
 def run(args=None):
     """Run a WSGI app as an IIS FastCGI process."""
+    root.setLevel(logging.INFO)
+
     options, args = parser.parse_args(args=args)
-    if options.config and options.entry_point:
+    if hasattr(options, 'config') and hasattr(options, 'entry_point'):
         parser.error("Use only one of '--config=%s' or '--entry-point=%s'"
                      % (options.config, options.entry_point))
     elif args:
@@ -257,22 +269,6 @@ def run(args=None):
 
     server = IISWSGIServer(options.app)
 
-    root = logging.getLogger()
-    root.setLevel(logging.INFO)
-
-    if options.config:
-        name = options.config
-    elif options.entry_point:
-        name = options.entry_point
-    elif hasattr(options.app, '__name__'):
-        name = options.app.__name__
-    elif hasattr(type(options.app), '__name__'):
-        name = type(options.app).__name__
-    else:
-        name = str(name)
-
-    handler = handlers.NTEventLogHandler('IISFCGI - %s' % name)
-    root.addHandler(handler)
     logger.info('Starting FCGI server with app %r' % options.app)
     try:
         server.run()
