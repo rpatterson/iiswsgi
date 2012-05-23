@@ -16,14 +16,14 @@ Use IIS's `AppCmd.exe
 to install a new FastCGI application.  You can find it at
 ``%ProgramFiles%\IIS Express\appcmd.exe`` for WebMatrix/IIS Express or
 ``%systemroot%\system32\inetsrv\AppCmd.exe`` for IIS.  Note that you
-need to replace ``%PasteDeployINIFile%`` with the full path to a
-`Paste Deploy INI configuration file
+need to replace ``%SystemDrive%\Python27\Scripts\test.ini`` with the
+full path to a `Paste Deploy INI configuration file
 <http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction>`_
-that defines the WSGI app and ``%WSGIAppName%`` with the name of your
+that defines the WSGI app and ``IISFCGI-Test`` with the name of your
 app as IIS will see it::
 
-    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iisfcgi.exe -c %PasteDeployINIFile%',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='%PasteDeployINIFile%']" /commit:apphost
-    > appcmd.exe set config -section:system.webServer/handlers /+"[name='%WSGIAppName%',path='*',verb='*',modules='FastCgiModule',scriptProcessor='%SystemDrive%\Python27\python.exe|-u %SystemDrive%\Python27\Scripts\iisfcgi.exe -c %PasteDeployINIFile%']" /commit:apphost
+    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iisfcgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='%SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
+    > appcmd.exe set config -section:system.webServer/handlers /+"[name='IISFCGI-Test',path='iisfcgi-test.fcgi',verb='*',modules='FastCgiModule',scriptProcessor='%SystemDrive%\Python27\python.exe|-u %SystemDrive%\Python27\Scripts\iisfcgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
 
 See the `IIS FastCGI Reference
 <http://www.iis.net/ConfigReference/system.webServer/fastCgi>`_ for
