@@ -24,9 +24,7 @@ app as IIS will see it::
 
     > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\Scripts\iisfcgi.exe',arguments='-c %PasteDeployINIFile%',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='%PasteDeployINIFile%']" /commit:apphost
     > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\Scripts\iisfcgi.exe'].environmentVariables.[name='PYTHONUNBUFFERED',value='1']" /commit:apphost
-    > appcmd.exe set config -section:system.webServer/handlers
-    /+"[name='%WSGIAppName%',path='*',verb='*',modules='FastCgiModule',scriptProcessor='%SystemDrive%\Python27\Scripts\iisfcgi.exe|-c
-    %PasteDeployINIFile%']" /commit:apphost
+    > appcmd.exe set config -section:system.webServer/handlers /+"[name='%WSGIAppName%',path='*',verb='*',modules='FastCgiModule',scriptProcessor='%SystemDrive%\Python27\Scripts\iisfcgi.exe|-c %PasteDeployINIFile%']" /commit:apphost
 
 See the `IIS FastCGI Reference
 <http://www.iis.net/ConfigReference/system.webServer/fastCgi>`_ for
