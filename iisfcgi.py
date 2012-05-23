@@ -259,8 +259,19 @@ def run(args=None):
 
     root = logging.getLogger()
     root.setLevel(logging.INFO)
-    handler = handlers.NTEventLogHandler('IISFCGI - %s' % getattr(
-        options.app, '__name__', options.app))
+
+    if options.config:
+        name = options.config
+    elif options.entry_point:
+        name = options.entry_point
+    elif hasattr(options.app, '__name__'):
+        name = options.app.__name__
+    elif hasattr(type(options.app), '__name__'):
+        name = type(options.app).__name__
+    else:
+        name = str(name)
+
+    handler = handlers.NTEventLogHandler('IISFCGI - %s' % name)
     root.addHandler(handler)
     logger.info('Starting FCGI server with app %r' % options.app)
     try:
