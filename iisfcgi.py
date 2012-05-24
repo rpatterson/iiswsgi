@@ -293,9 +293,9 @@ parser.add_option(
 appcmd_cmd = "{IIS_BIN}\AppCmd set config /section:system.webServer/fastCGI /+[{0}]"
 app_attr_defaults = dict(
     fullPath='{SystemDrive}\Python27\python.exe',
-    arguments='-u {APPL_PHYSICAL_PATH}\bin\iisfcgi-script.py -c {APPL_PHYSICAL_PATH}\production.ini',
+    arguments='-u {APPL_PHYSICAL_PATH}\bin\iisfcgi-script.py -c {APPL_PHYSICAL_PATH}\development.ini',
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
-    monitorChangesTo='{APPL_PHYSICAL_PATH}\production.ini')
+    monitorChangesTo='{APPL_PHYSICAL_PATH}\development.ini')
 
 msdeploy_cmd = "msdeploy.exe -verb:sync -source:package='{InstallerFile}' -dest:auto"
 
