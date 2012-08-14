@@ -4,3 +4,6 @@ develop-eggs/
 dist/
 build/
 sample.msdeploy/MANIFEST
+Include/
+Lib/
+Scripts/
