@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<MSDeploy.iisApp>
+<msdeploy.iisApp>
   <iisApp path="IISFCGISampleApp" />
-  <runCommand
-      path="&quot;%SYSTEMDRIVE%\Python27\python.exe&quot; -c &quot;import sys, os, pprint; print('IISFCGI Sample Manifest.xml') ; pprint.pprint({'sys.argv': sys.argv, 'os.environ': os.environ, 'os.getcwd()': os.getcwd()})&quot;"
-      dontUseCommandExe="true" MSDeploy.MSDeployKeyAttributeName="path" />
-</MSDeploy.iisApp>
+</msdeploy.iisApp>

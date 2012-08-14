@@ -1,12 +1,11 @@
 <parameters>
-  <parameter
-    name="ApplicationPath"
+  
+  <parameter 
+    name="Application Path" 
     description="Full site path where you would like to install your application (i.e., IISFCGISampleProject)" 
-    defaultValue="Default Web Site/IISFCGISampleProject" 
     tags="iisapp">
-      <parameterEntry type="ProviderPath" scope="iisApp" 
-		      match="IISFCGISampleProject" /> 
-      <parameterEntry type="TextFile" scope="deploy.py" 
-		      match="Parameterized" /> 
+    <parameterValidation kind="AllowEmpty" />
+    <parameterEntry kind="ProviderPath" scope="iisapp" match="IISFCGISampleProject" />
   </parameter>
+
 </parameters>

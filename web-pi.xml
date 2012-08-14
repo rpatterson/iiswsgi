@@ -93,11 +93,11 @@
         <languageId>en</languageId>
         <installerFile>
           <!-- size of the package in KBs -->
-          <fileSize>3</fileSize>
+          <fileSize>2</fileSize>
           <installerURL>file:///C:/Users/rpatterson/Documents/GitHub/iisfcgi/sample.msdeploy/dist/IISFCGISampleApp-0.1.zip</installerURL>
           <displayURL>http://github.com/rpatterson/iisfcgi</displayURL>
           <!-- SHA of the package file for signature verification -->
-          <sha1>6d90b285735e438afd1d89f1c1f7a6b3ea366de2</sha1>
+          <sha1>461877b8c37aaf7b2e34e0f970ff7b3c53877c33</sha1>
         </installerFile>
         <msDeploy/>
         <helpLink>http://github.com/rpatterson/iisfcgi</helpLink>
