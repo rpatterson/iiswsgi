@@ -4,8 +4,8 @@
     name="ApplicationPath" 
     description="Full site path where you would like to install your application (i.e., IISFCGISampleProject)" 
     defaultValue="Default Web Site/IISFCGISampleApp" 
-    tags="iisapp">
-    <parameterEntry kind="ProviderPath" scope="iisapp" match="IISFCGISampleApp" />
+    tags="iisApp">
+    <parameterEntry kind="ProviderPath" scope="iisApp" match="IISFCGISampleApp" />
   </parameter>
 
 </parameters>
