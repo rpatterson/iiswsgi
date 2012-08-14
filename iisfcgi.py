@@ -10,6 +10,8 @@ import copy
 import optparse
 import subprocess
 
+from distutils.command import build
+
 import logging
 from logging import handlers
 
@@ -289,6 +291,15 @@ parser.add_option(
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
     "  [default: iisfcgi:test_app]")
+
+
+class MSDeployBuild(build.build):
+    """Build an MSDeploy zip packages for installation into IIS."""
+
+    def initialize_options(self):
+        """Be more discriminating about what to prune."""
+        build.build.initialize_options(self)
+        self.build_base = 'build/'
 
 
 appcmd_cmd = "{IIS_BIN}\AppCmd set config /section:system.webServer/fastCGI /+[{0}]"

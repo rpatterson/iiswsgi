@@ -3,3 +3,4 @@ bin/
 develop-eggs/
 dist/
 build/
+sample.msdeploy/MANIFEST
