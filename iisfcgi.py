@@ -11,6 +11,8 @@ import optparse
 import subprocess
 
 from distutils.command import build
+from distutils.command import sdist
+from distutils import archive_util
 
 import logging
 from logging import handlers
@@ -294,7 +296,7 @@ parser.add_option(
 
 
 class MSDeployBuild(build.build):
-    """Build an MSDeploy zip packages for installation into IIS."""
+    """Build an MSDeploy zip package for installation into IIS."""
 
     def initialize_options(self):
         """Be more discriminating about what to prune."""
@@ -314,9 +316,9 @@ def make_zipfile(base_name, base_dir, verbose=0, dry_run=0):
     import zipfile
 
     zip_filename = base_name + ".zip"
-    mkpath(os.path.dirname(zip_filename), dry_run=dry_run)
+    archive_util.mkpath(os.path.dirname(zip_filename), dry_run=dry_run)
 
-    log.info("creating '%s' and adding '%s' to it",
+    archive_util.log.info("creating '%s' and adding '%s' to it",
              zip_filename, base_dir)
 
     if not dry_run:
@@ -324,15 +326,30 @@ def make_zipfile(base_name, base_dir, verbose=0, dry_run=0):
                               compression=zipfile.ZIP_DEFLATED)
 
         for dirpath, dirnames, filenames in os.walk(base_dir):
-            for dirpath, dirnames, filenames in os.walk(base_dir):
-                for name in filenames:
-                    path = os.path.normpath(os.path.join(dirpath, name))
-                    if os.path.isfile(path):
-                        zip.write(path, path)
-                        log.info("adding '%s'" % path)
+            for name in filenames:
+                src_path = os.path.normpath(os.path.join(dirpath, name))
+                dirpath_split = os.path.split(dirpath)
+                dst_dirpath = dirpath_split[1:]
+                if dirpath_split[0] == '':
+                    dst_dirpath = dirpath_split[2:]
+                dst_path = os.path.normpath(os.path.join(*(
+                    dst_dirpath + (name,))))
+                if os.path.isfile(src_path):
+                    zip.write(src_path, dst_path)
+                    archive_util.log.info("adding '%s'" % dst_path)
         zip.close()
 
     return zip_filename
+
+
+class MSDeploySDist(sdist.sdist):
+    """Create an MSDeploy zip package for installation into IIS."""
+
+    def make_archive(self, base_name, format, root_dir=None, base_dir=None,
+                     owner=None, group=None):
+        """Create a zip file without a top-level directory."""
+        make_zipfile(base_name, base_dir,
+                     verbose=self.verbose, dry_run=self.dry_run)
 
 
 appcmd_cmd = "{IIS_BIN}\AppCmd set config /section:system.webServer/fastCGI /+[{0}]"

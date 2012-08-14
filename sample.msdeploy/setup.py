@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-from iisfcgi import MSDeployBuild
+import iisfcgi
 
 version = '0.1'
 
@@ -21,7 +21,8 @@ try:
           author_email='me@rpatterson.net',
           url='http://github.com/rpatterson/iisfcgi',
           license='GPL version 3',
-          cmdclass={'build': MSDeployBuild},
+          cmdclass={'build': iisfcgi.MSDeployBuild,
+                    'sdist': iisfcgi.MSDeploySDist},
           )
 except:
     import pdb, sys; pdb.post_mortem(sys.exc_info()[2])
