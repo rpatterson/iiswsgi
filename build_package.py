@@ -28,11 +28,13 @@ feed_file = os.path.join(
     os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
     '-1373627273.xml')
 if os.path.exists(feed_file):
+    logger.info('Removing the Web Platform Installer cached feed')
     os.remove(feed_file)
 installer_dir = os.path.join(
     os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
     'installers', 'IISFCGISampleApp')
 if os.path.exists(installer_dir):
+    logger.info('Removing the cached MSDeploy package')
     shutil.rmtree(installer_dir)
 
 doc = minidom.parse('web-pi.xml')
