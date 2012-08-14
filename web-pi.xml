@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <webpiFile version="4.0.1.0" />
+
+  <title>IIS FastCGI Sample APP for WebPI Feed</title>
+  <link href="https://raw.github.com/rpatterson/iisfcgi/web-pi.xml" />
+  <updated>2012-03-25T13:22:48.440870</updated>
+  <author>
+    <name>Ross Patterson</name>
+    <uri>http://rpatterson.net</uri>
+  </author>
+  <id>https://raw.github.com/rpatterson/iisfcgi/web-pi.xml</id>
+
+  <!-- Resources -->
+  <resourcesList>
+    <resources>
+      <culture>en</culture>
+      <!-- included in file -->
+    </resources>
+    <!-- TODO add other languages
+    <resources>
+      <culture>de</culture>
+      <url>http://www.microsoft.com/web/webpi/3.0/resources/WebApplicationList_de.xml</url>
+    </resources>
+    -->
+  </resourcesList>
+
+  <!-- if loaded through a parent XML file then our languages list
+       must be a subset of theirs -->
+  <languages>
+    <language default="true">
+      <languageId>en</languageId>
+      <name>English</name>
+    </language>
+  </languages>
+
+
+  <!-- IISFCGI Sample App with dependencies -->
+  <entry type="application">
+    <productId>IISFCGISampleApp</productId>
+    <!-- TODO what should the id be to get auto-upgrades on minor
+         versions, but not major versions -->
+    <id>https://raw.github.com/rpatterson/iisfcgi</id>
+    <version>0.1</version>
+    
+    <updated>2012-03-25T13:22:48.440870</updated>
+    <published>2012-03-25T13:22:48.440870</published>
+    <title resourceName="Entry_IISFCGISampleApp_Title">IIS FastCGI Sample App</title>
+    <link href="https://raw.github.com/rpatterson/iisfcgi" />
+    <summary resourceName="Entry_IISFCGISampleApp_Summary">
+      Sample app demonstrating the use of IISFCGI.
+    </summary>
+    <author>
+      <name>Ross Patterson</name>
+      <uri>http://rpatterson.net</uri>
+    </author>
+    <frameworkFamily resourceName="Python">Python</frameworkFamily>
+    <keywords>
+      <keywordId>Python</keywordId>
+      <keywordId>Server</keywordId>
+      <keywordId>FrameworkRuntime</keywordId>
+    </keywords>
+    <images>
+      <icon>http://www.python.org/community/logos/python-powered-h-100x130.png</icon>
+    </images>
+    <discoveryHint>
+      <file>
+        <filePath>%APPL_PHYSICAL_PATH%</filePath>
+      </file>
+    </discoveryHint>
+    <!-- Minimum set of requirements/dependencies in order to
+         successfully install -->
+    <dependency>
+      <and>
+        <dependency>
+          <productId>Python27</productId>
+        </dependency>
+        <dependency>
+          <productId>PyDistributeModule</productId>
+        </dependency>
+      </and>
+    </dependency>
+    <!-- Bring along Visual Studio Python support, if it is not
+         installed as a related/nice-to-have product, not a dependency -->
+    <related>
+      <relatedProduct>
+        <productId>PythonToolsForVS</productId>
+      </relatedProduct>
+    </related>
+    <installers>
+      <installer>
+        <id>1</id>
+        <!-- List of languages this package is localized in -->
+        <languageId>en</languageId>
+        <installerFile>
+          <!-- size of the package in KBs -->
+          <fileSize>3</fileSize>
+          <installerURL>file:///C:/Users/rpatterson/Documents/GitHub/iisfcgi/sample.msdeploy/dist/IISFCGISampleApp-0.1.zip</installerURL>
+          <displayURL>http://github.com/rpatterson/iisfcgi</displayURL>
+          <!-- SHA of the package file for signature verification -->
+          <sha1>6d90b285735e438afd1d89f1c1f7a6b3ea366de2</sha1>
+        </installerFile>
+        <msDeploy />
+        <helpLink>http://github.com/rpatterson/iisfcgi</helpLink>
+      </installer>
+      <!-- TODO installers for other languages? -->
+    </installers>
+    <addToFeedDate>8-07-2012</addToFeedDate>
+    <pageName>IISFCGISampleApp</pageName>
+    <productFamily resourceName="Applications">Applications</productFamily>
+    <longSummary resourceName="Entry_IISFCGISampleApp_LongSummary">
+      The `iisfcgi` module implements a FastCGI to WSGI gateway that
+      is compatible with IIS's variation of the FastCGI protocol.  In
+      particular, it supports using STDIN_FILENO opened twice, once
+      each approximating the recv and send end of a socket as is
+      specified in FastCGI.
+    </longSummary>
+  </entry>
+
+  <keywords>
+    <keyword id="Python" resourceName="Keyword_Python">Python</keyword>
+  </keywords>
+</feed>
