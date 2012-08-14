@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<msdeploy.iisApp>
+<msdeploy.iisapp>
   <iisApp path="IISFCGISampleApp" />
-</msdeploy.iisApp>
+</msdeploy.iisapp>

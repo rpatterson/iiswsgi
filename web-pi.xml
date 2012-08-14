@@ -97,7 +97,7 @@
           <installerURL>file:///C:/Users/rpatterson/Documents/GitHub/iisfcgi/sample.msdeploy/dist/IISFCGISampleApp-0.1.zip</installerURL>
           <displayURL>http://github.com/rpatterson/iisfcgi</displayURL>
           <!-- SHA of the package file for signature verification -->
-          <sha1>461877b8c37aaf7b2e34e0f970ff7b3c53877c33</sha1>
+          <sha1>71f7e8468ee67049a2e156ef227bf410220927ec</sha1>
         </installerFile>
         <msDeploy/>
         <helpLink>http://github.com/rpatterson/iisfcgi</helpLink>
