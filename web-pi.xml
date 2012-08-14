@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-  <webpiFile version="4.0.1.0" />
+<?xml version="1.0" ?><feed xmlns="http://www.w3.org/2005/Atom">
+  <webpiFile version="4.0.1.0"/>
 
   <title>IIS FastCGI Sample APP for WebPI Feed</title>
-  <link href="https://raw.github.com/rpatterson/iisfcgi/web-pi.xml" />
+  <link href="https://raw.github.com/rpatterson/iisfcgi/web-pi.xml"/>
   <updated>2012-03-25T13:22:48.440870</updated>
   <author>
     <name>Ross Patterson</name>
@@ -46,7 +45,7 @@
     <updated>2012-03-25T13:22:48.440870</updated>
     <published>2012-03-25T13:22:48.440870</published>
     <title resourceName="Entry_IISFCGISampleApp_Title">IIS FastCGI Sample App</title>
-    <link href="https://raw.github.com/rpatterson/iisfcgi" />
+    <link href="https://raw.github.com/rpatterson/iisfcgi"/>
     <summary resourceName="Entry_IISFCGISampleApp_Summary">
       Sample app demonstrating the use of IISFCGI.
     </summary>
@@ -100,7 +99,7 @@
           <!-- SHA of the package file for signature verification -->
           <sha1>6d90b285735e438afd1d89f1c1f7a6b3ea366de2</sha1>
         </installerFile>
-        <msDeploy />
+        <msDeploy/>
         <helpLink>http://github.com/rpatterson/iisfcgi</helpLink>
       </installer>
       <!-- TODO installers for other languages? -->
