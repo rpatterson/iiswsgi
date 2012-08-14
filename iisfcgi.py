@@ -311,48 +311,26 @@ def make_zipfile(base_name, base_dir, verbose=0, dry_run=0):
     available, raises DistutilsExecError.  Returns the name of the output zip
     file.
     """
-    try:
-        import zipfile
-    except ImportError:
-        zipfile = None
+    import zipfile
 
     zip_filename = base_name + ".zip"
     mkpath(os.path.dirname(zip_filename), dry_run=dry_run)
 
-    # If zipfile module is not available, try spawning an external
-    # 'zip' command.
-    if zipfile is None:
-        if verbose:
-            zipoptions = "-r"
-        else:
-            zipoptions = "-rq"
+    log.info("creating '%s' and adding '%s' to it",
+             zip_filename, base_dir)
 
-        try:
-            spawn(["zip", zipoptions, zip_filename, base_dir],
-                  dry_run=dry_run)
-        except DistutilsExecError:
-            # XXX really should distinguish between "couldn't find
-            # external 'zip' command" and "zip failed".
-            raise DistutilsExecError, \
-                  ("unable to create zip file '%s': "
-                   "could neither import the 'zipfile' module nor "
-                   "find a standalone zip utility") % zip_filename
+    if not dry_run:
+        zip = zipfile.ZipFile(zip_filename, "w",
+                              compression=zipfile.ZIP_DEFLATED)
 
-    else:
-        log.info("creating '%s' and adding '%s' to it",
-                 zip_filename, base_dir)
-
-        if not dry_run:
-            zip = zipfile.ZipFile(zip_filename, "w",
-                                  compression=zipfile.ZIP_DEFLATED)
-
+        for dirpath, dirnames, filenames in os.walk(base_dir):
             for dirpath, dirnames, filenames in os.walk(base_dir):
                 for name in filenames:
                     path = os.path.normpath(os.path.join(dirpath, name))
                     if os.path.isfile(path):
                         zip.write(path, path)
                         log.info("adding '%s'" % path)
-            zip.close()
+        zip.close()
 
     return zip_filename
 
