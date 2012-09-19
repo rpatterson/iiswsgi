@@ -16,5 +16,14 @@
     <parameterValidation type="Boolean" />
     <parameterEntry kind="TextFile" scope="\\deploy\.py$" match="__msdeploy_devel_mode__" />
   </parameter>
+  
+  <parameter 
+    name="DBType"
+    friendlyName="Database Type"
+    description="Select the type of database."
+    defaultValue="SQLite">
+    <parameterValidation type="Enumeration" validationString="SQLite,Postgresql,MySQL" />
+    <parameterEntry kind="TextFile" scope="\\deploy\.py$" match="__msdeploy_db_type__" />
+  </parameter>
 
 </parameters>
