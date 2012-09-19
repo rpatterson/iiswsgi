@@ -217,16 +217,20 @@ response_template = """\
   </head>
   <body>
     <h1>Test IIS FastCGI WSGI Application</h1>
+{wsgi_environ_table}
+  </body>
+</html>
+"""
+table_template = """\
     <table border="1">
       <thead>
+        <tr><th colspan="2">{title}</th></tr>
         <tr><th>Key</th><th>Value</th></tr>
       </thead>
       <tbody>
-%s
+{body}
       </tbody>
     </table>
-  </body>
-</html>
 """
 row_template = """\
         <tr><th>%s</th><td>%s</td></tr>"""
@@ -235,8 +239,11 @@ row_template = """\
 def test_app(environ, start_response,
              response_template=response_template, row_template=row_template):
     """Render the WSGI environment as an HTML table."""
-    rows = '\n'.join((row_template % item) for item in environ.iteritems())
-    response = response_template % rows
+    wsgi_rows = '\n'.join(
+        (row_template % item) for item in environ.iteritems())
+    response = response_template.format(
+        wsgi_environ_table=table_template.format(
+            title='WSGI Environment', body=wsgi_rows))
     start_response('200 OK', [('Content-Type', 'text/html'),
                               ('Content-Length', str(len(response)))])
     yield response
