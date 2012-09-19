@@ -23,6 +23,8 @@ from flup.server import singleserver
 from flup.server import fcgi_base
 from flup.server import fcgi_single
 
+import pywintypes
+
 if __debug__:
     from flup.server.fcgi_base import _debug
 
@@ -238,8 +240,12 @@ def make_test_app(global_config):
 
 
 def setup_logger(name):
-    handler = handlers.NTEventLogHandler('IISFCGI - %s' % name)
-    root.addHandler(handler)
+    try:
+        handler = handlers.NTEventLogHandler('IISFCGI - %s' % name)
+        root.addHandler(handler)
+    except Exception, pywintypes.error:
+        logging.basicConfig()
+        logger.exception('Could not set up Windows event log handler')
 
 
 def loadapp_option(option, opt, value, parser):
