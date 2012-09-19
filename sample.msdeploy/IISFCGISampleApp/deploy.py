@@ -4,5 +4,5 @@ from pprint import pprint
 
 if __name__ == '__main__':
     pprint(dict(
-        DeploymentMode='__msdeploy_deployment_mode__',
+        devel_mode=__msdeploy_devel_mode__,
         ))

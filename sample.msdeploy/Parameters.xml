@@ -9,10 +9,12 @@
   </parameter>
   
   <parameter 
-    name="DeploymentMode" 
-    description="Specify the mode for the deployment, 'devel' for a development deployment with debugging tools, or 'prod' for a production deployment."
-    defaultValue="devel">
-    <parameterEntry kind="TextFile" scope="\\deploy\.py$" match="__msdeploy_deployment_mode__" />
+    name="DevelMode"
+    friendlyName="Development Mode?"
+    description="If 'True', a development and debugging deployment will be used. If 'False', a production deployment will be used."
+    defaultValue="True">
+    <parameterValidation type="Boolean" />
+    <parameterEntry kind="TextFile" scope="\\deploy\.py$" match="__msdeploy_devel_mode__" />
   </parameter>
 
 </parameters>
