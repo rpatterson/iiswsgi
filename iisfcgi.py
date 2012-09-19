@@ -44,15 +44,15 @@ class IISRecord(fcgi_base.Record):
 
         if length < fcgi_base.FCGI_HEADER_LEN:
             raise EOFError
-        
-        self.version, self.type, self.requestId, self.contentLength, \
-                      self.paddingLength = struct.unpack(fcgi_base.FCGI_Header, header)
 
-        if __debug__: _debug(9, 'read: fd = %d, type = %d, requestId = %d, '
-                             'contentLength = %d' %
-                             (sock.fileno(), self.type, self.requestId,
-                              self.contentLength))
-        
+        self.version, self.type, self.requestId, self.contentLength, \
+            self.paddingLength = struct.unpack(fcgi_base.FCGI_Header, header)
+
+        if __debug__:
+            _debug(9, 'read: fd = %d, type = %d, requestId = %d, '
+                   'contentLength = %d' % (sock.fileno(), self.type,
+                                           self.requestId, self.contentLength))
+
         if self.contentLength:
             try:
                 self.contentData, length = self._recvall(sock,
@@ -75,7 +75,7 @@ class IISConnection(fcgi_base.Connection):
     def __init__(self, sock, addr, init_header, *args):
         super(IISConnection, self).__init__(sock, addr, *args)
         self._init_header = init_header
-        
+
     def run(self):
         """Begin processing data from the socket."""
         self._keepGoing = True
@@ -86,7 +86,7 @@ class IISConnection(fcgi_base.Connection):
             except (EOFError, KeyboardInterrupt):
                 break
             except (select.error, socket.error), e:
-                if e[0] == errno.EBADF: # Socket was closed by Request.
+                if e[0] == errno.EBADF:  # Socket was closed by Request.
                     break
                 raise
 
@@ -174,7 +174,7 @@ class IISWSGIServer(fcgi_single.WSGIServer):
 
         # Set close-on-exec
         singleserver.setCloseOnExec(sock)
-        
+
         # Main loop.
         while self._keepGoing:
             r = sock.recv(fcgi_base.FCGI_HEADER_LEN)
@@ -222,6 +222,7 @@ response_template = """\
 row_template = """\
         <tr><th>%s</th><td>%s</td></tr>"""
 
+
 def test_app(environ, start_response,
              response_template=response_template, row_template=row_template):
     """Render the WSGI environment as an HTML table."""
@@ -247,14 +248,14 @@ def loadapp_option(option, opt, value, parser):
     setattr(parser.values, 'config', config)
     setup_logger(config)
     logger.info('Loading WSGI app from config file %r' % config)
-    app = loadapp('config:%s'%(config,))
+    app = loadapp('config:%s' % (config,))
     setattr(parser.values, option.dest, app)
 
 
 def ep_app_option(option, opt, value, parser):
     setattr(parser.values, 'entry_point', value)
     import pkg_resources
-    ep = pkg_resources.EntryPoint.parse('app='+value)
+    ep = pkg_resources.EntryPoint.parse('app=' + value)
     setup_logger(value)
     logger.info('Loading WSGI app from entry_point %r' % value)
     app = ep.load(require=False)
@@ -352,7 +353,8 @@ class MSDeploySDist(sdist.sdist):
                      verbose=self.verbose, dry_run=self.dry_run)
 
 
-appcmd_cmd = "{IIS_BIN}\AppCmd set config /section:system.webServer/fastCGI /+[{0}]"
+appcmd_cmd = """\
+{IIS_BIN}\AppCmd set config /section:system.webServer/fastCGI /+[{0}]"""
 app_attr_defaults = dict(
     config='{APPL_PHYSICAL_PATH}\development.ini',
     fullPath='{SystemDrive}\Python27\python.exe',
@@ -360,7 +362,9 @@ app_attr_defaults = dict(
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
     monitorChangesTo='{config}', maxInstances=1)
 
-msdeploy_cmd = "msdeploy.exe -verb:sync -source:package='{InstallerFile}' -dest:auto"
+msdeploy_cmd = """\
+msdeploy.exe -verb:sync -source:package='{InstallerFile}' -dest:auto"""
+
 
 def deploy(appcmd_cmd=appcmd_cmd, app_attr_defaults=app_attr_defaults,
            msdeploy_cmd=msdeploy_cmd, **application_attrs):
@@ -432,7 +436,7 @@ deploy_parser.add_option(
     "-m", "--monitor-changes", metavar="PATH",
     default=app_attr_defaults['monitorChangesTo'], help="""\
 The path to a file which IIS will monitor and restart the FastCGI \
-process when the file is modified. [default: %default]""") 
+process when the file is modified. [default: %default]""")
 deploy_parser.add_option(
     "-n", "--max-instances", type="int",
     default=app_attr_defaults['maxInstances'], help="""\
@@ -463,12 +467,12 @@ deploy_parser.add_option(
     default=app_attr_defaults['fullPath'], help="""\
 The path to the executable to be launched as the FastCGI process by \
 IIS.  This is usually the path to the Python executable. [default: \
-%default]""") 
+%default]""")
 deploy_parser.add_option(
     "-a", "--arguments", default=app_attr_defaults['arguments'],
     help="""\
 The arguments to be given the executable when invoked as the FastCGI \
-process by IIS.  [default: %default]""") 
+process by IIS.  [default: %default]""")
 
 
 if __name__ == '__main__':

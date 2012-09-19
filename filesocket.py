@@ -31,7 +31,7 @@ class FileSocket(object):
         self.recv = in_file.read
 
     def send(self, string):
-        self.out_file.write(string)    
+        self.out_file.write(string)
         return len(string)
 
     def shutdown(self, how):
