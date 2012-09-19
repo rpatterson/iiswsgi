@@ -19,7 +19,11 @@ setup(name='iisfcgi',
       author_email='me@rpatterson.net',
       url='http://github.com/rpatterson/iisfcgi',
       license='GPL',
-      install_requires=['flup'],
+      dependency_links = [
+          "http://downloads.sourceforge.net/project/pywin32/pywin32/Build%20217/pywin32-217.win32-py2.7.exe"
+          ],
+      install_requires=['flup',
+                        'pywin32'],
       extras_require=dict(config=['PasteDeploy']),
       scripts=['test.ini'],
       entry_points={'console_scripts':
