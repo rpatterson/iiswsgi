@@ -248,7 +248,11 @@ def setup_logger(name):
         handler = handlers.NTEventLogHandler('IISFCGI - %s' % name)
         root.addHandler(handler)
     except Exception, pywintypes.error:
-        logging.basicConfig()
+        # TODO What's the best place to log to?
+        handler = logging.FileHandler(
+            '{USERPROFILE}\Documents\IISExpress\Logs\{0}.log'.format(
+                name, **os.environ))
+        root.addHandler(handler)
         logger.exception('Could not set up Windows event log handler')
 
 
