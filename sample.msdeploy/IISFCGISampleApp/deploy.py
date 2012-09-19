@@ -1,3 +1,8 @@
 #!/usr/bin/env python2.7
 
-print('Parameterized')
+from pprint import pprint
+
+if __name__ == '__main__':
+    pprint(dict(
+        DeploymentMode='__msdeploy_deployment_mode__',
+        ))

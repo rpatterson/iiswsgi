@@ -7,5 +7,12 @@
     tags="iisApp">
     <parameterEntry kind="ProviderPath" scope="iisApp" match="IISFCGISampleApp" />
   </parameter>
+  
+  <parameter 
+    name="DeploymentMode" 
+    description="Specify the mode for the deployment, 'devel' for a development deployment with debugging tools, or 'prod' for a production deployment."
+    defaultValue="devel">
+    <parameterEntry kind="TextFile" scope="\\deploy\.py$" match="__msdeploy_deployment_mode__" />
+  </parameter>
 
 </parameters>
