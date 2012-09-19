@@ -23,7 +23,10 @@ from flup.server import singleserver
 from flup.server import fcgi_base
 from flup.server import fcgi_single
 
-import pywintypes
+try:
+    from pywintypes import error
+except ImportError:
+    error = Exception
 
 if __debug__:
     from flup.server.fcgi_base import _debug
@@ -247,7 +250,7 @@ def setup_logger(name):
     try:
         handler = handlers.NTEventLogHandler('IISFCGI - %s' % name)
         root.addHandler(handler)
-    except Exception, pywintypes.error:
+    except Exception, error:
         # TODO What's the best place to log to?
         handler = logging.FileHandler(
             '{USERPROFILE}\Documents\IISExpress\Logs\{0}.log'.format(
