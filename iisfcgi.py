@@ -233,14 +233,14 @@ table_template = """\
     </table>
 """
 row_template = """\
-        <tr><th>%s</th><td>%s</td></tr>"""
+        <tr><th>{0}</th><td>{1}</td></tr>"""
 
 
 def test_app(environ, start_response,
              response_template=response_template, row_template=row_template):
     """Render the WSGI environment as an HTML table."""
     wsgi_rows = '\n'.join(
-        (row_template % item) for item in environ.iteritems())
+        (row_template.format(*item)) for item in environ.iteritems())
     response = response_template.format(
         wsgi_environ_table=table_template.format(
             title='WSGI Environment', body=wsgi_rows))
