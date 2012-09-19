@@ -287,7 +287,7 @@ def run(args=None):
     elif options.app is None:
         # Manually set the default app since we need to configure
         # logging in that case
-        setup_logger('iisfcgi:test_app')
+        setup_logger('test_app')
         options.app = test_app
     if args:
         parser.error('Got unrecognized arugments: %r' % args)
