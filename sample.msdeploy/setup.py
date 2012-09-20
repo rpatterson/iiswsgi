@@ -25,6 +25,7 @@ with Microsoft Web Deploy.""",
       license='GPL version 3',
       # TODO get the custom commands to work without iiswsgi installed
       # in the python
-      setup_requires=['iiswsgi'],
+      setup_requires=['setuptools-git',
+                      'iiswsgi'],
       cmdclass=cmdclass,
       )
