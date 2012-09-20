@@ -1,6 +1,9 @@
 from distutils.core import setup
 
-import iiswsgi
+try:
+    from iiswsgi import cmdclass
+except ImportError:
+    cmdclass = dict()
 
 version = '0.1'
 
@@ -20,6 +23,8 @@ with Microsoft Web Deploy.""",
       author_email='me@rpatterson.net',
       url='http://github.com/rpatterson/iiswsgi',
       license='GPL version 3',
-      cmdclass={'build': iiswsgi.MSDeployBuild,
-                'sdist': iiswsgi.MSDeploySDist},
+      # TODO get the custom commands to work without iiswsgi installed
+      # in the python
+      setup_requires=['iiswsgi'],
+      cmdclass=cmdclass,
       )

@@ -381,6 +381,8 @@ class MSDeploySDist(sdist.sdist):
         make_zipfile(base_name, base_dir,
                      verbose=self.verbose, dry_run=self.dry_run)
 
+cmdclass = dict(build=MSDeployBuild,
+                sdist=MSDeploySDist)
 
 appcmd_cmd = """\
 {IIS_BIN}\AppCmd set config /section:system.webServer/fastCGI /+[{0}]"""
