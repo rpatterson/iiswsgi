@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 setup(name='iiswsgi',
-      version='0.1',
+      version='0.2',
       description="Serve WSGI apps using IIS's modified FastCGI support.",
       long_description=(
           open(os.path.join(os.path.dirname(__file__),
@@ -19,9 +19,11 @@ setup(name='iiswsgi',
       author_email='me@rpatterson.net',
       url='http://github.com/rpatterson/iiswsgi',
       license='GPL',
+      include_package_data=True,
       dependency_links = [
           "http://downloads.sourceforge.net/project/pywin32/pywin32/Build%20217/pywin32-217.win32-py2.7.exe"
           ],
+      setup_requires=['setuptools-git'],
       install_requires=['flup',
                         'pywin32'],
       extras_require=dict(config=['PasteDeploy']),
