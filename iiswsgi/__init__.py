@@ -17,7 +17,7 @@ from distutils import archive_util
 import logging
 from logging import handlers
 
-from filesocket import FileSocket
+from iiswsgi.filesocket import FileSocket
 
 from flup.server import singleserver
 from flup.server import fcgi_base
