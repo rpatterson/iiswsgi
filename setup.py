@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-setup(name='iisfcgi',
+setup(name='iiswsgi',
       version='0.1',
       description="Serve WSGI apps using IIS's modified FastCGI support.",
       long_description=(
@@ -17,7 +17,7 @@ setup(name='iisfcgi',
       keywords='fcgi iis windows',
       author='Ross Patterson',
       author_email='me@rpatterson.net',
-      url='http://github.com/rpatterson/iisfcgi',
+      url='http://github.com/rpatterson/iiswsgi',
       license='GPL',
       dependency_links = [
           "http://downloads.sourceforge.net/project/pywin32/pywin32/Build%20217/pywin32-217.win32-py2.7.exe"
@@ -27,6 +27,6 @@ setup(name='iisfcgi',
       extras_require=dict(config=['PasteDeploy']),
       scripts=['test.ini'],
       entry_points={'console_scripts':
-                        ['iisfcgi = iisfcgi:run',
-                         'iisfcgi_deploy = iisfcgi:deploy_console'],
-                    'paste.app_factory': ['test_app = iisfcgi:make_test_app']})
+                        ['iiswsgi = iiswsgi:run',
+                         'iiswsgi_deploy = iiswsgi:deploy_console'],
+                    'paste.app_factory': ['test_app = iiswsgi:make_test_app']})

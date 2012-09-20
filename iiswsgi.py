@@ -32,7 +32,7 @@ if __debug__:
     from flup.server.fcgi_base import _debug
 
 root = logging.getLogger()
-logger = logging.getLogger('iisfcgi')
+logger = logging.getLogger('iiswsgi')
 
 
 class IISRecord(fcgi_base.Record):
@@ -255,7 +255,7 @@ def make_test_app(global_config):
 
 def setup_logger(name):
     try:
-        handler = handlers.NTEventLogHandler('IISFCGI - %s' % name)
+        handler = handlers.NTEventLogHandler('IISWSGI - %s' % name)
         root.addHandler(handler)
     except Exception, error:
         # TODO What's the best place to log to?
@@ -322,7 +322,7 @@ parser.add_option(
     type="string", dest='app', action="callback", callback=ep_app_option,
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
-    "  [default: iisfcgi:test_app]")
+    "  [default: iiswsgi:test_app]")
 
 
 class MSDeployBuild(build.build):
@@ -387,7 +387,7 @@ appcmd_cmd = """\
 app_attr_defaults = dict(
     config='{APPL_PHYSICAL_PATH}\development.ini',
     fullPath='{SystemDrive}\Python27\python.exe',
-    arguments='-u {APPL_PHYSICAL_PATH}\bin\iisfcgi-script.py -c {config}',
+    arguments='-u {APPL_PHYSICAL_PATH}\bin\iiswsgi-script.py -c {config}',
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
     monitorChangesTo='{config}', maxInstances=1)
 
@@ -398,7 +398,7 @@ msdeploy.exe -verb:sync -source:package='{InstallerFile}' -dest:auto"""
 def deploy(appcmd_cmd=appcmd_cmd, app_attr_defaults=app_attr_defaults,
            msdeploy_cmd=msdeploy_cmd, **application_attrs):
     """
-    Install an IIS FastCGI application and deploy a Web Deploy package.
+    Install an IIS WSGI application and deploy a Web Deploy package.
 
     This is intended to be used as an alternat install command for a
     Web Deploy package such as in a `<installers><installer><cmdline>`
@@ -448,7 +448,7 @@ def deploy_console(args=None):
     for more details on the valid attributes and their affects.
     """
     root.setLevel(logging.INFO)
-    setup_logger('IISFCGI Deploy')
+    setup_logger('IISWSGI Deploy')
     options, args = deploy_parser.parse_args(args=args)
     try:
         deploy(**options.__dict__)

@@ -1,14 +1,14 @@
 <?xml version="1.0" ?><feed xmlns="http://www.w3.org/2005/Atom">
   <webpiFile version="4.0.1.0"/>
 
-  <title>IIS FastCGI Sample APP for WebPI Feed</title>
-  <link href="https://raw.github.com/rpatterson/iisfcgi/web-pi.xml"/>
+  <title>IIS WSGI Sample APP for WebPI Feed</title>
+  <link href="https://raw.github.com/rpatterson/iiswsgi/web-pi.xml"/>
   <updated>2012-03-25T13:22:48.440870</updated>
   <author>
     <name>Ross Patterson</name>
     <uri>http://rpatterson.net</uri>
   </author>
-  <id>https://raw.github.com/rpatterson/iisfcgi/web-pi.xml</id>
+  <id>https://raw.github.com/rpatterson/iiswsgi/web-pi.xml</id>
 
   <!-- Resources -->
   <resourcesList>
@@ -34,20 +34,20 @@
   </languages>
 
 
-  <!-- IISFCGI Sample App with dependencies -->
+  <!-- IISWSGI Sample App with dependencies -->
   <entry type="application">
-    <productId>IISFCGISampleApp</productId>
+    <productId>IISWSGISampleApp</productId>
     <!-- TODO what should the id be to get auto-upgrades on minor
          versions, but not major versions -->
-    <id>https://raw.github.com/rpatterson/iisfcgi</id>
+    <id>https://raw.github.com/rpatterson/iiswsgi</id>
     <version>0.1</version>
     
     <updated>2012-03-25T13:22:48.440870</updated>
     <published>2012-03-25T13:22:48.440870</published>
-    <title resourceName="Entry_IISFCGISampleApp_Title">IIS FastCGI Sample App</title>
-    <link href="https://raw.github.com/rpatterson/iisfcgi"/>
-    <summary resourceName="Entry_IISFCGISampleApp_Summary">
-      Sample app demonstrating the use of IISFCGI.
+    <title resourceName="Entry_IISWSGISampleApp_Title">IIS WSGI Sample App</title>
+    <link href="https://raw.github.com/rpatterson/iiswsgi"/>
+    <summary resourceName="Entry_IISWSGISampleApp_Summary">
+      Sample app demonstrating the use of IISWSGI.
     </summary>
     <author>
       <name>Ross Patterson</name>
@@ -94,21 +94,21 @@
         <installerFile>
           <!-- size of the package in KBs -->
           <fileSize>2</fileSize>
-          <installerURL>file:///C:/Users/rpatterson/Documents/GitHub/iisfcgi/sample.msdeploy/dist/IISFCGISampleApp-0.1.zip</installerURL>
-          <displayURL>http://github.com/rpatterson/iisfcgi</displayURL>
+          <installerURL>file:///C:/Users/rpatterson/Documents/GitHub/iiswsgi/sample.msdeploy/dist/IISWSGISampleApp-0.1.zip</installerURL>
+          <displayURL>http://github.com/rpatterson/iiswsgi</displayURL>
           <!-- SHA of the package file for signature verification -->
-          <sha1>6c99641f205195b542b3dd2183bf2f23e47563eb</sha1>
+          <sha1>03f8c269541fba92b8c5ec6223bf4475703908bd</sha1>
         </installerFile>
         <msDeploy/>
-        <helpLink>http://github.com/rpatterson/iisfcgi</helpLink>
+        <helpLink>http://github.com/rpatterson/iiswsgi</helpLink>
       </installer>
       <!-- TODO installers for other languages? -->
     </installers>
     <addToFeedDate>8-07-2012</addToFeedDate>
-    <pageName>IISFCGISampleApp</pageName>
+    <pageName>IISWSGISampleApp</pageName>
     <productFamily resourceName="Applications">Applications</productFamily>
-    <longSummary resourceName="Entry_IISFCGISampleApp_LongSummary">
-      The `iisfcgi` module implements a FastCGI to WSGI gateway that
+    <longSummary resourceName="Entry_IISWSGISampleApp_LongSummary">
+      The `iiswsgi` module implements a FastCGI to WSGI gateway that
       is compatible with IIS's variation of the FastCGI protocol.  In
       particular, it supports using STDIN_FILENO opened twice, once
       each approximating the recv and send end of a socket as is

@@ -1,5 +1,5 @@
-include IISFCGISampleApp/*.py
+include IISWSGISampleApp/*.py
 
 include Manifest.xml
 include Parameters.xml
-include IISFCGISampleApp/web.config
+include IISWSGISampleApp/web.config

@@ -1,8 +1,8 @@
 =======
-iisfcgi
+iiswsgi
 =======
 
-The `iisfcgi` module implements a FastCGI to WSGI gateway that is
+The `iiswsgi` module implements a FastCGI to WSGI gateway that is
 compatible with IIS's variation of the FastCGI protocol.  In
 particular, it supports using STDIN_FILENO opened twice, once each
 approximating the recv and send end of a socket as is specified in
@@ -19,11 +19,11 @@ to install a new FastCGI application.  You can find it at
 need to replace ``%SystemDrive%\Python27\Scripts\test.ini`` with the
 full path to a `Paste Deploy INI configuration file
 <http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction>`_
-that defines the WSGI app and ``IISFCGI-Test`` with the name of your
+that defines the WSGI app and ``IISWSGI-Test`` with the name of your
 app as IIS will see it::
 
-    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iisfcgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='%SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
-    > appcmd.exe set config -section:system.webServer/handlers /+"[name='IISFCGI-Test',path='iisfcgi-test.fcgi',verb='*',modules='FastCgiModule',scriptProcessor='%SystemDrive%\Python27\python.exe|-u %SystemDrive%\Python27\Scripts\iisfcgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
+    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='%SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
+    > appcmd.exe set config -section:system.webServer/handlers /+"[name='IISWSGI-Test',path='iiswsgi-test.fcgi',verb='*',modules='FastCgiModule',scriptProcessor='%SystemDrive%\Python27\python.exe|-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
 
 See the `IIS FastCGI Reference
 <http://www.iis.net/ConfigReference/system.webServer/fastCgi>`_ for
@@ -61,11 +61,11 @@ feeds.
    
      Force WebPI to use the modified feed.  Use the WebPI options
      screen to remove any previous Plone installer feeds and adding
-     ``file:///C:/.../iisfcgi/web-pi.xml`` replacing ``...`` with the
+     ``file:///C:/.../iiswsgi/web-pi.xml`` replacing ``...`` with the
      appropriate path.
 
   #. Install the package in WebPI
 
-     Use the search box in WebPI to search for `iisfcgi`, click `Add`
+     Use the search box in WebPI to search for `iiswsgi`, click `Add`
      then click the `Install` button below and follow the
      instructions.

@@ -8,7 +8,7 @@ import logging
 from xml.dom import minidom
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('iisfcgi.build_package')
+logger = logging.getLogger('iiswsgi.build_package')
 
 cwd = os.getcwd()
 
@@ -18,9 +18,9 @@ try:
         os.path.join('..', 'Scripts', 'python.exe'),
         'setup.py', 'sdist'])
     package_size = os.path.getsize(
-        os.path.join('dist', 'IISFCGISampleApp-0.1.zip'))
+        os.path.join('dist', 'IISWSGISampleApp-0.1.zip'))
     package_sha1 = subprocess.check_output([
-        'fciv', '-sha1', os.path.join('dist', 'IISFCGISampleApp-0.1.zip')])
+        'fciv', '-sha1', os.path.join('dist', 'IISWSGISampleApp-0.1.zip')])
 finally:
     os.chdir(cwd)
 
@@ -32,7 +32,7 @@ if os.path.exists(feed_file):
     os.remove(feed_file)
 installer_dir = os.path.join(
     os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
-    'installers', 'IISFCGISampleApp')
+    'installers', 'IISWSGISampleApp')
 if os.path.exists(installer_dir):
     logger.info('Removing the cached MSDeploy package')
     shutil.rmtree(installer_dir)
