@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 try:
-    from iiswsgi import cmdclass
+    from iiswsgi.setup import cmdclass
 except ImportError:
     cmdclass = dict()
 
