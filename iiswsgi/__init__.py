@@ -19,6 +19,7 @@ from flup.server import fcgi_single
 
 try:
     from pywintypes import error
+    error  # pyflakes
 except ImportError:
     error = Exception
 

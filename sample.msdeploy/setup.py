@@ -2,6 +2,7 @@ from distutils.core import setup
 
 try:
     from iiswsgi.setup import cmdclass
+    cmdclass  # pyflakes
 except ImportError:
     cmdclass = dict()
 
