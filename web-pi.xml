@@ -97,7 +97,7 @@
           <installerURL>file:///C:/Users/rpatterson/Documents/GitHub/iiswsgi/sample.msdeploy/dist/IISWSGISampleApp-0.1.zip</installerURL>
           <displayURL>http://github.com/rpatterson/iiswsgi</displayURL>
           <!-- SHA of the package file for signature verification -->
-          <sha1>03f8c269541fba92b8c5ec6223bf4475703908bd</sha1>
+          <sha1>a845b8fb4f65808d5d7d1c6c3dd483240c5a0ef2</sha1>
         </installerFile>
         <msDeploy/>
         <helpLink>http://github.com/rpatterson/iiswsgi</helpLink>
