@@ -24,12 +24,21 @@ try:
 finally:
     os.chdir(cwd)
 
-feed_file = os.path.join(
-    os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
-    '-1373627273.xml')
-if os.path.exists(feed_file):
-    logger.info('Removing the Web Platform Installer cached feed')
-    os.remove(feed_file)
+feed_dir = os.path.join(
+    os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
+for feed in os.listdir(feed_dir):
+    if not os.path.splitext(feed)[1] == '.xml':
+        # not a cached feed file
+        continue
+    feed_path = os.path.join(feed_dir, feed)
+    doc = minidom.parse(feed_path)
+    links = doc.getElementsByTagName("link")
+    if links and 'iiswsgi' in links[0].getAttribute('href'):
+        logger.info(
+            'Removing the Web Platform Installer cached feed at {0}'.format(
+                feed_path))
+        os.remove(feed_path)
+
 installer_dir = os.path.join(
     os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
     'installers', 'IISWSGISampleApp')
