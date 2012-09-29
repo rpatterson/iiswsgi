@@ -1,5 +1,6 @@
 #!/usr/bin/env python2.7
 
+import sys
 import os
 import subprocess
 import shutil
@@ -14,9 +15,7 @@ cwd = os.getcwd()
 
 try:
     os.chdir('sample.msdeploy')
-    subprocess.check_call([
-        os.path.join('..', 'Scripts', 'python.exe'),
-        'setup.py', 'sdist'])
+    subprocess.check_call([sys.executable, 'setup.py', 'sdist'])
     package_size = os.path.getsize(
         os.path.join('dist', 'IISWSGISampleApp-0.1.zip'))
     package_sha1 = subprocess.check_output([
