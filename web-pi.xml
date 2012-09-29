@@ -80,6 +80,12 @@
         <dependency>
           <productId>WDeploy</productId>
         </dependency>
+        <dependency>
+          <!--  workaround for "retrieving the com class factory for
+          remote component CLSID 2b72133b-3f5b-4602-8952-803546CE3344
+          error 80040154" when using full IIS -->
+          <productId>IISManagementConsole</productId>
+        </dependency>
       </and>
     </dependency>
     <!-- Bring along Visual Studio Python support, if it is not
