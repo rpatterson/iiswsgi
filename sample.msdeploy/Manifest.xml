@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <msDeploy.iisApp>
   <iisApp path="IISWSGISampleApp" />
-  <runCommand path="set"
+  <runCommand path="python -c &quot;import sys, os, pprint; environ = os.environ.copy(); environ.update({'sys.argv': sys.argv, 'os.getcwd()': os.getcwd()}); pprint.pprint(environ)&quot;"
               MSDeploy.MSDeployKeyAttributeName="path" />
 </msDeploy.iisApp>
