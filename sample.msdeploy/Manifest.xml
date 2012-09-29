@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <msDeploy.iisApp>
   <iisApp path="IISWSGISampleApp" />
-  <runCommand path="set" />
+  <runCommand path="set"
+              MSDeploy.MSDeployKeyAttributeName="path" />
 </msDeploy.iisApp>
