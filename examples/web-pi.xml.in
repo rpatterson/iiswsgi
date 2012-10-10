@@ -103,7 +103,7 @@
         <installerFile>
           <!-- size of the package in KBs -->
           <fileSize>__size__</fileSize>
-          <installerURL>file:///C:/Users/Administrator/Documents/GitHub/iiswsgi/sample.msdeploy/dist/IISWSGISampleApp-0.1.zip</installerURL>
+          <installerURL>file:///C:/Users/Administrator/Documents/GitHub/iiswsgi/examples/sample.msdeploy/dist/IISWSGISampleApp-0.1.zip</installerURL>
           <displayURL>http://github.com/rpatterson/iiswsgi</displayURL>
           <!-- SHA of the package file for signature verification -->
           <sha1>__sha1__</sha1>
