@@ -68,3 +68,5 @@ to test or as a basis for building your own packages and custom feeds.
      Use the search box in WebPI to search for `iiswsgi`, click `Add`
      then click the `Install` button below and follow the
      instructions.
+
+TODO building a MSDeploy package from an existing project
