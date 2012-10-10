@@ -33,12 +33,11 @@ more details on how to configure IIS for FastCGI.
 Sample Package
 ==============
 
-The `sample.msdeploy` sub-directory can be used to build a sample
-MSDeploy package to be used with the `web-pi.xml` file as a custom
-`Web Platform Installer feed
+The `examples\sample.msdeploy` sub-directory can be used to build a
+sample MSDeploy package to be used with the `web-pi.xml` file as a
+custom `Web Platform Installer feed
 <http://blogs.iis.net/kateroh/archive/2009/10/24/web-pi-extensibility-custom-feeds-installing-custom-applications.aspx>`_
-to test or as a basis for building your own packages and custom
-feeds.
+to test or as a basis for building your own packages and custom feeds.
 
   #. Exit the Web Platform Installer
 
@@ -61,8 +60,8 @@ feeds.
    
      Force WebPI to use the modified feed.  Use the WebPI options
      screen to remove any previous Plone installer feeds and adding
-     ``file:///C:/.../iiswsgi/web-pi.xml`` replacing ``...`` with the
-     appropriate path.
+     ``file:///C:/.../iiswsgi/examples/web-pi.xml`` replacing ``...``
+     with the appropriate path.
 
   #. Install the package in WebPI
 
