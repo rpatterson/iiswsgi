@@ -138,11 +138,11 @@ def deploy():
         an error will be raised.  None of the steps below will be done if
         this variable is set.
 
-    `IIS_SITES_DIR` environment variable
+    `IIS_SITES_HOME` environment variable
 
         If defined, its value is taken as the location of a directory
         containing one or more IIS applications.  All directories that
-        are direct children of the `IIS_SITES_DIR` will be searched
+        are direct children of the `IIS_SITES_HOME` will be searched
         for an `iis_deploy.py` script and a `iis_deploy.stamp` file.
         If multiple directories are found with both the script and the
         stamp file, an error is raised.  Otherwise, in the case where
@@ -156,16 +156,16 @@ def deploy():
         the `iis_deploy.stamp` file will be removed.  With any other
         non-zero status code, an error will be raised.
 
-    When installing to "IIS Express", the `IIS_SITES_DIR` environment
+    When installing to "IIS Express", the `IIS_SITES_HOME` environment
     variable should be available and the script and stamp file search
     should succeed to automatically find the right app for which to run
     post-install script.  In the case of installing to full "IIS",
-    however, neither the `APPL_PHYSICAL_PATH` nor the `IIS_SITES_DIR`
+    however, neither the `APPL_PHYSICAL_PATH` nor the `IIS_SITES_HOME`
     environment variables are available and the post-install deploy
     script won't be run and WebPI will report an error.  The best way
     to workaround this limitation is to adopt a convention of putting
     all your IIS apps installed via WebPI in one directory and then
-    set the `IIS_SITES_DIR` enviornment variable.  Then when
+    set the `IIS_SITES_HOME` enviornment variable.  Then when
     installing a new IIS app be sure to give a physical path within
     that directory when prompted to by WebPI.  If that's not possible
     you can set the `APPL_PHYSICAL_PATH` environment variable to the
