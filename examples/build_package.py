@@ -46,7 +46,7 @@ if os.path.exists(installer_dir):
     shutil.rmtree(installer_dir)
 
 feed_path = os.path.join(os.path.dirname(__file__), 'web-pi.xml')
-doc = minidom.parse(feed_path)
+doc = minidom.parse(feed_path + '.in')
 
 package_size_kb = int(round(package_size / 1024.0))
 size_elem = doc.getElementsByTagName('fileSize')[0]

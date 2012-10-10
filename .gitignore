@@ -3,6 +3,7 @@ bin/
 develop-eggs/
 dist/
 build/
+examples/web-pi.xml
 examples/sample.msdeploy/MANIFEST
 Include/
 Lib/

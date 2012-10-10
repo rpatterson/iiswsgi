@@ -102,11 +102,11 @@
         <languageId>en</languageId>
         <installerFile>
           <!-- size of the package in KBs -->
-          <fileSize>3</fileSize>
+          <fileSize>__size__</fileSize>
           <installerURL>file:///C:/Users/Administrator/Documents/GitHub/iiswsgi/sample.msdeploy/dist/IISWSGISampleApp-0.1.zip</installerURL>
           <displayURL>http://github.com/rpatterson/iiswsgi</displayURL>
           <!-- SHA of the package file for signature verification -->
-          <sha1>eb36e73bcf3d5e6bdfe2e78fd68cf14fc3a45c7d</sha1>
+          <sha1>__sha1__</sha1>
         </installerFile>
         <msDeploy/>
         <helpLink>http://github.com/rpatterson/iiswsgi</helpLink>
