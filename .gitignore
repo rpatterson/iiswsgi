@@ -3,7 +3,7 @@ bin/
 develop-eggs/
 dist/
 build/
-sample.msdeploy/MANIFEST
+examples/sample.msdeploy/MANIFEST
 Include/
 Lib/
 Scripts/

@@ -14,7 +14,7 @@ logger = logging.getLogger('iiswsgi.build_package')
 cwd = os.getcwd()
 
 try:
-    os.chdir('sample.msdeploy')
+    os.chdir(os.path.join(os.path.dirname(__file__), 'sample.msdeploy'))
     subprocess.check_call([sys.executable, 'setup.py', 'sdist'])
     package_size = os.path.getsize(
         os.path.join('dist', 'IISWSGISampleApp-0.1.zip'))
@@ -45,7 +45,8 @@ if os.path.exists(installer_dir):
     logger.info('Removing the cached MSDeploy package')
     shutil.rmtree(installer_dir)
 
-doc = minidom.parse('web-pi.xml')
+feed_path = os.path.join(os.path.dirname(__file__), 'web-pi.xml')
+doc = minidom.parse(feed_path)
 
 package_size_kb = int(round(package_size / 1024.0))
 size_elem = doc.getElementsByTagName('fileSize')[0]
@@ -59,4 +60,4 @@ sha1_elem.firstChild.data = u'{0}'.format(package_sha1_value)
 logger.info('Set Web Platform Installer <sha1> to {0}'.format(
     package_sha1_value))
 
-doc.writexml(open('web-pi.xml', 'w'))
+doc.writexml(open(feed_path, 'w'))
