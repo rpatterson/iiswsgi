@@ -115,3 +115,68 @@ install_fcgi_app_parser.add_option(
     help="""\
 The arguments to be given the executable when invoked as the FastCGI \
 process by IIS.  [default: %default]""")
+
+
+def deploy():
+    """
+    Run arbitrary post-install tasks as defined in an `iis_deploy.py` script.
+
+    Try to infer the appropriate `iis_deploy.py` script to run to do
+    arbitrary post WebPI/MSDeploy installation tasks.  Until such a
+    time as Web Platform Installer or Web Deploy provide some way to
+    identify the physical path of the `iisApp` being installed when
+    the `runCommand` provider is used, we have to guess at the
+    physical path as follows:
+
+    `APPL_PHYSICAL_PATH` environment variable
+
+        If defined, its value is taken as the location of a single IIS
+        application.  If a `iis_deploy.py` script is found as
+        described below but no `iis_deploy.stamp` file is found, an
+        error will be raised.  Otherwise the `iis_deploy.py` script
+        will be run.  If there isn't such a script in that directory,
+        an error will be raised.  None of the steps below will be done if
+        this variable is set.
+
+    `IIS_SITES_DIR` environment variable
+
+        If defined, its value is taken as the location of a directory
+        containing one or more IIS applications.  All directories that
+        are direct children of the `IIS_SITES_DIR` will be searched
+        for an `iis_deploy.py` script and a `iis_deploy.stamp` file.
+        If multiple directories are found with both the script and the
+        stamp file, an error is raised.  Otherwise, in the case where
+        one directory has the script and stamp file, it is taken as
+        the app directory and the `iis_deploy.py` script is run.
+
+    `iis_deploy.py` script
+
+        Once the `iis_deploy.py` script is found as described above,
+        it is executed.  If it exits with a status code of `0`, then
+        the `iis_deploy.stamp` file will be removed.  With any other
+        non-zero status code, an error will be raised.
+
+    When installing to "IIS Express", the `IIS_SITES_DIR` environment
+    variable should be available and the script and stamp file search
+    should succeed to automatically find the right app for which to run
+    post-install script.  In the case of installing to full "IIS",
+    however, neither the `APPL_PHYSICAL_PATH` nor the `IIS_SITES_DIR`
+    environment variables are available and the post-install deploy
+    script won't be run and WebPI will report an error.  The best way
+    to workaround this limitation is to adopt a convention of putting
+    all your IIS apps installed via WebPI in one directory and then
+    set the `IIS_SITES_DIR` enviornment variable.  Then when
+    installing a new IIS app be sure to give a physical path within
+    that directory when prompted to by WebPI.  If that's not possible
+    you can set the `APPL_PHYSICAL_PATH` environment variable to the
+    physical path you will enter when installing via WebPI.
+    Otherwise, when installing to full "IIS" you'll have to follow the
+    steps for manually running the post-install deployment script
+    after you get the error.
+
+    If you get an error indicating that the correct `iis_deploy.py`
+    script could not be found or determined, you may manually run it
+    after you recive the error as follows:
+
+    * TODO
+    """
