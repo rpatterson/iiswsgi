@@ -8,7 +8,7 @@ from iiswsgi import setup_logger
 from iiswsgi import parser
 
 root = logging.getLogger()
-logger = logging.getLogger('iiswsgi')
+logger = logging.getLogger('iiswsgi.deploy')
 
 appcmd_cmd_init = """\
 {IIS_BIN}\AppCmd set config /section:system.webServer/fastCGI /+[{0}]"""
