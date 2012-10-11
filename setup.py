@@ -30,5 +30,7 @@ setup(name='iiswsgi',
       scripts=['test.ini'],
       entry_points={'console_scripts':
                         ['iiswsgi = iiswsgi:run',
-                         'iiswsgi_deploy = iiswsgi:deploy_console'],
+                         'iiswsgi_deploy = iiswsgi:deploy_console',
+                         'iiswsgi_install_fcgi_app = '
+                         'iiswsgi:install_fcgi_app_console'],
                     'paste.app_factory': ['test_app = iiswsgi:make_test_app']})
