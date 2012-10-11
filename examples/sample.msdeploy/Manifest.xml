@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <msDeploy.iisApp>
   <iisApp path="IISWSGISampleApp" />
+  <!-- TODO successReturnCodes not working -->
   <runCommand
       path="%SystemDrive%\Python27\python.exe -u %SystemDrive%\Python27\Scripts\iiswsgi_deploy-script.py"
       successReturnCodes="0"
