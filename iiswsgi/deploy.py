@@ -121,6 +121,17 @@ def deploy():
     """
     Run arbitrary post-install tasks as defined in an `iis_deploy.py` script.
 
+    The script is often used to build an isolated Python environment
+    for the application (such as with virtualenv or buildout).  Since
+    typically the package will be installed using a Web Platform
+    Installer feed defining IISWSGI as a dependency, the script will
+    be executed with the system Python.  As such, if some of your
+    post-install deployment requires steps to be executed under the
+    applications isolated environment, be sure that your
+    `iis_deploy.py` script uses the Python `subprocess` module to
+    invoke your isolated Python environment as appropriate once its
+    been set up.
+
     Try to infer the appropriate `iis_deploy.py` script to run to do
     arbitrary post WebPI/MSDeploy installation tasks.  Until such a
     time as Web Platform Installer or Web Deploy provide some way to
