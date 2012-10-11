@@ -10,8 +10,9 @@ from iiswsgi import parser
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.deploy')
 
+# TODO support bot IIS Express and full IIS 
 appcmd_cmd_init = """\
-{IIS_BIN}\AppCmd set config /section:system.webServer/fastCGI /+[{0}]"""
+"{PROGRAMFILES}\\IIS Express\\appcmd.exe" set config -section:system.webServer/fastCgi /+"[{0}]" /commit:apphost"""
 app_attr_defaults_init = dict(
     config='{APPL_PHYSICAL_PATH}\development.ini',
     fullPath='{SystemDrive}\Python27\python.exe',
