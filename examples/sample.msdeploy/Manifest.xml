@@ -4,6 +4,6 @@
   <!-- TODO successReturnCodes not working -->
   <runCommand
       path="%SystemDrive%\Python27\python.exe -u %SystemDrive%\Python27\Scripts\iiswsgi_deploy-script.py"
-      successReturnCodes="0"
+      successReturnCodes="0x0"
       MSDeploy.MSDeployKeyAttributeName="path" />
 </msDeploy.iisApp>
