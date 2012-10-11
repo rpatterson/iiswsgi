@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import copy
 import optparse
@@ -107,7 +108,7 @@ The arguments to be given the executable when invoked as the FastCGI \
 process by IIS.  [default: %default]""")
 
 
-def deploy():
+class Deployer(object):
     """
     Run arbitrary post-install tasks as defined in an `iis_deploy.py` script.
 
@@ -181,3 +182,91 @@ def deploy():
 
     * TODO
     """
+
+    logger = logger
+    stamp_filename = 'iis_deploy.stamp'
+    script_filename = 'iis_deploy.py'
+
+    def __call__(self):
+        appl_physical_path = self.get_appl_physical_path()
+        stamp_path = os.path.join(appl_physical_path, self.stamp_filename)
+        if not os.path.exists(stamp_path):
+            raise ValueError(
+                'No IIS deploy stamp file found at {0}'.format(stamp_path))
+
+        environ = os.environ.copy()
+        if 'APPL_PHYSICAL_PATH' not in environ:
+            environ['APPL_PHYSICAL_PATH'] = appl_physical_path
+
+        script_path = os.path.join(appl_physical_path, self.script_filename)
+        if os.path.exists(script_path):
+            # Raises CalledProcessError if it failes
+            subprocess.check_call(
+                [sys.executable, script_path] + sys.argv[1:], env=environ)
+        else:
+            # TODO Default deploy process
+            raise NotImplementedError(
+                'Default deploy process not defined yet')
+
+        # Success, clean up the stamp file
+        os.remove(stamp_path)
+
+    def get_appl_physical_path(self):
+        appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
+        if appl_physical_path is not None:
+            if not os.path.exists(appl_physical_path):
+                raise ValueError(
+                    ('The APPL_PHYSICAL_PATH environment variable value is a '
+                     'non-existent path: {0}').format(appl_physical_path))
+            else:
+                self.logger.info(
+                    ('Found IIS app in APPL_PHYSICAL_PATH environment '
+                     'variable at {0}').format(appl_physical_path))
+                return appl_physical_path
+        else:
+            self.logger.info(
+                'APPL_PHYSICAL_PATH environment variable not set')
+
+        iis_sites_home = os.environ.get('IIS_SITES_HOME')
+        if iis_sites_home is not None:
+            if not os.path.exists(iis_sites_home):
+                raise ValueError(
+                    ('The IIS_SITES_HOME environment variable value is a '
+                     'non-existent path: {0}').format(iis_sites_home))
+            elif not os.path.isdir(iis_sites_home):
+                raise ValueError(
+                    ('The IIS_SITES_HOME environment variable value is '
+                     'not a directory: {0}').format(iis_sites_home))
+
+        self.logger.info(
+            'Searching the directory in the IIS_SITES_HOME environment '
+            'variable for the app to deploy')
+        appl_physical_paths = [
+            os.path.join(iis_sites_home, name)
+            for name in os.listdir(iis_sites_home)
+            if os.path.isdir(os.path.join(iis_sites_home, name))
+            and os.path.exists(os.path.join(
+                iis_sites_home, name, self.stamp_filename))]
+        if not appl_physical_paths:
+            raise ValueError(
+                ('Found no {0} stamp file in any of the directories in the '
+                 'IIS_SITES_HOME environment variable: {0}').format(
+                    self.stamp_filename, iis_sites_home))
+        elif len(appl_physical_paths) > 1:
+            raise ValueError(
+                ('Found multiple {0} stamp files in the directories in the '
+                 'IIS_SITES_HOME environment variable: {0}').format(
+                    self.stamp_filename, iis_sites_home))
+
+        appl_physical_path = appl_physical_paths[0]
+        self.logger.info(
+            ('Found IIS app with a stamp file in just one of the directories '
+             'in the IIS_SITES_HOME environment variable: {0}').format(
+                    appl_physical_path))
+        return appl_physical_path
+
+
+def deploy_console():
+    logging.basicConfig(level=logging.INFO)
+    deployer = Deployer()
+    deployer()
