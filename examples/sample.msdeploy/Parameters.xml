@@ -14,7 +14,7 @@
     description="If 'True', a development and debugging deployment will be used. If 'False', a production deployment will be used."
     defaultValue="True">
     <parameterValidation type="Boolean" />
-    <parameterEntry kind="TextFile" scope="\\deploy\.py$" match="__msdeploy_devel_mode__" />
+    <parameterEntry kind="TextFile" scope="\\iis_fcgi\.ini$" match="__msdeploy_devel_mode__" />
   </parameter>
   
   <parameter 
@@ -23,7 +23,7 @@
     description="Select the type of database."
     defaultValue="SQLite">
     <parameterValidation type="Enumeration" validationString="SQLite,Postgresql,MySQL" />
-    <parameterEntry kind="TextFile" scope="\\deploy\.py$" match="__msdeploy_db_type__" />
+    <parameterEntry kind="TextFile" scope="\\iis_fcgi\.ini$" match="__msdeploy_db_type__" />
   </parameter>
 
 </parameters>
