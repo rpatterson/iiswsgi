@@ -69,4 +69,20 @@ to test or as a basis for building your own packages and custom feeds.
      then click the `Install` button below and follow the
      instructions.
 
+Known Issues
+============
+
+`System.IO.FileNotFoundException: Could not find file '\\?\C:\...`
+
+    I've run into this error on Windows 7 on two different machines
+    and multiple installs, one OEM and one vanilla Windows 7 Extreme.
+    When this happens, it seems to happen when the "Web Platform
+    Installer" has been run, then exited, and then run again without
+    rebooting the machine in between.  To workaround this, you may
+    have to reboot the machine.  See the stack overflow question `MS
+    WebPI package runCommand not working in Manifest.xml`_ for more
+    information.
+
 TODO building a MSDeploy package from an existing project
+
+.. _MS WebPI package runCommand not working in Manifest.xml: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
