@@ -213,6 +213,7 @@ class Deployer(object):
         script_path = os.path.join(appl_physical_path, self.script_filename)
         if os.path.exists(script_path):
             # Raises CalledProcessError if it failes
+            # TODO output not being captured in the logs
             subprocess.check_call(
                 [sys.executable, script_path] + sys.argv[1:], env=environ)
         else:
