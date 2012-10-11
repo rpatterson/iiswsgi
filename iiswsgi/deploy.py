@@ -10,8 +10,8 @@ from iiswsgi import parser
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.deploy')
 
-appcmd_args_init = """\
-set config -section:system.webServer/fastCgi /+"[{0}]" /commit:apphost"""
+appcmd_args_init = (
+    "set", "config", "-section:system.webServer/fastCgi")
 app_attr_defaults_init = dict(
     fullPath='{SystemDrive}\\Python27\\python.exe',
     arguments='-u {APPL_PHYSICAL_PATH}\\bin\\iiswsgi-script.py',
@@ -21,7 +21,6 @@ app_attr_defaults_init = dict(
 
 
 def install_fcgi_app(appcmd_exe=None,
-                     appcmd_args=appcmd_args_init,
                      app_attr_defaults=app_attr_defaults_init,
                      **application_attrs):
     """
@@ -36,11 +35,11 @@ def install_fcgi_app(appcmd_exe=None,
     http://www.iis.net/ConfigReference/system.webServer/fastCgi/application
     for more details on the valid attributes and their affects.
     """
+    # TODO read from web.config instead?
     app_attrs = app_attr_defaults.copy()
     app_attrs.update(application_attrs)
-    appcmd_args = appcmd_args.format(",".join(
-        "{0}='{1}'".format(*item) for item in app_attrs.iteritems()),
-                                   **os.environ)
+    appcmd_args = ",".join(
+        "{0}='{1}'".format(*item) for item in app_attrs.iteritems())
 
     if appcmd_exe is None:
         appcmd_exe = '{WINDIR}\\System32\\inetsrv\\appcmd.exe'
@@ -50,9 +49,12 @@ def install_fcgi_app(appcmd_exe=None,
             appcmd_exe = '{PROGRAMFILES}\\IIS Express\\appcmd.exe'
     appcmd_exe = appcmd_exe.format(**os.environ)
 
-    appcmd_cmd = '"{0}" {1}'.format(appcmd_exe, appcmd_args)
-    logger.info('Installing IIS FastCGI application: {0!r}'.format(appcmd_cmd))
-    subprocess.check_call(appcmd_cmd, shell=True)
+    appcmd_cmd = ((appcmd_exe,) +
+                  appcmd_args_init +
+                  ('/+[{0}]'.format(appcmd_args), '/commit:apphost'))
+    logger.info('Installing IIS FastCGI application: {0!r}'.format(
+        ' '.join(appcmd_cmd)))
+    subprocess.check_call(appcmd_cmd)
 
 
 def install_fcgi_app_console(args=None):
