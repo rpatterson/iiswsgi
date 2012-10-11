@@ -41,12 +41,7 @@ def install_fcgi_app(appcmd_cmd=appcmd_cmd_init,
         "{0}='{1}'".format(*item) for item in app_attrs.iteritems()),
                                    **os.environ)
     logger.info('Installing IIS FastCGI application: {0!r}'.format(appcmd_cmd))
-    appcmd = subprocess.Popen(appcmd_cmd, shell=True)
-    stdoutdata, stderrdata = appcmd.communicate(None)
-    if stdoutdata:
-        logger.info(stdoutdata)
-    if stderrdata:
-        logger.info(stderrdata)
+    subprocess.check_call(appcmd_cmd, shell=True)
 
 
 def install_fcgi_app_console(args=None):
