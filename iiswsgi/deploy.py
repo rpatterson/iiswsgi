@@ -14,11 +14,11 @@ logger = logging.getLogger('iiswsgi.deploy')
 appcmd_cmd_init = """\
 "{PROGRAMFILES}\\IIS Express\\appcmd.exe" set config -section:system.webServer/fastCgi /+"[{0}]" /commit:apphost"""
 app_attr_defaults_init = dict(
-    config='{APPL_PHYSICAL_PATH}\development.ini',
-    fullPath='{SystemDrive}\Python27\python.exe',
-    arguments='-u {APPL_PHYSICAL_PATH}\bin\iiswsgi-script.py -c {config}',
+    fullPath='{SystemDrive}\\Python27\\python.exe',
+    arguments='-u {APPL_PHYSICAL_PATH}\\bin\\iiswsgi-script.py',
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
-    monitorChangesTo='{config}', maxInstances=1)
+    monitorChangesTo='{APPL_PHYSICAL_PATH}\\bin\\iiswsgi-script.py',
+    maxInstances=1)
 
 
 def install_fcgi_app(appcmd_cmd=appcmd_cmd_init,
@@ -73,7 +73,7 @@ def install_fcgi_app_console(args=None):
 install_fcgi_app_parser = optparse.OptionParser(
     description=install_fcgi_app_console.__doc__)
 config_option = copy.copy(parser.get_option('--config'))
-config_option.default = app_attr_defaults_init['config']
+config_option.default = '{APPL_PHYSICAL_PATH}\\development.ini'
 install_fcgi_app_parser.add_option(config_option)
 install_fcgi_app_parser.add_option(
     "-m", "--monitor-changes", metavar="PATH",
