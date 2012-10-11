@@ -4,7 +4,6 @@ import copy
 import optparse
 import logging
 
-from iiswsgi import setup_logger
 from iiswsgi import parser
 
 root = logging.getLogger()
@@ -60,14 +59,9 @@ def install_fcgi_app_console(args=None):
     http://www.iis.net/ConfigReference/system.webServer/fastCgi/application
     for more details on the valid attributes and their affects.
     """
-    root.setLevel(logging.INFO)
-    setup_logger('IISWSGI Install FastCGI')
+    logging.basicConfig(level=logging.INFO)
     options, args = install_fcgi_app_parser.parse_args(args=args)
-    try:
-        install_fcgi_app(**options.__dict__)
-    except:
-        logger.exception('Exception running %r' % install_fcgi_app)
-        raise
+    install_fcgi_app(**options.__dict__)
 
 
 install_fcgi_app_parser = optparse.OptionParser(
