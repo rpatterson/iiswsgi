@@ -251,7 +251,7 @@ class Deployer(object):
         cwd = os.getcwd()
         try:
             os.chdir(appl_physical_path)
-            self.deploy(appl_physical_path)
+            self.deploy()
         finally:
             os.chdir(cwd)
 
