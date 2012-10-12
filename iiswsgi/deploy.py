@@ -192,7 +192,14 @@ class Deployer(object):
 
     Writing variable substitutions into `web.config`
 
-        TODO
+        The `web.config` file is re-written substituting environment
+        variables using the Python Format String Syntax:
+
+        http://docs.python.org/library/string.html#formatstrings
+
+        This is probably most useful to substitute APPL_PHYSICAL_PATH
+        to make sure that each app gets unique IIS FastCGI application
+        handlers that can each have their own parameters.
 
     Run the `iis_deploy.py` script
 
