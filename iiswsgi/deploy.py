@@ -172,7 +172,7 @@ class Deployer(object):
         case where one directory has the stamp file, it is set as the
         `APPL_PHYSICAL_PATH`.
 
-        When installing to"IIS Express", the `IIS_SITES_HOME` environment
+        When installing to "IIS Express", the `IIS_SITES_HOME` environment
         variable should be available and the stamp file search should
         succeed to automatically find the right app for which to run
         post-install script.  In the case of installing to full "IIS",
@@ -186,7 +186,7 @@ class Deployer(object):
         that directory when prompted to by WebPI.  If that's not possible
         you can set the `APPL_PHYSICAL_PATH` environment variable to the
         physical path you will enter when installing via WebPI. Otherwise,
-        when installing to full"IIS" you'll have to follow the steps for
+        when installing to full "IIS" you'll have to follow the steps for
         manually running the post-install deployment script after you get
         the error.
 
@@ -252,7 +252,7 @@ class Deployer(object):
 
         script_path = os.path.join(appl_physical_path, self.script_filename)
         if os.path.exists(script_path):
-            # Raises CalledProcessError if it failes
+           # Raises CalledProcessError if it failes
             # TODO output not being captured in the logs
             subprocess.check_call(
                 [sys.executable, script_path] + sys.argv[1:], env=os.environ)
