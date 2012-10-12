@@ -22,12 +22,14 @@ full path to a `Paste Deploy INI configuration file
 that defines the WSGI app and ``IISWSGI-Test`` with the name of your
 app as IIS will see it::
 
-    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='%SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
+    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='C:\Python27\Scripts\test.ini']" /commit:apphost
     > appcmd.exe set config -section:system.webServer/handlers /+"[name='IISWSGI-Test',path='iiswsgi-test.fcgi',verb='*',modules='FastCgiModule',scriptProcessor='%SystemDrive%\Python27\python.exe|-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
 
 See the `IIS FastCGI Reference
 <http://www.iis.net/ConfigReference/system.webServer/fastCgi>`_ for
-more details on how to configure IIS for FastCGI.
+more details on how to configure IIS for FastCGI.  Note that you
+cannot use environment variable in the `monitorChangesTo` argument,
+IIS will return an opaque 500 error.
 
 
 Sample Package
