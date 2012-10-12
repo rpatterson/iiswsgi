@@ -7,9 +7,7 @@ import select
 import socket
 import errno
 import optparse
-
 import logging
-from logging import handlers
 
 from iiswsgi.filesocket import FileSocket
 
@@ -28,6 +26,15 @@ if __debug__:
 
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi')
+
+# Global logging objects for manipulation once we know better places to log to.
+# log to a file since FCGI is using stdin/stdout
+handler = logging.FileHandler(
+    '{IIS_USER_HOME}\\Logs\\{IISEXPRESS_SITENAME}\\iiswsgi.log'.format(
+        **os.environ))
+# Include the time
+formatter = logging.Formatter('%(asctime)s:' + logging.BASIC_FORMAT)
+handler.setFormatter(formatter)
 
 
 class IISRecord(fcgi_base.Record):
@@ -248,24 +255,22 @@ def make_test_app(global_config):
     return test_app
 
 
-def setup_logger(name):
-    try:
-        handler = handlers.NTEventLogHandler('IISWSGI - %s' % name)
-        root.addHandler(handler)
-    except Exception, error:
-        # TODO What's the best place to log to?
-        handler = logging.FileHandler(
-            '{USERPROFILE}\Documents\IISExpress\Logs\{0}.log'.format(
-                name, **os.environ))
-        root.addHandler(handler)
-        logger.exception('Could not set up Windows event log handler')
+def verbose_option(option, opt, value, parser):
+    root.setLevel(root.level - 10)
+    if root.level == logging.DEBUG:
+        # Some useful startup debugging info
+        logger.debug('os.getcwd(): {0}'.format(os.getcwd()))
+        logger.debug('sys.argv: {0}'.format(sys.argv))
+        logger.debug('os.environ:\n{0}'.format(
+            '\n'.join('{0}={1}'.format(key, value)
+                      for key, value in os.environ.iteritems())))
+    setattr(parser.values, option.dest, root.level)
 
 
 def loadapp_option(option, opt, value, parser):
     from paste.deploy import loadapp
     config = os.path.abspath(value)
     setattr(parser.values, 'config', config)
-    setup_logger(config)
     logger.info('Loading WSGI app from config file %r' % config)
     app = loadapp('config:%s' % (config,))
     setattr(parser.values, option.dest, app)
@@ -275,7 +280,6 @@ def ep_app_option(option, opt, value, parser):
     setattr(parser.values, 'entry_point', value)
     import pkg_resources
     ep = pkg_resources.EntryPoint.parse('app=' + value)
-    setup_logger(value)
     logger.info('Loading WSGI app from entry_point %r' % value)
     app = ep.load(require=False)
     setattr(parser.values, option.dest, app)
@@ -283,17 +287,18 @@ def ep_app_option(option, opt, value, parser):
 
 def run(args=None):
     """Run a WSGI app as an IIS FastCGI process."""
-    root.setLevel(logging.INFO)
+    # Setup logging in case something happens during option parsing
+    root.addHandler(handler)
 
-    options, args = parser.parse_args(args=args)
+    try:
+        options, args = parser.parse_args(args=args)
+    except:
+        logger.exception('Error parsing arguments.')
+        raise
+
     if hasattr(options, 'config') and hasattr(options, 'entry_point'):
         parser.error("Use only one of '--config=%s' or '--entry-point=%s'"
                      % (options.config, options.entry_point))
-    elif options.app is None:
-        # Manually set the default app since we need to configure
-        # logging in that case
-        setup_logger('test_app')
-        options.app = test_app
     if args:
         parser.error('Got unrecognized arugments: %r' % args)
 
@@ -309,11 +314,18 @@ def run(args=None):
 
 parser = optparse.OptionParser(description=run.__doc__)
 parser.add_option(
+    "-v", "--verbose", default=root.level, dest='verbose',
+    action="callback", callback=verbose_option,
+    help=("Increase the verbosity of logging.  "
+          "Can be given multiple times.  "
+          "Pass before other options to ensure that logging includes "
+          "information about processing options."))
+parser.add_option(
     "-c", "--config", metavar="FILE", type="string",
     dest='app', action="callback", callback=loadapp_option,
     help="Load the  the WSGI app from paster config FILE.")
 parser.add_option(
-    "-e", "--entry-point", metavar="ENTRY_POINT",
+    "-e", "--entry-point", metavar="ENTRY_POINT", default=test_app,
     type="string", dest='app', action="callback", callback=ep_app_option,
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
