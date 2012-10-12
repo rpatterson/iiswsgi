@@ -239,16 +239,15 @@ class Deployer(object):
             raise ValueError(
                 'No IIS deploy stamp file found at {0}'.format(stamp_path))
 
-        environ = os.environ.copy()
-        if 'APPL_PHYSICAL_PATH' not in environ:
-            environ['APPL_PHYSICAL_PATH'] = appl_physical_path
+        if 'APPL_PHYSICAL_PATH' not in os.environ:
+            os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
 
         script_path = os.path.join(appl_physical_path, self.script_filename)
         if os.path.exists(script_path):
             # Raises CalledProcessError if it failes
             # TODO output not being captured in the logs
             subprocess.check_call(
-                [sys.executable, script_path] + sys.argv[1:], env=environ)
+                [sys.executable, script_path] + sys.argv[1:], env=os.environ)
         else:
             # TODO Default deploy process
             raise NotImplementedError(
