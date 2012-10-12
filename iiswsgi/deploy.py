@@ -153,9 +153,7 @@ process by IIS.  [default: %default]""")
 
 class Deployer(object):
     """
-    Run post-install tasks for a MS Web Deploy package.
-
-    The post-install tasks run include:
+    Run post-install tasks for a MS Web Deploy package:
 
     Set the `APPL_PHYSICAL_PATH` environment variable:
 
