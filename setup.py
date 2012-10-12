@@ -33,4 +33,4 @@ setup(name='iiswsgi',
                          'iiswsgi_deploy = iiswsgi.deploy:deploy_console',
                          'iiswsgi_install_fcgi_app = '
                          'iiswsgi.deploy:install_fcgi_app_console'],
-                    'paste.app_factory': ['test_app = iiswsgi:make_test_app']})
+                    'paste.app_factory': ['test_app = iiswsgi.server:make_test_app']})
