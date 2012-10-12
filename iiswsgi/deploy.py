@@ -16,7 +16,7 @@ app_attr_defaults_init = dict(
     fullPath='%SystemDrive%\\Python27\\python.exe',
     arguments='-u %SystemDrive%\\Python27\\Scripts\\iiswsgi-script.py',
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
-    monitorChangesTo='C:\\Python27\\Scripts\\iiswsgi-script.py',
+    monitorChangesTo='{SystemDrive}\\Scripts\\iiswsgi-script.py',
     maxInstances=1)
 
 
