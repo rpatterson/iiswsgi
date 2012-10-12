@@ -271,7 +271,8 @@ class Deployer(object):
         if os.path.exists(self.requirements_filename):
             subprocess.check_call(
                 [os.path.join(os.path.dirname(executable),
-                              'Scripts', 'virtualenv.exe')], env=os.environ)
+                              'Scripts', 'virtualenv.exe'), '.'],
+                env=os.environ)
             executable = os.path.abspath(os.path.join('Scripts', 'python.exe'))
             subprocess.check_call(
                 [os.path.join('Scripts', 'pip.exe'), '-r',
