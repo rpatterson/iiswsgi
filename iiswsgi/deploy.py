@@ -44,8 +44,8 @@ def install_fcgi_app(appcmd_exe=None,
     if appcmd_exe is None:
         appcmd_exe = '{WINDIR}\\System32\\inetsrv\\appcmd.exe'
         if 'IIS_BIN' in os.environ:
-            # IIS Express, under WebPI at least, this is only set when
-            # using IIS Express
+            # IIS Express
+            # under WebPI at least, this is only set when using IIS Express
             appcmd_exe = '{PROGRAMFILES}\\IIS Express\\appcmd.exe'
     appcmd_exe = appcmd_exe.format(**os.environ)
 
