@@ -263,7 +263,6 @@ class Deployer(object):
                 [sys.executable, self.script_filename] + sys.argv[1:],
                 env=os.environ)
 
-
     def get_appl_physical_path(self):
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
         if appl_physical_path is not None:
