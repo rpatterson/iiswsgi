@@ -62,3 +62,14 @@ logger.info('Set Web Platform Installer <sha1> to {0}'.format(
     package_sha1_value))
 
 doc.writexml(open(feed_path, 'w'))
+
+# Clean up likely stale stamp files
+iis_sites_home = os.path.join(
+    os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
+for name in os.listdir(iis_sites_home):
+    if not os.path.isdir(os.path.join(iis_sites_home, name)):
+        continue
+    stamp_file = os.path.join(iis_sites_home, name, 'iis_deploy.stamp')
+    if os.path.exists(stamp_file):
+        logger.info('Removing stale deploy stamp file: {0}'.format(stamp_file))
+        os.remove(stamp_file)
