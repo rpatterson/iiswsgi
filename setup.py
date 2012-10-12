@@ -29,7 +29,7 @@ setup(name='iiswsgi',
       extras_require=dict(config=['PasteDeploy']),
       scripts=['test.ini'],
       entry_points={'console_scripts':
-                        ['iiswsgi = iiswsgi:run',
+                        ['iiswsgi = iiswsgi.server:run',
                          'iiswsgi_deploy = iiswsgi.deploy:deploy_console',
                          'iiswsgi_install_fcgi_app = '
                          'iiswsgi.deploy:install_fcgi_app_console'],
