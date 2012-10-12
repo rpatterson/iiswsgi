@@ -155,7 +155,15 @@ process by IIS.  [default: %default]""")
 
 class Deployer(object):
     """
-    Run arbitrary post-install tasks as defined in an `iis_deploy.py` script.
+    Run post-install tasks for a MS Web Deploy package.
+
+    The post-install tasks run include:
+
+    * writing variable substitutions into `web.config`
+
+      TODO
+
+    
 
     The script is often used to build an isolated Python environment
     for the application (such as with virtualenv or buildout).  Since
@@ -241,6 +249,12 @@ class Deployer(object):
 
         if 'APPL_PHYSICAL_PATH' not in os.environ:
             os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
+
+        # web.config variable substitution
+        web_config_path = os.path.join(
+            os.environ['APPL_PHYSICAL_PATH'], 'web.config')
+        web_config = open(web_config_path).read()
+        open(web_config_path, 'w').write(web_config.format(**os.environ))
 
         script_path = os.path.join(appl_physical_path, self.script_filename)
         if os.path.exists(script_path):
