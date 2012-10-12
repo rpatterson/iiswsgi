@@ -10,8 +10,6 @@ from iiswsgi import parser
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.deploy')
 
-appcmd_args_init = (
-    "set", "config", "-section:system.webServer/fastCgi")
 app_attr_defaults_init = dict(
     fullPath='%SystemDrive%\\Python27\\python.exe',
     arguments='-u %SystemDrive%\\Python27\\Scripts\\iiswsgi-script.py',
@@ -49,9 +47,9 @@ def install_fcgi_app(appcmd_exe=None,
             appcmd_exe = '{PROGRAMFILES}\\IIS Express\\appcmd.exe'
     appcmd_exe = appcmd_exe.format(**os.environ)
 
-    appcmd_cmd = ((appcmd_exe,) +
-                  appcmd_args_init +
-                  ('/+[{0}]'.format(appcmd_args), '/commit:apphost'))
+    appcmd_cmd = (
+        appcmd_exe, "set", "config", "-section:system.webServer/fastCgi",
+        '/+[{0}]'.format(appcmd_args), '/commit:apphost')
     logger.info('Installing IIS FastCGI application: {0!r}'.format(
         ' '.join(appcmd_cmd)))
     subprocess.check_call(appcmd_cmd)
