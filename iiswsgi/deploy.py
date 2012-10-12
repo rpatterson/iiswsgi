@@ -168,7 +168,8 @@ class Deployer(object):
         `iis_deploy.stamp` file.  If multiple directories are found
         with the stamp file, an error is raised.  Otherwise, in the
         case where one directory has the stamp file, it is set as the
-        `APPL_PHYSICAL_PATH`.
+        `APPL_PHYSICAL_PATH`.  Then change to that directory before
+        continuing with the rest of the steps.
 
         When installing to "IIS Express", the `IIS_SITES_HOME` environment
         variable should be available and the stamp file search should
@@ -238,23 +239,31 @@ class Deployer(object):
             raise ValueError(
                 'No IIS deploy stamp file found at {0}'.format(stamp_path))
 
-
-        # web.config variable substitution
-        web_config_path = os.path.join(
-            os.environ['APPL_PHYSICAL_PATH'], 'web.config')
-        web_config = open(web_config_path).read()
-        open(web_config_path, 'w').write(web_config.format(**os.environ))
-        install_fcgi_app()
-
-        script_path = os.path.join(appl_physical_path, self.script_filename)
-        if os.path.exists(script_path):
-           # Raises CalledProcessError if it failes
-            # TODO output not being captured in the logs
-            subprocess.check_call(
-                [sys.executable, script_path] + sys.argv[1:], env=os.environ)
+        cwd = os.getcwd()
+        try:
+            os.chdir(appl_physical_path)
+            self.deploy(appl_physical_path)
+        finally:
+            os.chdir(cwd)
 
         # Success, clean up the stamp file
         os.remove(stamp_path)
+
+    def deploy(self):
+        # web.config variable substitution
+        web_config = open('web.config').read()
+        open('web.config', 'w').write(web_config.format(**os.environ))
+
+        # register the IIS FCGI app
+        install_fcgi_app()
+
+        if os.path.exists(self.script_filename):
+           # Raises CalledProcessError if it failes
+            # TODO output not being captured in the logs
+            subprocess.check_call(
+                [sys.executable, self.script_filename] + sys.argv[1:],
+                env=os.environ)
+
 
     def get_appl_physical_path(self):
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
