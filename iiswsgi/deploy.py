@@ -1,11 +1,9 @@
 import os
 import sys
 import subprocess
-import copy
 import optparse
 import logging
 
-from iiswsgi import parser
 
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.deploy')
@@ -72,9 +70,6 @@ def install_fcgi_app_console(args=None):
 
 install_fcgi_app_parser = optparse.OptionParser(
     description=install_fcgi_app_console.__doc__)
-config_option = copy.copy(parser.get_option('--config'))
-config_option.default = '{APPL_PHYSICAL_PATH}\\development.ini'
-install_fcgi_app_parser.add_option(config_option)
 install_fcgi_app_parser.add_option(
     "-m", "--monitor-changes", metavar="PATH",
     default=app_attr_defaults_init['monitorChangesTo'], help="""\
