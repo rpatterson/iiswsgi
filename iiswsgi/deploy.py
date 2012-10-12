@@ -13,10 +13,10 @@ logger = logging.getLogger('iiswsgi.deploy')
 appcmd_args_init = (
     "set", "config", "-section:system.webServer/fastCgi")
 app_attr_defaults_init = dict(
-    fullPath='{SystemDrive}\\Python27\\python.exe',
-    arguments='-u {APPL_PHYSICAL_PATH}\\bin\\iiswsgi-script.py',
+    fullPath='%SystemDrive%\\Python27\\python.exe',
+    arguments='-u %SystemDrive%\\Python27\\Scripts\\iiswsgi-script.py',
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
-    monitorChangesTo='{APPL_PHYSICAL_PATH}\\bin\\iiswsgi-script.py',
+    monitorChangesTo='C:\\Python27\\Scripts\\iiswsgi-script.py',
     maxInstances=1)
 
 
