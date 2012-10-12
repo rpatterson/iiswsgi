@@ -219,7 +219,7 @@ class Deployer(object):
         script could not be found or determined, you may manually run it
         after you recive the error as follows:
 
-        * TODO
+        * TODO provide the right variables and context before running
     """
 
     logger = logger
