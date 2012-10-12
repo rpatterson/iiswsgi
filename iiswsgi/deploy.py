@@ -258,7 +258,7 @@ class Deployer(object):
         install_fcgi_app()
 
         if os.path.exists(self.script_filename):
-           # Raises CalledProcessError if it failes
+            # Raises CalledProcessError if it failes
             subprocess.check_call(
                 [sys.executable, self.script_filename] + sys.argv[1:],
                 env=os.environ)
