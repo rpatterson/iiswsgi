@@ -200,6 +200,14 @@ class Deployer(object):
         to make sure that each app gets unique IIS FastCGI application
         handlers that can each have their own parameters.
 
+    Install requirements into a `virtualenv`
+
+        If `APPL_PHYSICAL_PATH` has a `requirements.txt` file in `pip
+        requirements format
+        <http://www.pip-installer.org/en/latest/requirements.html>`_,
+        then a `virtualenv` will be setup and `pip` will be used to
+        install those requirements into the `virtualenv`.
+
     Run the `iis_deploy.py` script
 
         Look for a `iis_deploy.py` script in `APPL_PHYSICAL_PATH`.  If
@@ -231,6 +239,7 @@ class Deployer(object):
     logger = logger
     stamp_filename = 'iis_deploy.stamp'
     script_filename = 'iis_deploy.py'
+    requirements_filename = 'requirements.txt'
 
     def __call__(self):
         appl_physical_path = self.get_appl_physical_path()
@@ -257,10 +266,22 @@ class Deployer(object):
         # register the IIS FCGI app
         install_fcgi_app()
 
+        # vritualenv and requirements
+        executable = sys.executable
+        if os.path.exists(self.requirements_filename):
+            subprocess.check_call(
+                [os.path.join(os.path.dirname(executable),
+                              'Scripts', 'virtualenv.exe')], env=os.environ)
+            executable = os.path.abspath(os.path.join('Scripts', 'python.exe'))
+            subprocess.check_call(
+                [os.path.join('Scripts', 'pip.exe'), '-r',
+                 self.requirements_filename], env=os.environ)
+
+        # custom deploy script
         if os.path.exists(self.script_filename):
             # Raises CalledProcessError if it failes
             subprocess.check_call(
-                [sys.executable, self.script_filename] + sys.argv[1:],
+                [executable, self.script_filename] + sys.argv[1:],
                 env=os.environ)
 
     def get_appl_physical_path(self):
