@@ -259,7 +259,6 @@ class Deployer(object):
 
         if os.path.exists(self.script_filename):
            # Raises CalledProcessError if it failes
-            # TODO output not being captured in the logs
             subprocess.check_call(
                 [sys.executable, self.script_filename] + sys.argv[1:],
                 env=os.environ)
