@@ -238,8 +238,6 @@ class Deployer(object):
             raise ValueError(
                 'No IIS deploy stamp file found at {0}'.format(stamp_path))
 
-        if 'APPL_PHYSICAL_PATH' not in os.environ:
-            os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
 
         # web.config variable substitution
         web_config_path = os.path.join(
@@ -310,6 +308,9 @@ class Deployer(object):
             ('Found IIS app with a stamp file in just one of the directories '
              'in the IIS_SITES_HOME environment variable: {0}').format(
                     appl_physical_path))
+
+        if 'APPL_PHYSICAL_PATH' not in os.environ:
+            os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
         return appl_physical_path
 
 
