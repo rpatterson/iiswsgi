@@ -55,8 +55,6 @@ def install_fcgi_app(appcmd_exe=None,
     http://www.iis.net/ConfigReference/system.webServer/fastCgi/application
     for more details on the valid attributes and their affects.
     """
-    logging.basicConfig(level=logging.INFO)
-
     if appcmd_exe is None:
         appcmd_exe = '{WINDIR}\\System32\\inetsrv\\appcmd.exe'
         if 'IIS_BIN' in os.environ:
@@ -220,7 +218,7 @@ class Deployer(object):
         If you get an error indicating that the correct `iis_deploy.py`
         script could not be found or determined, you may manually run it
         after you recive the error as follows:
-    
+
         * TODO
     """
 
@@ -243,6 +241,7 @@ class Deployer(object):
             os.environ['APPL_PHYSICAL_PATH'], 'web.config')
         web_config = open(web_config_path).read()
         open(web_config_path, 'w').write(web_config.format(**os.environ))
+        install_fcgi_app()
 
         script_path = os.path.join(appl_physical_path, self.script_filename)
         if os.path.exists(script_path):
@@ -250,10 +249,6 @@ class Deployer(object):
             # TODO output not being captured in the logs
             subprocess.check_call(
                 [sys.executable, script_path] + sys.argv[1:], env=os.environ)
-        else:
-            # TODO Default deploy process
-            raise NotImplementedError(
-                'Default deploy process not defined yet')
 
         # Success, clean up the stamp file
         os.remove(stamp_path)
