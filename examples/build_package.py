@@ -42,7 +42,8 @@ installer_dir = os.path.join(
     os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
     'installers', 'IISWSGISampleApp')
 if os.path.exists(installer_dir):
-    logger.info('Removing the cached MSDeploy package')
+    logger.info('Removing the cached MSDeploy package: {0}'.format(
+        installer_dir))
     shutil.rmtree(installer_dir)
 
 feed_path = os.path.join(os.path.dirname(__file__), 'web-pi.xml')
