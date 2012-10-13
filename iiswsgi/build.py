@@ -82,10 +82,11 @@ def build():
             continue
         feed_path = os.path.join(feed_dir, feed)
         cached_doc = minidom.parse(feed_path)
-        links = cached_doc.getElementsByTagName("link")
-        if (links and
-            links[0].getAttribute('href') ==
-            doc.getElementsByTagName("link")[0].getAttribute('href')):
+        # TODO Assumes that the first <id> element is the feed/id
+        # Would not be true if an entry/id came before the feed/id
+        ids = cached_doc.getElementsByTagName("id")
+        if ids and (ids[0]firstChild.data ==
+                    doc.getElementsByTagName("id")[0]firstChild.data):
             logger.info(
                 'Removing the Web Platform Installer cached feed at {0}'
                 .format(feed_path))
