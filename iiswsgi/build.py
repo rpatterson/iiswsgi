@@ -134,6 +134,8 @@ class Builder(object):
         if feed is None:
             return
 
+        logger.info('Writing Web Platform Installer feed to {0}'.format(
+            self.feed))
         feed.writexml(open(self.feed, 'w'))
 
     def delete_feed_cache(self, feed):
