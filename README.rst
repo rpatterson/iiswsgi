@@ -7,18 +7,6 @@ Serving Python WSGI applications natively from IIS
 The ``iiswsgi`` module implements a FastCGI to WSGI gateway that is
 compatible with IIS's variation of the FastCGI protocol.
 
-IIS FastCGI
-===========
-
-IIS' implementation of the FastCGI protocol is not fully compliant.
-Most significantly, what is passed in on `STDIN_FILENO`_ is not a
-handle to an open socket but rather to a `Windows named pipe`_.  This
-names pipe does not support socket-like behavior, at least under
-Python.  As such, the `iiswsgi.server` module extends `flup's WSGI to
-FCGI gateway` to support using ``STDIN_FILENO`` opened twice, once
-each approximating the `recv` and `send` end of a socket as is
-specified in FastCGI.
-
 Quick Start
 ===========
 
@@ -81,6 +69,18 @@ to test or as a basis for building your own packages and custom feeds.
      Use the search box in WebPI to search for `iiswsgi`, click `Add`
      then click the `Install` button below and follow the
      instructions.
+
+IIS FastCGI
+===========
+
+IIS' implementation of the FastCGI protocol is not fully compliant.
+Most significantly, what is passed in on `STDIN_FILENO`_ is not a
+handle to an open socket but rather to a `Windows named pipe`_.  This
+names pipe does not support socket-like behavior, at least under
+Python.  As such, the `iiswsgi.server` module extends `flup's WSGI to
+FCGI gateway` to support using ``STDIN_FILENO`` opened twice, once
+each approximating the `recv` and `send` end of a socket as is
+specified in FastCGI.
 
 Known Issues
 ============
