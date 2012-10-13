@@ -20,16 +20,14 @@ class Builder(object):
 
     Expects to be run in a directory containing a `web-pi.xml.in`
     template Web Platform Installer feed.
-
-    Performs the following tasks:
-    * Build the Web Deploy Package
-    * Calculate the size and sha1
-    * Delete old Web Deploy packages from the Web Platform Installer cache
-    * Update the size and sha1 in the Web Platform Installer feed
-    * Write the Web Platform Installer feed to `web-pi.xml`
-    * Delete copies of the feed from the Web Platform Installer cache
-    * Delete `iis_deploy.stamp` files from all installations of any
-      `*.msdeploy` packages in `%USERPROFILE%\Documents\My Web Sites`
+    Performs the following tasks: build the Web Deploy Package,
+    calculate the size and sha1, delete old Web Deploy packages from
+    the Web Platform Installer cache, update the size and sha1 in the
+    Web Platform Installer feed, write the Web Platform Installer feed
+    to `web-pi.xml`, delete copies of the feed from the Web Platform
+    Installer cache, delete `iis_deploy.stamp` files from all
+    installations of any of the given packages in
+    `%USERPROFILE%\Documents\My Web Sites`
     """
 
     feed_name = 'web-pi.xml'
