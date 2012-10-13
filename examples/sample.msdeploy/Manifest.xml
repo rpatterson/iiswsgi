@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <msDeploy.iisApp>
   <iisApp path="IISWSGISampleApp" />
-  <!-- TODO successReturnCodes not working -->
+  <!-- MSDeploy.MSDeployProviderOptions = 'successReturnCodes=0x0' -->
+  <!-- To generate the MSDeploy.MSDeployProviderOptions do:
+       >"%PROGRAMFILES%\IIS\Microsoft Web Deploy V3\msdeploy.exe" -verb:sync -source:runCommand="%SystemDrive%\Python27\python.exe -u %SystemDrive%\Python27\Scripts\iiswsgi_deploy-script.py",successReturnCodes=0x0 -dest:package=%TEMP%\runCommand.zip
+       Then take the value from %TEMP%\runCommand.zip:archive.xml.
+  -->
   <runCommand
       path="%SystemDrive%\Python27\python.exe -u %SystemDrive%\Python27\Scripts\iiswsgi_deploy-script.py"
-      successReturnCodes="0x0"
-      MSDeploy.MSDeployKeyAttributeName="path" />
+      MSDeploy.MSDeployKeyAttributeName="path"
+      MSDeploy.MSDeployProviderOptions="H4sIAAAAAAAEAOy9B2AcSZYlJi9tynt/SvVK1+B0oQiAYBMk2JBAEOzBiM3mkuwdaUcjKasqgcplVmVdZhZAzO2dvPfee++999577733ujudTif33/8/XGZkAWz2zkrayZ4hgKrIHz9+fB8/In6NX/PX+DV+jf/7//6//2/8xP9+o1/r1/g1fo3vfVFM66qpztvxVT4Zz/JVWV0v8mU7Sn8yr5uiWn72YLw73hnvjNKTddmu6/yzZb5u66wcpS/Xk7KY/l759Zvqbb787N7u5Pzewf1Ps9m9T/fze/d/XfS05zr4LnXw1Hbg/fqyri6LWV5/uWqpw+bX+TV+jV/jN1rpZy+yRf7rrLJ2/usus0Xe/HqXWbnOm1/z1/z1fj2g/+v92r/Gr/FrJPV6eVItFtly9uvh3Wcnj37fl9ftvFruPfh9V/zLOH+Xp9vr1P/m9bQuVm3z+xZFc9VcFL+/jH274Y/Hq+sf+3V/jV/j1/ixX+/X+DV+jd8cv4Fsv96v/2v8Gr/Gb9Gsp9O8aV7lRA3qeJY3vzlaga6/3m/wa/wav8avvfNu5zf8fwIAAP//tTFCT28BAAA=" />
 </msDeploy.iisApp>
