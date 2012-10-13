@@ -116,25 +116,25 @@ install_fcgi_app_parser.add_argument(
 The path to a file which IIS will monitor and restart the FastCGI \
 process when the file is modified. [default: %default]""")
 install_fcgi_app_parser.add_argument(
-    "-n", "--max-instances", type="int",
+    "-n", "--max-instances", type=int,
     default=app_attr_defaults_init['maxInstances'], help="""\
 The maximum number of FastCGI processes which IIS will launch.  For a \
 production deployment, it's usually best to set this to \
 %NUMBER_OF_PROCESSORS%. [default: %default]""")
 install_fcgi_app_parser.add_argument(
-    "-t", "--activity-timeout", type="int",
+    "-t", "--activity-timeout", type=int,
     default=app_attr_defaults_init['activityTimeout'], help="""\
 Specifies the maximum time, in seconds, that a FastCGI process can \
 take to process. Acceptable values are in the range from 10 through \
 3600.  [default: %default]""")
 install_fcgi_app_parser.add_argument(
-    "-i", "--idle-timeout", type="int",
+    "-i", "--idle-timeout", type=int,
     default=app_attr_defaults_init['idleTimeout'], help="""\
 Specifies the maximum amount of time, in seconds, that a FastCGI \
 process can be idle before the process is shut down. Acceptable values \
 are in the range from 10 through 604800.  [default: %default]""")
 install_fcgi_app_parser.add_argument(
-    "-r", "--request-timeout", type="int",
+    "-r", "--request-timeout", type=int,
     default=app_attr_defaults_init['requestTimeout'],
     help="""\
 Specifies the maximum time, in seconds, that a FastCGI process request \
