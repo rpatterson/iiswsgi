@@ -252,6 +252,8 @@ class Deployer(object):
 
         cwd = os.getcwd()
         try:
+            self.logger.info('Changing to application directory {0}'.format(
+                appl_physical_path))
             os.chdir(appl_physical_path)
             self.deploy()
         finally:
@@ -260,8 +262,8 @@ class Deployer(object):
             os.remove(stamp_path)
 
     def deploy(self):
-        # web.config variable substitution
         web_config = open('web.config').read()
+        self.logger.info('Doing variable substitution in web.config')
         open('web.config', 'w').write(web_config.format(**os.environ))
 
         # register the IIS FCGI app
@@ -270,21 +272,26 @@ class Deployer(object):
         # vritualenv and requirements
         executable = sys.executable
         if os.path.exists(self.requirements_filename):
-            subprocess.check_call(
-                [os.path.join(os.path.dirname(executable),
-                              'Scripts', 'virtualenv.exe'), '.'],
-                env=os.environ)
+            args = [os.path.join(os.path.dirname(executable),
+                                 'Scripts', 'virtualenv.exe'), '.']
+            self.logger.info(
+                'Setting up a isolated Python with: {0}'.format(
+                    ' '.join(args)))
+            subprocess.check_call(args, env=os.environ)
             executable = os.path.abspath(os.path.join('Scripts', 'python.exe'))
-            subprocess.check_call(
-                [os.path.join('Scripts', 'pip.exe'), 'install', '-r',
-                 self.requirements_filename], env=os.environ)
+            args = [os.path.join('Scripts', 'pip.exe'), 'install', '-r',
+                    self.requirements_filename]
+            self.logger.info(
+                'Installing dependencies with: {0}'.format(' '.join(args)))
+            self.logger.info('XXX os.getcwd(): {0}'.format(os.getcwd()))
+            subprocess.check_call(args, env=os.environ)
 
-        # custom deploy script
         if os.path.exists(self.script_filename):
+            args = [executable, self.script_filename] + sys.argv[1:]
+            self.logger.info(
+                'Running custom deploy script: {0}'.format(' '.join(args)))
             # Raises CalledProcessError if it failes
-            subprocess.check_call(
-                [executable, self.script_filename] + sys.argv[1:],
-                env=os.environ)
+            subprocess.check_call(args, env=os.environ)
 
     def get_appl_physical_path(self):
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
