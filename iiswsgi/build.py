@@ -33,6 +33,15 @@ class Builder(object):
       `*.msdeploy` packages in `%USERPROFILE%\Documents\My Web Sites`
     """
 
+    feed_name = 'web-pi.xml'
+    webpi_installer_cache = os.path.join(
+        os.environ['LOCALAPPDATA'],
+        'Microsoft', 'Web Platform Installer', 'installers')
+    iis_sites_home = os.path.join(
+        os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
+    feed_dir = os.path.join(
+        os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
+
     def __init__(self):
         self.cwd = os.getcwd()
 
@@ -56,7 +65,7 @@ class Builder(object):
 
     def parse_feed(self):
         # TODO optparse option for feed
-        feed_path = os.path.join(self.cwd, 'web-pi.xml')
+        feed_path = os.path.join(self.cwd, self.feed_name)
         return minidom.parse(feed_path + '.in')
 
     def build_package(self, name):
@@ -101,9 +110,7 @@ class Builder(object):
             package_sha1_value))
 
     def delete_installer_cache(self, package_name):
-        installer_dir = os.path.join(
-            os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
-            'installers', package_name)
+        installer_dir = os.path.join(self.webpi_installer_cache, package_name)
         if os.path.exists(installer_dir):
             logger.info('Removing the cached MSDeploy package: {0}'.format(
                 installer_dir))
@@ -111,31 +118,28 @@ class Builder(object):
 
     def delete_stamp_files(self, package_name):
         # Clean up likely stale stamp files
-        iis_sites_home = os.path.join(
-            os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
-        for name in os.listdir(iis_sites_home):
-            if not (os.path.isdir(os.path.join(iis_sites_home, name)) and
+        for name in os.listdir(self.iis_sites_home):
+            if not (os.path.isdir(os.path.join(self.iis_sites_home, name)) and
                     name.startswith(package_name)):
                 continue
-            stamp_file = os.path.join(iis_sites_home, name, 'iis_deploy.stamp')
+            stamp_file = os.path.join(
+                self.iis_sites_home, name, 'iis_deploy.stamp')
             if os.path.exists(stamp_file):
                 logger.info(
                     'Removing stale deploy stamp file: {0}'.format(stamp_file))
                 os.remove(stamp_file)
 
     def write_feed(self, feed):
-        feed_path = os.path.join(self.cwd, 'web-pi.xml')
+        feed_path = os.path.join(self.cwd, self.feed_name)
         feed.writexml(open(feed_path, 'w'))
 
     def delete_feed_cache(self, feed):
-        feed_dir = os.path.join(
-            os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
-        for cached_feed_name in os.listdir(feed_dir):
+        for cached_feed_name in os.listdir(self.feed_dir):
             if not os.path.splitext(cached_feed_name)[1] == '.xml':
                 # not a cached feed file
                 continue
 
-            cached_feed_path = os.path.join(feed_dir, cached_feed_name)
+            cached_feed_path = os.path.join(self.feed_dir, cached_feed_name)
             cached_feed = minidom.parse(cached_feed_path)
             # TODO Assumes that the first <id> element is the feed/id
             # Would not be true if an entry/id came before the feed/id
