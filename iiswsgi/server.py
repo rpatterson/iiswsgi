@@ -284,15 +284,9 @@ def run(args=None):
         logger.exception('Error parsing arguments.')
         raise
 
-    if hasattr(options, 'config') and hasattr(options, 'entry_point'):
-        parser.error("Use only one of '--config=%s' or '--entry-point=%s'"
-                     % (options.config, options.entry_point))
-    if args:
-        parser.error('Got unrecognized arugments: %r' % args)
+    server = IISWSGIServer(args.app)
 
-    server = IISWSGIServer(options.app)
-
-    logger.info('Starting FCGI server with app %r' % options.app)
+    logger.info('Starting FCGI server with app %r' % args.app)
     try:
         server.run()
     except BaseException:
@@ -304,12 +298,11 @@ parser = argparse.ArgumentParser(description=run.__doc__,
                                parents=[options.parent_parser])
 app_group = parser.add_mutually_exclusive_group()
 app_group.add_argument(
-    "-c", "--config", metavar="FILE", type="string",
-    dest='app', type=loadapp_option,
+    "-c", "--config", metavar="FILE", dest='app', type=loadapp_option,
     help="Load the  the WSGI app from paster config FILE.")
 app_group.add_argument(
     "-e", "--entry-point", metavar="ENTRY_POINT", default=test_app,
-    type="string", dest='app', type=ep_app_option,
+    dest='app', type=ep_app_option,
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
     "  [default: iiswsgi:test_app]")
