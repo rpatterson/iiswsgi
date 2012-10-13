@@ -5,6 +5,7 @@ dist/
 build/
 examples/web-pi.xml
 examples/sample.msdeploy/MANIFEST
+examples/sample.msdeploy/Manifest.xml
 Include/
 Lib/
 Scripts/

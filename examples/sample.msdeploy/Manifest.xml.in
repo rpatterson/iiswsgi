@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<msDeploy.iisApp>
+  <iisApp path="IISWSGISampleApp" />
+  <runCommand
+      path="%SystemDrive%\Python27\python.exe -u %SystemDrive%\Python27\Scripts\iiswsgi_deploy-script.py"
+      successReturnCodes="0x0"
+      MSDeploy.MSDeployKeyAttributeName="path" />
+</msDeploy.iisApp>
