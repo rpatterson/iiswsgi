@@ -11,7 +11,7 @@ logger = logging.getLogger('pyramid.iiswsgi')
 def main():
     logging.basicConfig(level=logging.INFO)
     pcreate = os.path.join(os.path.dirname(sys.executable), 'pcreate.exe')
-    args = [pcreate, '-s', '__pyramid_scaffold__', '__pyramid_project__']
+    args = [pcreate, '-s', '__pyramid_scaffold__', '.']
     logger.info('Creating Pyramid project: {0}'.format(' '.join(args)))
     subprocess.check_call(args)
 

@@ -17,12 +17,4 @@
     <parameterEntry kind="TextFile" scope="\\iis_deploy\.py$" match="__pyramid_scaffold__" />
   </parameter>
 
-  <parameter 
-    name="project"
-    friendlyName="Project Name"
-    description="Name your Pyramid project."
-    defaultValue="MyProject">
-    <parameterEntry kind="TextFile" scope="\\iis_deploy\.py$" match="__pyramid_project__" />
-  </parameter>
-
 </parameters>
