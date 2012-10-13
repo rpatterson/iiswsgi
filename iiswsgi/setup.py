@@ -64,6 +64,8 @@ class MSDeployBuild(build.build):
             # Assemble the msdeploy.exe source command line
             settings = ','.join('{0}={1}'.format(*item) for item in
                                 settings_attrs.items())
+            if settings:
+                settings = ',' + settings
             source = '-source:runCommand="{0}"{1}'.format(path, settings)
 
             tmp = tempfile.mkdtemp()
