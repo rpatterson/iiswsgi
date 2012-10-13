@@ -276,7 +276,7 @@ class Deployer(object):
                 env=os.environ)
             executable = os.path.abspath(os.path.join('Scripts', 'python.exe'))
             subprocess.check_call(
-                [os.path.join('Scripts', 'pip.exe'), '-r',
+                [os.path.join('Scripts', 'pip.exe'), 'install', '-r',
                  self.requirements_filename], env=os.environ)
 
         # custom deploy script
