@@ -6,7 +6,7 @@ import struct
 import select
 import socket
 import errno
-import optparse
+import argparse
 import logging
 
 from iiswsgi.filesocket import FileSocket
@@ -256,22 +256,21 @@ def make_test_app(global_config):
     return test_app
 
 
-def loadapp_option(option, opt, value, parser):
+def loadapp_option(value):
     from paste.deploy import loadapp
     config = os.path.abspath(value)
-    setattr(parser.values, 'config', config)
     logger.info('Loading WSGI app from config file %r' % config)
     app = loadapp('config:%s' % (config,))
-    setattr(parser.values, option.dest, app)
+    return app
 
 
-def ep_app_option(option, opt, value, parser):
+def ep_app_option(value):
     setattr(parser.values, 'entry_point', value)
     import pkg_resources
     ep = pkg_resources.EntryPoint.parse('app=' + value)
     logger.info('Loading WSGI app from entry_point %r' % value)
     app = ep.load(require=False)
-    setattr(parser.values, option.dest, app)
+    return app
 
 
 def run(args=None):
@@ -301,15 +300,15 @@ def run(args=None):
         raise
 
 
-parser = optparse.OptionParser(description=run.__doc__)
-parser.add_option(options.verbose)
-parser.add_option(
+parser = argparse.ArgumentParser(description=run.__doc__,
+                               parents=[options.parent_parser])
+parser.add_argument(
     "-c", "--config", metavar="FILE", type="string",
-    dest='app', action="callback", callback=loadapp_option,
+    dest='app', type=loadapp_option,
     help="Load the  the WSGI app from paster config FILE.")
-parser.add_option(
+parser.add_argument(
     "-e", "--entry-point", metavar="ENTRY_POINT", default=test_app,
-    type="string", dest='app', action="callback", callback=ep_app_option,
+    type="string", dest='app', type=ep_app_option,
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
     "  [default: iiswsgi:test_app]")
