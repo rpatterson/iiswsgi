@@ -4,8 +4,8 @@ develop-eggs/
 dist/
 build/
 examples/web-pi.xml
-examples/sample.msdeploy/MANIFEST
-examples/sample.msdeploy/Manifest.xml
+examples/*.msdeploy/MANIFEST
+examples/*.msdeploy/Manifest.xml
 Include/
 Lib/
 Scripts/

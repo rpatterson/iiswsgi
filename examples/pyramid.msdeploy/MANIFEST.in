@@ -1,0 +1,7 @@
+include PyramidApp/*.py
+
+include Manifest.xml
+include Parameters.xml
+include PyramidApp/web.config
+include PyramidApp/requirements.txt
+include PyramidApp/iis_deploy.stamp

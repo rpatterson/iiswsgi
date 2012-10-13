@@ -1,0 +1,28 @@
+<parameters>
+  
+  <parameter 
+    name="ApplicationPath" 
+    description="Full site path where you would like to install your application (i.e., PyramidApp)" 
+    defaultValue="Default Web Site/PyramidApp" 
+    tags="iisApp">
+    <parameterEntry kind="ProviderPath" scope="iisApp" match="PyramidApp" />
+  </parameter>
+  
+  <parameter 
+    name="scaffold"
+    friendlyName="Scaffold"
+    description="Select the type of Pyramid project."
+    defaultValue="starter">
+    <parameterValidation type="Enumeration" validationString="starter,zodb,alchemy" />
+    <parameterEntry kind="TextFile" scope="\\iis_deploy\.py$" match="__pyramid_scaffold__" />
+  </parameter>
+
+  <parameter 
+    name="project"
+    friendlyName="Project Name"
+    description="Name your Pyramid project."
+    defaultValue="MyProject">
+    <parameterEntry kind="TextFile" scope="\\iis_deploy\.py$" match="__pyramid_project__" />
+  </parameter>
+
+</parameters>

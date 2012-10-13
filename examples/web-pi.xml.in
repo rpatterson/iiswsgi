@@ -202,6 +202,98 @@
     </longSummary>
   </entry>
 
+
+  <!-- Pyramid App with dependencies -->
+  <entry type="application">
+    <productId>PyramidApp</productId>
+    <!-- TODO what should the id be to get auto-upgrades on minor
+         versions, but not major versions -->
+    <id>https://raw.github.com/rpatterson/iiswsgi/examples/pyramid.msdeploy</id>
+    <version>0.1</version>
+    
+    <updated>2012-03-25T13:22:48.440870</updated>
+    <published>2012-03-25T13:22:48.440870</published>
+    <title resourceName="Entry_PyramidApp_Title">Pyramid App</title>
+    <link href="https://raw.github.com/rpatterson/iiswsgi/examples/pyramid.msdeploy"/>
+    <summary resourceName="Entry_PyramidApp_Summary">
+      Pyramid application project.
+    </summary>
+    <author>
+      <name>Pyramid Community</name>
+      <uri>http://www.pylonsproject.org/projects/pyramid/about</uri>
+    </author>
+    <frameworkFamily resourceName="Python">Python</frameworkFamily>
+    <keywords>
+      <keywordId>Pyramid</keywordId>
+      <keywordId>Python</keywordId>
+      <keywordId>Server</keywordId>
+      <keywordId>FrameworkRuntime</keywordId>
+    </keywords>
+    <images>
+      <icon>http://www.pylonsproject.org/static/images/pyramid-small.png</icon>
+    </images>
+    <discoveryHint>
+      <file>
+        <filePath>%APPL_PHYSICAL_PATH%</filePath>
+      </file>
+    </discoveryHint>
+    <!-- Minimum set of requirements/dependencies in order to
+         successfully install -->
+    <dependency>
+      <and>
+        <dependency>
+          <productId>Python27</productId>
+        </dependency>
+        <dependency>
+          <productId>IISWSGI</productId>
+        </dependency>
+        <dependency>
+          <productId>WDeploy</productId>
+        </dependency>
+      </and>
+    </dependency>
+    <!-- Bring along Visual Studio Python support, if it is not
+         installed as a related/nice-to-have product, not a dependency -->
+    <related>
+      <relatedProduct>
+          <!--  workaround for "retrieving the com class factory for
+          remote component CLSID 2b72133b-3f5b-4602-8952-803546CE3344
+          error 80040154" when using full IIS -->
+          <productId>IISManagementConsole</productId>
+      </relatedProduct>
+    </related>
+    <installers>
+      <installer>
+        <id>1</id>
+        <!-- List of languages this package is localized in -->
+        <languageId>en</languageId>
+        <installerFile>
+          <!-- size of the package in KBs -->
+          <fileSize>__size__</fileSize>
+          <installerURL>file:///C:/Users/Administrator/Documents/GitHub/iiswsgi/examples/pyramid.msdeploy/dist/PyramidApp-0.1.zip</installerURL>
+          <displayURL>http://github.com/rpatterson/iiswsgi/examples/pyramid.msdeploy</displayURL>
+          <!-- SHA of the package file for signature verification -->
+          <sha1>__sha1__</sha1>
+        </installerFile>
+        <msDeploy/>
+        <helpLink>http://github.com/rpatterson/iiswsgi</helpLink>
+      </installer>
+    </installers>
+    <addToFeedDate>8-07-2012</addToFeedDate>
+    <pageName>PyramidApp</pageName>
+    <productFamily resourceName="Applications">Applications</productFamily>
+    <longSummary resourceName="Entry_PyramidApp_LongSummary">
+      Pyramid is a very general open source Python web framework. As a
+      framework, its primary job is to make it easier for a developer
+      to create an arbitrary web application. The type of application
+      being created isn't really important; it could be a spreadsheet,
+      a corporate intranet, or a social networking platform. Pyramid
+      is general enough that it can be used in a wide variety of
+      circumstances.
+    </longSummary>
+  </entry>
+
+
   <keywords>
     <keyword id="Python" resourceName="Keyword_Python">Python</keyword>
   </keywords>
