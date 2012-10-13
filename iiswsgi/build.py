@@ -15,7 +15,21 @@ def build():
     """
     Helper for building IIS WSGI Web Deploy packages.
 
-    TODO
+    Expects to be run in a directory containing a `web-pi.xml.in`
+    template Web Platform Installer feed and one or more `*.msdeploy`
+    directories which are to be made into Web Deploy packages.  These
+    `*.msdeploy` directories in turn are expected to contain
+    `setup.py` files which use the `iiswsgi.setup` `distutils`
+    commands to generate Web Deploy Packages.
+
+    Performs the following tasks:
+    * Build the Web Deploy Package
+    * Calculate the size and sha1
+    * Delete old Web Deploy packages from the Web Platform Installer cache
+    * Update the size and sha1 in the Web Platform Installer feed
+    * Write the Web Platform Installer feed to `web-pi.xml`
+    * Delete copies of the feed from the Web Platform Installer cache
+    * Delete `iis_deploy.stamp` files assuming that they're stale
     """
     cwd = os.getcwd()
 
