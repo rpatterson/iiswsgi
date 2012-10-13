@@ -279,7 +279,7 @@ def run(args=None):
     root.addHandler(handler)
 
     try:
-        options, args = parser.parse_args(args=args)
+        args = parser.parse_args(args=args)
     except:
         logger.exception('Error parsing arguments.')
         raise
@@ -302,11 +302,12 @@ def run(args=None):
 
 parser = argparse.ArgumentParser(description=run.__doc__,
                                parents=[options.parent_parser])
-parser.add_argument(
+app_group = parser.add_mutually_exclusive_group()
+app_group.add_argument(
     "-c", "--config", metavar="FILE", type="string",
     dest='app', type=loadapp_option,
     help="Load the  the WSGI app from paster config FILE.")
-parser.add_argument(
+app_group.add_argument(
     "-e", "--entry-point", metavar="ENTRY_POINT", default=test_app,
     type="string", dest='app', type=ep_app_option,
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."

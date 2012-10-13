@@ -240,8 +240,8 @@ class Deployer(object):
     script_filename = 'iis_deploy.py'
     requirements_filename = 'requirements.txt'
 
-    def __init__(self, options, args):
-        self.options, self.args = options, args
+    def __init__(self, args):
+        self.args = args
 
     def __call__(self):
         appl_physical_path = self.get_appl_physical_path()
@@ -349,6 +349,6 @@ deploy_parser = argparse.ArgumentParser(description=Deployer.__doc__,
 
 def deploy_console(args=None):
     logging.basicConfig()
-    options, args = deploy_parser.parse_args(args=args)
-    deployer = Deployer(options, args)
+    args = deploy_parser.parse_args(args=args)
+    deployer = Deployer(args)
     deployer()
