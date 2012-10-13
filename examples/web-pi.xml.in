@@ -1,4 +1,5 @@
-<?xml version="1.0" ?><feed xmlns="http://www.w3.org/2005/Atom">
+<?xml version="1.0" ?>
+<feed xmlns="http://www.w3.org/2005/Atom">
   <webpiFile version="4.0.1.0"/>
 
   <title>IIS WSGI Sample APP for WebPI Feed</title>
