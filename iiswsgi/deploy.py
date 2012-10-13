@@ -249,6 +249,8 @@ class Deployer(object):
         if not os.path.exists(stamp_path):
             raise ValueError(
                 'No IIS deploy stamp file found at {0}'.format(stamp_path))
+        # clean up the stamp file regardless, we tried
+        os.remove(stamp_path)
 
         cwd = os.getcwd()
         try:
@@ -258,8 +260,6 @@ class Deployer(object):
             self.deploy()
         finally:
             os.chdir(cwd)
-            # clean up the stamp file regardless, we tried
-            os.remove(stamp_path)
 
     def deploy(self):
         web_config = open('web.config').read()
