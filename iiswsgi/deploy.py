@@ -6,6 +6,8 @@ import logging
 
 from xml.dom import minidom
 
+from iiswsgi import options
+
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.deploy')
 
@@ -241,6 +243,9 @@ class Deployer(object):
     script_filename = 'iis_deploy.py'
     requirements_filename = 'requirements.txt'
 
+    def __init__(self, options, args):
+        self.options, self.args = options, args
+
     def __call__(self):
         appl_physical_path = self.get_appl_physical_path()
         stamp_path = os.path.join(appl_physical_path, self.stamp_filename)
@@ -342,8 +347,12 @@ class Deployer(object):
             os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
         return appl_physical_path
 
+deploy_parser = optparse.OptionParser(description=Deployer.__doc__)
+deploy_parser.add_option(options.verbose)
 
-def deploy_console():
-    logging.basicConfig(level=logging.INFO)
-    deployer = Deployer()
+
+def deploy_console(args=None):
+    logging.basicConfig()
+    options, args = deploy_parser.parse_args(args=args)
+    deployer = Deployer(options, args)
     deployer()

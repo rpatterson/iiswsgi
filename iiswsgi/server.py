@@ -10,6 +10,7 @@ import optparse
 import logging
 
 from iiswsgi.filesocket import FileSocket
+from iiswsgi import options
 
 from flup.server import singleserver
 from flup.server import fcgi_base
@@ -255,18 +256,6 @@ def make_test_app(global_config):
     return test_app
 
 
-def verbose_option(option, opt, value, parser):
-    root.setLevel(root.level - 10)
-    if root.level == logging.DEBUG:
-        # Some useful startup debugging info
-        logger.debug('os.getcwd(): {0}'.format(os.getcwd()))
-        logger.debug('sys.argv: {0}'.format(sys.argv))
-        logger.debug('os.environ:\n{0}'.format(
-            '\n'.join('{0}={1}'.format(key, value)
-                      for key, value in os.environ.iteritems())))
-    setattr(parser.values, option.dest, root.level)
-
-
 def loadapp_option(option, opt, value, parser):
     from paste.deploy import loadapp
     config = os.path.abspath(value)
@@ -313,13 +302,7 @@ def run(args=None):
 
 
 parser = optparse.OptionParser(description=run.__doc__)
-parser.add_option(
-    "-v", "--verbose", default=root.level, dest='verbose',
-    action="callback", callback=verbose_option,
-    help=("Increase the verbosity of logging.  "
-          "Can be given multiple times.  "
-          "Pass before other options to ensure that logging includes "
-          "information about processing options."))
+parser.add_option(options.verbose)
 parser.add_option(
     "-c", "--config", metavar="FILE", type="string",
     dest='app', action="callback", callback=loadapp_option,
