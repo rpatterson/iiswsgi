@@ -5,8 +5,11 @@ import os
 import subprocess
 import shutil
 import logging
+import argparse
 
 from xml.dom import minidom
+
+from iiswsgi import options
 
 logger = logging.getLogger('iiswsgi.build')
 
@@ -42,19 +45,16 @@ class Builder(object):
     feed_dir = os.path.join(
         os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
 
-    def __init__(self):
+    def __init__(self, *packages):
+        self.packages = packages
         self.cwd = os.getcwd()
 
     def __call__(self):
         feed = self.parse_feed()
 
-        # TODO args are packages
-        for name in os.listdir(self.cwd):
-            if os.path.splitext(name)[1] != '.msdeploy':
-                # not an msdeploy package
-                continue
-
-            package_name, package_size, package_sha1 = self.build_package(name)
+        for package in self.packages:
+            package_name, package_size, package_sha1 = self.build_package(
+                package)
             self.update_feed_entry(
                 feed, package_name, package_size, package_sha1)
             self.delete_installer_cache(package_name)
@@ -64,13 +64,13 @@ class Builder(object):
         self.delete_feed_cache(feed)
 
     def parse_feed(self):
-        # TODO optparse option for feed
+        # TODO argparse option for feed
         feed_path = os.path.join(self.cwd, self.feed_name)
         return minidom.parse(feed_path + '.in')
 
-    def build_package(self, name):
+    def build_package(self, package):
         try:
-            os.chdir(os.path.join(self.cwd, name))
+            os.chdir(package)
             subprocess.check_call([sys.executable, 'setup.py', 'sdist'])
             os.chdir('dist')
             latest_package = max(
@@ -153,7 +153,14 @@ class Builder(object):
                 break
 
 
+build_parser = argparse.ArgumentParser(description=Builder.__doc__,
+                                     parents=[options.parent_parser])
+build_parser.add_argument('packages', nargs='+',
+                   help='Web Deploy package directories.')
+
+
 def build_console(args=None):
-    logging.basicConfig(level=logging.INFO)
-    builder = Builder()
+    logging.basicConfig()
+    args = build_parser.parse_args(args=args)
+    builder = Builder(*args.packages)
     builder()
