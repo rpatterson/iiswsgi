@@ -11,7 +11,7 @@ from xml.dom import minidom
 logger = logging.getLogger('iiswsgi.build')
 
 
-def build():
+class Builder(object):
     """
     Helper for building IIS WSGI Web Deploy packages.
 
@@ -32,18 +32,36 @@ def build():
     * Delete `iis_deploy.stamp` files from all installations of any
       `*.msdeploy` packages in `%USERPROFILE%\Documents\My Web Sites`
     """
-    cwd = os.getcwd()
 
-    feed_path = os.path.join(cwd, 'web-pi.xml')
-    doc = minidom.parse(feed_path + '.in')
+    def __init__(self):
+        self.cwd = os.getcwd()
 
-    for name in os.listdir(cwd):
-        if os.path.splitext(name)[1] != '.msdeploy':
-            # not an msdeploy package
-            continue
+    def __call__(self):
+        feed = self.parse_feed()
 
+        # TODO args are packages
+        for name in os.listdir(self.cwd):
+            if os.path.splitext(name)[1] != '.msdeploy':
+                # not an msdeploy package
+                continue
+
+            package_name, package_size, package_sha1 = self.build_package(name)
+            self.update_feed_entry(
+                feed, package_name, package_size, package_sha1)
+            self.delete_installer_cache(package_name)
+            self.delete_stamp_files(package_name)
+
+        self.write_feed(feed)
+        self.delete_feed_cache(feed)
+
+    def parse_feed(self):
+        # TODO optparse option for feed
+        feed_path = os.path.join(self.cwd, 'web-pi.xml')
+        return minidom.parse(feed_path + '.in')
+
+    def build_package(self, name):
         try:
-            os.chdir(os.path.join(cwd, name))
+            os.chdir(os.path.join(self.cwd, name))
             subprocess.check_call([sys.executable, 'setup.py', 'sdist'])
             os.chdir('dist')
             latest_package = max(
@@ -54,31 +72,26 @@ def build():
             package_sha1 = subprocess.check_output([
                 'fciv', '-sha1', latest_package])
         finally:
-            os.chdir(cwd)
+            os.chdir(self.cwd)
 
+        package_size = int(round(package_size / 1024.0))
         package_name = latest_package.split('-', 1)[0]
+        return package_name, package_size, package_sha1
 
-        installer_dir = os.path.join(
-            os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
-            'installers', package_name)
-        if os.path.exists(installer_dir):
-            logger.info('Removing the cached MSDeploy package: {0}'.format(
-                installer_dir))
-            shutil.rmtree(installer_dir)
-
-        package_size_kb = int(round(package_size / 1024.0))
-        for entry in doc.getElementsByTagName('entry'):
+    def update_feed_entry(
+        self, feed, package_name, package_size, package_sha1):
+        for entry in feed.getElementsByTagName('entry'):
             productIds = entry.getElementsByTagName("productId")
             if productIds and productIds[0].firstChild.data == package_name:
                 break
         else:
-            raise ValueError('Could not find <entry> for {0} in {1}'.format(
-                package_name, feed_path))
+            raise ValueError(
+                'Could not find <entry> for {0}'.format(package_name))
 
         size_elem = entry.getElementsByTagName('fileSize')[0]
-        size_elem.firstChild.data = u'{0}'.format(package_size_kb)
+        size_elem.firstChild.data = u'{0}'.format(package_size)
         logger.info('Set Web Platform Installer <fileSize> to {0}'.format(
-            package_size_kb))
+            package_size))
 
         package_sha1_value = package_sha1.rsplit(
             '\r\n', 2)[-2].split(' ', 1)[0]
@@ -87,6 +100,16 @@ def build():
         logger.info('Set Web Platform Installer <sha1> to {0}'.format(
             package_sha1_value))
 
+    def delete_installer_cache(self, package_name):
+        installer_dir = os.path.join(
+            os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer',
+            'installers', package_name)
+        if os.path.exists(installer_dir):
+            logger.info('Removing the cached MSDeploy package: {0}'.format(
+                installer_dir))
+            shutil.rmtree(installer_dir)
+
+    def delete_stamp_files(self, package_name):
         # Clean up likely stale stamp files
         iis_sites_home = os.path.join(
             os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
@@ -100,27 +123,33 @@ def build():
                     'Removing stale deploy stamp file: {0}'.format(stamp_file))
                 os.remove(stamp_file)
 
-    doc.writexml(open(feed_path, 'w'))
+    def write_feed(self, feed):
+        feed_path = os.path.join(self.cwd, 'web-pi.xml')
+        feed.writexml(open(feed_path, 'w'))
 
-    feed_dir = os.path.join(
-        os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
-    for feed in os.listdir(feed_dir):
-        if not os.path.splitext(feed)[1] == '.xml':
-            # not a cached feed file
-            continue
-        feed_path = os.path.join(feed_dir, feed)
-        cached_doc = minidom.parse(feed_path)
-        # TODO Assumes that the first <id> element is the feed/id
-        # Would not be true if an entry/id came before the feed/id
-        ids = cached_doc.getElementsByTagName("id")
-        if ids and (ids[0].firstChild.data ==
-                    doc.getElementsByTagName("id")[0].firstChild.data):
-            logger.info(
-                'Removing the Web Platform Installer cached feed at {0}'
-                .format(feed_path))
-            os.remove(feed_path)
+    def delete_feed_cache(self, feed):
+        feed_dir = os.path.join(
+            os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
+        for cached_feed_name in os.listdir(feed_dir):
+            if not os.path.splitext(cached_feed_name)[1] == '.xml':
+                # not a cached feed file
+                continue
+
+            cached_feed_path = os.path.join(feed_dir, cached_feed_name)
+            cached_feed = minidom.parse(cached_feed_path)
+            # TODO Assumes that the first <id> element is the feed/id
+            # Would not be true if an entry/id came before the feed/id
+            ids = cached_feed.getElementsByTagName("id")
+            if ids and (ids[0].firstChild.data ==
+                        feed.getElementsByTagName("id")[0].firstChild.data):
+                logger.info(
+                    'Removing the Web Platform Installer cached feed at {0}'
+                    .format(cached_feed_path))
+                os.remove(cached_feed_path)
+                break
 
 
 def build_console(args=None):
     logging.basicConfig(level=logging.INFO)
-    build()
+    builder = Builder()
+    builder()
