@@ -19,11 +19,7 @@ class Builder(object):
     Helper for building IIS WSGI Web Deploy packages.
 
     Expects to be run in a directory containing a `web-pi.xml.in`
-    template Web Platform Installer feed and one or more `*.msdeploy`
-    directories which are to be made into Web Deploy packages.  These
-    `*.msdeploy` directories in turn are expected to contain
-    `setup.py` files which use the `iiswsgi.setup` `distutils`
-    commands to generate Web Deploy Packages.
+    template Web Platform Installer feed.
 
     Performs the following tasks:
     * Build the Web Deploy Package
@@ -156,7 +152,10 @@ class Builder(object):
 build_parser = argparse.ArgumentParser(description=Builder.__doc__,
                                      parents=[options.parent_parser])
 build_parser.add_argument('packages', nargs='+',
-                   help='Web Deploy package directories.')
+                          help="""\
+One or more Web Deploy package directories.  Each must contain `setup.py` \
+files which use the `iiswsgi.setup` `distutils` commands to \
+generate a package."""
 
 
 def build_console(args=None):
