@@ -5,7 +5,10 @@ Serving Python WSGI applications natively from IIS
 ==================================================
 
 The ``iiswsgi`` module implements a FastCGI to WSGI gateway that is
-compatible with IIS's variation of the FastCGI protocol.
+compatible with IIS's variation of the FastCGI protocol.  It also
+provides utilities and helpers for building, packaging and deploying
+`Microsoft Web Deploy`_ packages through the `Web Platform
+Installer`_.
 
 Quick Start
 ===========
@@ -101,3 +104,5 @@ TODO building a MSDeploy package from an existing project
 .. _MS WebPI package runCommand not working in Manifest.xml: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
 .. _Windows named pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
 .. _STDIN_FILENO: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
+.. _Microsoft Web Deploy: http://www.iis.net/downloads/microsoft/web-deploy
+.. _Web Platform Installer: http://www.microsoft.com/web/downloads/platform.aspx
