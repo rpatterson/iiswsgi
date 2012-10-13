@@ -151,5 +151,6 @@ class MSDeploySDist(sdist.sdist):
         make_zipfile(base_name, base_dir,
                      verbose=self.verbose, dry_run=self.dry_run)
 
+# TODO separate actions, msdeploy_package depending on msdeploy_build
 cmdclass = dict(build=MSDeployBuild,
                 sdist=MSDeploySDist)
