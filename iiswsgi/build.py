@@ -69,7 +69,8 @@ class Builder(object):
     def build_package(self, package):
         try:
             os.chdir(package)
-            subprocess.check_call([sys.executable, 'setup.py', 'sdist'])
+            subprocess.check_call(
+                [sys.executable, 'setup.py', 'build', 'sdist'])
             os.chdir('dist')
             latest_package = max(
                 (package for package in os.listdir('.')
