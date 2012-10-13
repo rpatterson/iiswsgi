@@ -215,10 +215,7 @@ class Deployer(object):
         Look for a `iis_deploy.py` script in `APPL_PHYSICAL_PATH`.  If
         it is found but `APPL_PHYSICAL_PATH` has no `iis_deploy.stamp`
         file, an error will be raised.  Otherwise the script is
-        executed.  If it exits with a status code of `0`, then the
-        `iis_deploy.stamp` file will be removed.  With any other
-        non-zero status code, an error will be raised and the stamp
-        file will be left in place.
+        executed and the stamp file is removed.
 
         The script is often used to build an isolated Python environment
         for the application (such as with virtualenv or buildout).  Since
@@ -259,9 +256,8 @@ class Deployer(object):
             self.deploy()
         finally:
             os.chdir(cwd)
-
-        # Success, clean up the stamp file
-        os.remove(stamp_path)
+            # clean up the stamp file regardless, we tried
+            os.remove(stamp_path)
 
     def deploy(self):
         # web.config variable substitution
