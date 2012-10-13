@@ -81,9 +81,11 @@ def build():
             # not a cached feed file
             continue
         feed_path = os.path.join(feed_dir, feed)
-        doc = minidom.parse(feed_path)
-        links = doc.getElementsByTagName("link")
-        if links and 'iiswsgi' in links[0].getAttribute('href'):
+        cached_doc = minidom.parse(feed_path)
+        links = cached_doc.getElementsByTagName("link")
+        if (links and
+            links[0].getAttribute('href') ==
+            doc.getElementsByTagName("link")[0].getAttribute('href')):
             logger.info(
                 'Removing the Web Platform Installer cached feed at {0}'
                 .format(feed_path))
