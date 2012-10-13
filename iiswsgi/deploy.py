@@ -279,8 +279,9 @@ class Deployer(object):
                     ' '.join(args)))
             subprocess.check_call(args, env=os.environ)
             executable = os.path.abspath(os.path.join('Scripts', 'python.exe'))
-            args = [os.path.join('Scripts', 'pip.exe'), 'install', '-r',
-                    self.requirements_filename]
+
+            args = [os.path.abspath(os.path.join('Scripts', 'pip.exe')),
+                    'install', '-r', self.requirements_filename]
             self.logger.info(
                 'Installing dependencies with: {0}'.format(' '.join(args)))
             self.logger.info('XXX os.getcwd(): {0}'.format(os.getcwd()))
