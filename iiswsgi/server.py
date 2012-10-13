@@ -16,12 +16,6 @@ from flup.server import singleserver
 from flup.server import fcgi_base
 from flup.server import fcgi_single
 
-try:
-    from pywintypes import error
-    error  # pyflakes
-except ImportError:
-    error = Exception
-
 if __debug__:
     from flup.server.fcgi_base import _debug
 

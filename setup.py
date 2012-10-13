@@ -24,8 +24,7 @@ setup(name='iiswsgi',
           "http://downloads.sourceforge.net/project/pywin32/pywin32/Build%20217/pywin32-217.win32-py2.7.exe"
           ],
       setup_requires=['setuptools-git'],
-      install_requires=['flup',
-                        'pywin32'],
+      install_requires=['flup'],
       extras_require=dict(config=['PasteDeploy']),
       scripts=['test.ini'],
       entry_points={'console_scripts':
