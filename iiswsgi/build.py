@@ -8,21 +8,21 @@ import logging
 
 from xml.dom import minidom
 
+logger = logging.getLogger('iiswsgi.build')
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('iiswsgi.build_package')
 
 cwd = os.getcwd()
 
-feed_path = os.path.join(os.path.dirname(__file__), 'web-pi.xml')
+feed_path = os.path.join(cwd, 'web-pi.xml')
 doc = minidom.parse(feed_path + '.in')
 
-for name in os.listdir(os.path.dirname(__file__)):
+for name in os.listdir(cwd):
     if os.path.splitext(name)[1] != '.msdeploy':
         # not an msdeploy package
         continue
 
     try:
-        os.chdir(os.path.join(os.path.dirname(__file__), name))
+        os.chdir(os.path.join(cwd, name))
         subprocess.check_call([sys.executable, 'setup.py', 'sdist'])
         os.chdir('dist')
         latest_package = max(
@@ -59,7 +59,8 @@ for name in os.listdir(os.path.dirname(__file__)):
     logger.info('Set Web Platform Installer <fileSize> to {0}'.format(
         package_size_kb))
 
-    package_sha1_value = package_sha1.rsplit('\r\n', 2)[-2].split(' ', 1)[0]
+    package_sha1_value = package_sha1.rsplit(
+        '\r\n', 2)[-2].split(' ', 1)[0]
     sha1_elem = entry.getElementsByTagName('sha1')[0]
     sha1_elem.firstChild.data = u'{0}'.format(package_sha1_value)
     logger.info('Set Web Platform Installer <sha1> to {0}'.format(
@@ -78,8 +79,8 @@ for feed in os.listdir(feed_dir):
     links = doc.getElementsByTagName("link")
     if links and 'iiswsgi' in links[0].getAttribute('href'):
         logger.info(
-            'Removing the Web Platform Installer cached feed at {0}'.format(
-                feed_path))
+            'Removing the Web Platform Installer cached feed at {0}'
+            .format(feed_path))
         os.remove(feed_path)
 
 # Clean up likely stale stamp files
@@ -90,5 +91,6 @@ for name in os.listdir(iis_sites_home):
         continue
     stamp_file = os.path.join(iis_sites_home, name, 'iis_deploy.stamp')
     if os.path.exists(stamp_file):
-        logger.info('Removing stale deploy stamp file: {0}'.format(stamp_file))
+        logger.info(
+            'Removing stale deploy stamp file: {0}'.format(stamp_file))
         os.remove(stamp_file)
