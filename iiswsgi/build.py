@@ -29,7 +29,8 @@ def build():
     * Update the size and sha1 in the Web Platform Installer feed
     * Write the Web Platform Installer feed to `web-pi.xml`
     * Delete copies of the feed from the Web Platform Installer cache
-    * Delete `iis_deploy.stamp` files assuming that they're stale
+    * Delete `iis_deploy.stamp` files from all installations of any
+      `*.msdeploy` packages in `%USERPROFILE%\Documents\My Web Sites`
     """
     cwd = os.getcwd()
 
@@ -86,6 +87,19 @@ def build():
         logger.info('Set Web Platform Installer <sha1> to {0}'.format(
             package_sha1_value))
 
+        # Clean up likely stale stamp files
+        iis_sites_home = os.path.join(
+            os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
+        for name in os.listdir(iis_sites_home):
+            if not (os.path.isdir(os.path.join(iis_sites_home, name)) and
+                    name.startswith(package_name)):
+                continue
+            stamp_file = os.path.join(iis_sites_home, name, 'iis_deploy.stamp')
+            if os.path.exists(stamp_file):
+                logger.info(
+                    'Removing stale deploy stamp file: {0}'.format(stamp_file))
+                os.remove(stamp_file)
+
     doc.writexml(open(feed_path, 'w'))
 
     feed_dir = os.path.join(
@@ -105,18 +119,6 @@ def build():
                 'Removing the Web Platform Installer cached feed at {0}'
                 .format(feed_path))
             os.remove(feed_path)
-
-    # Clean up likely stale stamp files
-    iis_sites_home = os.path.join(
-        os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
-    for name in os.listdir(iis_sites_home):
-        if not os.path.isdir(os.path.join(iis_sites_home, name)):
-            continue
-        stamp_file = os.path.join(iis_sites_home, name, 'iis_deploy.stamp')
-        if os.path.exists(stamp_file):
-            logger.info(
-                'Removing stale deploy stamp file: {0}'.format(stamp_file))
-            os.remove(stamp_file)
 
 
 def build_console(args=None):
