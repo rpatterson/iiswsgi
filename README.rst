@@ -10,30 +10,6 @@ provides utilities and helpers for building, packaging and deploying
 `Microsoft Web Deploy`_ packages through the `Web Platform
 Installer`_.
 
-Quick Start
-===========
-
-Use IIS's `AppCmd.exe
-<http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe/>`_
-to install a new FastCGI application.  You can find it at
-``%ProgramFiles%\IIS Express\appcmd.exe`` for WebMatrix/IIS Express or
-``%systemroot%\system32\inetsrv\AppCmd.exe`` for IIS.  Note that you
-need to replace ``%SystemDrive%\Python27\Scripts\test.ini`` with the
-full path to a `Paste Deploy INI configuration file
-<http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction>`_
-that defines the WSGI app and ``IISWSGI-Test`` with the name of your
-app as IIS will see it::
-
-    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='C:\Python27\Scripts\test.ini']" /commit:apphost
-    > appcmd.exe set config -section:system.webServer/handlers /+"[name='IISWSGI-Test',path='iiswsgi-test.fcgi',verb='*',modules='FastCgiModule',scriptProcessor='%SystemDrive%\Python27\python.exe|-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini']" /commit:apphost
-
-See the `IIS FastCGI Reference
-<http://www.iis.net/ConfigReference/system.webServer/fastCgi>`_ for
-more details on how to configure IIS for FastCGI.  Note that you
-cannot use environment variable in the `monitorChangesTo` argument,
-IIS will return an opaque 500 error.
-
-
 Sample Package
 ==============
 
@@ -85,6 +61,30 @@ FCGI gateway` to support using ``STDIN_FILENO`` opened twice, once
 each approximating the `recv` and `send` end of a socket as is
 specified in FastCGI.
 
+IIS FastCGI Applications
+------------------------
+
+The ``iiswsgi.deploy`` package provides helpers which can be using an
+an application's `Manifest.xml`_ file to automate the installation of
+an IIS FastCGI application.  For those needing more control, the
+following may help understand what's involved.
+
+You can use IIS's `AppCmd.exe`_ to install new FastCGI applications.
+You can find it at ``%ProgramFiles%\IIS Express\appcmd.exe`` for
+WebMatrix/IIS Express or ``%systemroot%\system32\inetsrv\AppCmd.exe``
+for IIS.  Note that you need to replace
+``%SystemDrive%\Python27\Scripts\test.ini`` with the full path to a
+`Paste Deploy INI configuration file`_
+that defines the WSGI app and ``IISWSGI-Test`` with the name of your
+app as IIS will see it::
+
+    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='C:\Python27\Scripts\test.ini']" /commit:apphost
+
+See the `IIS FastCGI Reference`_ for
+more details on how to configure IIS for FastCGI.  Note that you
+cannot use environment variable in the `monitorChangesTo` argument,
+IIS will return an opaque 500 error.
+
 Known Issues
 ============
 
@@ -106,3 +106,6 @@ TODO building a MSDeploy package from an existing project
 .. _STDIN_FILENO: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
 .. _Microsoft Web Deploy: http://www.iis.net/downloads/microsoft/web-deploy
 .. _Web Platform Installer: http://www.microsoft.com/web/downloads/platform.aspx
+.. _AppCmd.exe: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
+.. _IIS FastCGI Reference: http://www.iis.net/ConfigReference/system.webServer/fastCgi
+.. _Paste Deploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
