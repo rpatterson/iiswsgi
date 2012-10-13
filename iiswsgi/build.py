@@ -153,7 +153,7 @@ build_parser.add_argument('packages', nargs='+',
                           help="""\
 One or more Web Deploy package directories.  Each must contain `setup.py` \
 files which use the `iiswsgi.setup` `distutils` commands to \
-generate a package."""
+generate a package.""")
 
 
 def build_console(args=None):
