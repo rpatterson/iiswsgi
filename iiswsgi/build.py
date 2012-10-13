@@ -18,8 +18,6 @@ class Builder(object):
     """
     Helper for building IIS WSGI Web Deploy packages.
 
-    Expects to be run in a directory containing a `web-pi.xml.in`
-    template Web Platform Installer feed.
     Performs the following tasks: build the Web Deploy Package,
     calculate the size and sha1, delete old Web Deploy packages from
     the Web Platform Installer cache, update the size and sha1 in the
@@ -39,8 +37,9 @@ class Builder(object):
     feed_dir = os.path.join(
         os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
 
-    def __init__(self, *packages):
+    def __init__(self, packages, feed=None):
         self.packages = packages
+        self.feed = feed
         self.cwd = os.getcwd()
 
     def __call__(self):
@@ -58,9 +57,14 @@ class Builder(object):
         self.delete_feed_cache(feed)
 
     def parse_feed(self):
-        # TODO argparse option for feed
-        feed_path = os.path.join(self.cwd, self.feed_name)
-        return minidom.parse(feed_path + '.in')
+        if self.feed is None:
+            return
+
+        feed = self.feed
+        if os.path.exists(feed + '.in'):
+            # We have a template
+            feed = feed + '.in'
+        return minidom.parse(feed)
 
     def build_package(self, package):
         try:
@@ -83,6 +87,9 @@ class Builder(object):
 
     def update_feed_entry(
         self, feed, package_name, package_size, package_sha1):
+        if feed is None:
+            return
+
         for entry in feed.getElementsByTagName('entry'):
             productIds = entry.getElementsByTagName("productId")
             if productIds and productIds[0].firstChild.data == package_name:
@@ -124,10 +131,15 @@ class Builder(object):
                 os.remove(stamp_file)
 
     def write_feed(self, feed):
-        feed_path = os.path.join(self.cwd, self.feed_name)
-        feed.writexml(open(feed_path, 'w'))
+        if feed is None:
+            return
+
+        feed.writexml(open(self.feed, 'w'))
 
     def delete_feed_cache(self, feed):
+        if feed is None:
+            return
+
         for cached_feed_name in os.listdir(self.feed_dir):
             if not os.path.splitext(cached_feed_name)[1] == '.xml':
                 # not a cached feed file
@@ -149,6 +161,11 @@ class Builder(object):
 
 build_parser = argparse.ArgumentParser(description=Builder.__doc__,
                                      parents=[options.parent_parser])
+build_parser.add_argument('-f', '--feed',
+                          help="""\
+Web Platform Installer atom feed to update.  If a file of the same name but \
+with a `*.in` extension exists it will be used as a template.  \
+Useful to avoid versioning irrellevant feed changes.""")
 build_parser.add_argument('packages', nargs='+',
                           help="""\
 One or more Web Deploy package directories.  Each must contain `setup.py` \
@@ -159,5 +176,5 @@ generate a package.""")
 def build_console(args=None):
     logging.basicConfig()
     args = build_parser.parse_args(args=args)
-    builder = Builder(*args.packages)
+    builder = Builder(args.packages, feed=args.feed)
     builder()
