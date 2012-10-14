@@ -19,13 +19,9 @@ def get_app_name(package):
     manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
     iisapps = manifest.getElementsByTagName('iisApp')
     if not iisapps:
-        raise ValueError(
-            'No <iisApp> elements found in Manifest.xml'
-            .format(package))
+        raise ValueError('No <iisApp> elements found in Manifest.xml')
     elif len(iisapps) > 1:
-        raise ValueError(
-            'Multiple <iisApp> elements found in Manifest.xml'
-            .format(package))
+        raise ValueError('Multiple <iisApp> elements found in Manifest.xml')
     return iisapps[0].getAttribute('path')
 
 
