@@ -273,17 +273,14 @@ class Deployer(object):
         if self.install_fcgi_app:
             install_fcgi_app()
 
-        executable = sys.executable
-        # Assume virtualenv
-        scripts_dir = os.path.join(os.path.dirname(executable))
-        if os.path.exists(os.path.join(scripts_dir, 'Scripts')):
-            # real Python installation
-            scripts_dir = os.path.join(scripts_dir, 'Scripts')
-
         # vritualenv and requirements
+        executable = sys.executable
         if (os.path.exists(self.requirements_filename) or
             os.path.exists(self.easy_install_filename)):
-            args = [os.path.join(scripts_dir, 'virtualenv.exe'), '.']
+            args = [os.path.join(
+                os.environ['SYSTEMDRIVE'] + '\\',
+                'Python{0}{1}'.format(*sys.version_info[:2]),
+                'Scripts', 'virtualenv.exe'), '.']
             self.logger.info(
                 'Setting up a isolated Python with: {0}'.format(
                     ' '.join(args)))
