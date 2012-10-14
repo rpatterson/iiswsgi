@@ -276,7 +276,7 @@ class Deployer(object):
         executable = sys.executable
         # Assume virtualenv
         scripts_dir = os.path.join(os.path.dirname(executable))
-        if os.path.exist(os.path.join(scripts_dir, 'Scripts')):
+        if os.path.exists(os.path.join(scripts_dir, 'Scripts')):
             # real Python installation
             scripts_dir = os.path.join(scripts_dir, 'Scripts')
 
