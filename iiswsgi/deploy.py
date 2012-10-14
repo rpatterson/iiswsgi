@@ -271,12 +271,17 @@ class Deployer(object):
         # register the IIS FCGI app
         install_fcgi_app()
 
-        # vritualenv and requirements
         executable = sys.executable
+        # Assume virtualenv
+        scripts_dir = os.path.join(os.path.dirname(executable))
+        if os.path.exist(os.path.join(scripts_dir, 'Scripts')):
+            # real Python installation
+            scripts_dir = os.path.join(scripts_dir, 'Scripts')
+
+        # vritualenv and requirements
         if (os.path.exists(self.requirements_filename) or
             os.path.exists(self.easy_install_filename)):
-            args = [os.path.join(os.path.dirname(executable),
-                                 'Scripts', 'virtualenv.exe'), '.']
+            args = [os.path.join(scripts_dir, 'virtualenv.exe'), '.']
             self.logger.info(
                 'Setting up a isolated Python with: {0}'.format(
                     ' '.join(args)))
