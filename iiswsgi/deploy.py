@@ -372,7 +372,7 @@ deploy_parser.add_argument(
     help="""\
 Run the deploy process even if the `iis_deploy.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
-stopped a previous run has been addressed."""
+stopped a previous run has been addressed.""")
 
 def deploy_console(args=None):
     logging.basicConfig()
