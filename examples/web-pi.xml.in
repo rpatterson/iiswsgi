@@ -230,7 +230,7 @@
       <keywordId>FrameworkRuntime</keywordId>
     </keywords>
     <images>
-      <icon>http://www.pylonsproject.org/static/images/pyramid-small.png</icon>
+      <icon>http://www.pylonsproject.org/static/images/pyramid.png</icon>
     </images>
     <discoveryHint>
       <file>
