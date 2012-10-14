@@ -241,17 +241,18 @@ class Deployer(object):
     requirements_filename = 'requirements.txt'
     easy_install_filename = 'easy_install.txt'
 
-    def __init__(self, args):
-        self.args = args
+    def __init__(self, require_stamp=True):
+        self.require_stamp = require_stamp
 
     def __call__(self):
         appl_physical_path = self.get_appl_physical_path()
         stamp_path = os.path.join(appl_physical_path, self.stamp_filename)
-        if not os.path.exists(stamp_path):
+        if os.path.exists(stamp_path):
+            # clean up the stamp file regardless, we tried
+            os.remove(stamp_path)
+        elif self.require_stamp:
             raise ValueError(
                 'No IIS deploy stamp file found at {0}'.format(stamp_path))
-        # clean up the stamp file regardless, we tried
-        os.remove(stamp_path)
 
         cwd = os.getcwd()
         try:
@@ -366,10 +367,15 @@ class Deployer(object):
 
 deploy_parser = argparse.ArgumentParser(description=Deployer.__doc__,
                                       parents=[options.parent_parser])
-
+deploy_parser.add_argument(
+    '-i', '--ignore-stamp', dest='require_stamp', action='store_false',
+    help="""\
+Run the deploy process even if the `iis_deploy.stamp` file is not present.  \
+This can be usefule to manually re-run the deployment after an error that \
+stopped a previous run has been addressed."""
 
 def deploy_console(args=None):
     logging.basicConfig()
     args = deploy_parser.parse_args(args=args)
-    deployer = Deployer(args)
+    deployer = Deployer(args.require_stamp)
     deployer()
