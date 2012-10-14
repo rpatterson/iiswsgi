@@ -46,8 +46,9 @@ class Builder(object):
         feed = self.parse_feed()
 
         for package in self.packages:
-            package_name, package_size, package_sha1 = self.build_package(
+            package_size, package_sha1 = self.build_package(
                 package)
+            package_name = self.get_package_name(package)
             self.update_feed_entry(
                 feed, package_name, package_size, package_sha1)
             self.delete_installer_cache(package_name)
@@ -81,7 +82,20 @@ class Builder(object):
             os.chdir(self.cwd)
 
         package_size = int(round(package_size / 1024.0))
-        return dist_name, package_size, package_sha1
+        return package_size, package_sha1
+
+    def get_package_name(self, package):
+        manifest = minidom.parse('Manifest.xml')
+        iisapps = manifest.getElementsByTagName('iisApp')
+        if not iisapps:
+            raise ValueError(
+                'No <iisApp> elements found in Manifest.xml'
+                .format(package))
+        elif len(iisapps) > 1:
+            raise ValueError(
+                'Multiple <iisApp> elements found in Manifest.xml'
+                .format(package))
+        return iisapps[0].getAttribute('path')
 
     def update_feed_entry(
         self, feed, package_name, package_size, package_sha1):
