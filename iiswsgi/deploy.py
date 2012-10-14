@@ -325,15 +325,18 @@ class Deployer(object):
                 'APPL_PHYSICAL_PATH environment variable not set')
 
         iis_sites_home = os.environ.get('IIS_SITES_HOME')
-        if iis_sites_home is not None:
-            if not os.path.exists(iis_sites_home):
-                raise ValueError(
-                    ('The IIS_SITES_HOME environment variable value is a '
-                     'non-existent path: {0}').format(iis_sites_home))
-            elif not os.path.isdir(iis_sites_home):
-                raise ValueError(
-                    ('The IIS_SITES_HOME environment variable value is '
-                     'not a directory: {0}').format(iis_sites_home))
+        if iis_sites_home is None:
+            raise ValueError(
+                'Neither the APPL_PHYSICAL_PATH nor the IIS_SITES_HOME '
+                'environment variables are set.')
+        elif not os.path.exists(iis_sites_home):
+            raise ValueError(
+                ('The IIS_SITES_HOME environment variable value is a '
+                 'non-existent path: {0}').format(iis_sites_home))
+        elif not os.path.isdir(iis_sites_home):
+            raise ValueError(
+                ('The IIS_SITES_HOME environment variable value is '
+                 'not a directory: {0}').format(iis_sites_home))
 
         self.logger.info(
             'Searching the directory in the IIS_SITES_HOME environment '
