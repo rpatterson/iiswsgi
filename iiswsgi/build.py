@@ -49,7 +49,8 @@ class Builder(object):
         for package in self.packages:
             package_size, package_sha1 = self.build_package(
                 package)
-            app_name = setup.get_app_name(package)
+            manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
+            app_name = setup.get_app_name(manifest)
             self.update_feed_entry(
                 feed, app_name, package_size, package_sha1)
             self.delete_installer_cache(app_name)

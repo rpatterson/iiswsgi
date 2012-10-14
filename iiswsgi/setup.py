@@ -15,8 +15,7 @@ from distutils import errors
 # TODO upload
 
 
-def get_app_name(package):
-    manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
+def get_app_name(manifest):
     iisapps = manifest.getElementsByTagName('iisApp')
     if not iisapps:
         raise ValueError('No <iisApp> elements found in Manifest.xml')
