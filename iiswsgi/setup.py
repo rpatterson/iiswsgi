@@ -16,6 +16,7 @@ from distutils import errors
 
 
 def get_app_name(manifest):
+    """Return the <iisApp> name from a Manifest.xml DOM."""
     iisapps = manifest.getElementsByTagName('iisApp')
     if not iisapps:
         raise ValueError('No <iisApp> elements found in Manifest.xml')
