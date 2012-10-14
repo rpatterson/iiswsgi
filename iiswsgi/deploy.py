@@ -265,7 +265,7 @@ class Deployer(object):
             os.chdir(cwd)
 
     def deploy(self):
-        web_config = open('web.config').read()
+        web_config = open('web.config.in').read()
         self.logger.info('Doing variable substitution in web.config')
         open('web.config', 'w').write(web_config.format(**os.environ))
 

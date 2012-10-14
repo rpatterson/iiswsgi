@@ -111,6 +111,18 @@ class MSDeployBuild(build.build):
             self.manifest_name))
         manifest.writexml(open(self.manifest_name, 'w'))
 
+        app_name = get_app_name(manifest)
+        stamp_template = os.path.join(app_name, 'iis_deploy.stamp.in')
+        if os.path.exists(stamp_template):
+            stamp_path = os.path.splitext(stamp_template)[0]
+            if os.path.exists(stamp_path):
+                log.info('Deleting existing stamp file: {0}'.format(
+                    stamp_path))
+                os.remove(stamp_path)
+            log.info('Copying stamp file template to {0}'.format(
+                stamp_path))
+            shutil.copyfile(stamp_template, stamp_path)
+
         return result
 
 
