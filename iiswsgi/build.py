@@ -85,7 +85,7 @@ class Builder(object):
         return package_size, package_sha1
 
     def get_package_name(self, package):
-        manifest = minidom.parse('Manifest.xml')
+        manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
         iisapps = manifest.getElementsByTagName('iisApp')
         if not iisapps:
             raise ValueError(
