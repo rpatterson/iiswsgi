@@ -241,8 +241,9 @@ class Deployer(object):
     requirements_filename = 'requirements.txt'
     easy_install_filename = 'easy_install.txt'
 
-    def __init__(self, require_stamp=True):
+    def __init__(self, require_stamp=True, install_fcgi_app=True):
         self.require_stamp = require_stamp
+        self.install_fcgi_app = install_fcgi_app
 
     def __call__(self):
         appl_physical_path = self.get_appl_physical_path()
@@ -269,7 +270,8 @@ class Deployer(object):
         open('web.config', 'w').write(web_config.format(**os.environ))
 
         # register the IIS FCGI app
-        install_fcgi_app()
+        if self.install_fcgi_app:
+            install_fcgi_app()
 
         executable = sys.executable
         # Assume virtualenv
@@ -381,9 +383,16 @@ deploy_parser.add_argument(
 Run the deploy process even if the `iis_deploy.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed.""")
+deploy_parser.add_argument(
+    '-s', '--skip-fcgi-app-install', dest='install_fcgi_app',
+    action='store_false', help="""\
+Run the deploy process even if the `iis_deploy.stamp` file is not present.  \
+This can be usefule to manually re-run the deployment after an error that \
+stopped a previous run has been addressed.""")
+
 
 def deploy_console(args=None):
     logging.basicConfig()
     args = deploy_parser.parse_args(args=args)
-    deployer = Deployer(args.require_stamp)
+    deployer = Deployer(args.require_stamp, args.install_fcgi_app)
     deployer()
