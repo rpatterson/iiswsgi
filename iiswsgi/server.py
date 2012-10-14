@@ -294,8 +294,8 @@ app_group.add_argument(
     "-c", "--config", metavar="FILE", dest='app', type=loadapp_option,
     help="Load the  the WSGI app from paster config FILE.")
 app_group.add_argument(
-    "-e", "--entry-point", metavar="ENTRY_POINT", default=test_app,
-    dest='app', type=ep_app_option,
+    "-e", "--entry-point", metavar="ENTRY_POINT", dest='app',
+    default=test_app, type=ep_app_option,
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
     "  [default: iiswsgi:test_app]")
