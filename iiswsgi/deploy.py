@@ -293,6 +293,8 @@ class Deployer(object):
             if os.path.exists(self.easy_install_filename):
                 args = [os.path.abspath(os.path.join(
                     'Scripts', 'easy_install.exe'))]
+                args.extend(
+                    line.strip() for line in open(self.easy_install_filename))
                 self.logger.info(
                     'Installing dependencies with easy_install: {0} < {1}'
                     .format(' '.join(args), self.easy_install_filename))
