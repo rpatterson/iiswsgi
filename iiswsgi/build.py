@@ -48,11 +48,11 @@ class Builder(object):
         for package in self.packages:
             package_size, package_sha1 = self.build_package(
                 package)
-            package_name = self.get_package_name(package)
+            app_name = self.get_app_name(package)
             self.update_feed_entry(
-                feed, package_name, package_size, package_sha1)
-            self.delete_installer_cache(package_name)
-            self.delete_stamp_files(package_name)
+                feed, app_name, package_size, package_sha1)
+            self.delete_installer_cache(app_name)
+            self.delete_stamp_files(app_name)
 
         self.write_feed(feed)
         self.delete_feed_cache(feed)
@@ -98,17 +98,17 @@ class Builder(object):
         return iisapps[0].getAttribute('path')
 
     def update_feed_entry(
-        self, feed, package_name, package_size, package_sha1):
+        self, feed, app_name, package_size, package_sha1):
         if feed is None:
             return
 
         for entry in feed.getElementsByTagName('entry'):
             productIds = entry.getElementsByTagName("productId")
-            if productIds and productIds[0].firstChild.data == package_name:
+            if productIds and productIds[0].firstChild.data == app_name:
                 break
         else:
             raise ValueError(
-                'Could not find <entry> for {0}'.format(package_name))
+                'Could not find <entry> for {0}'.format(app_name))
 
         size_elem = entry.getElementsByTagName('fileSize')[0]
         size_elem.firstChild.data = u'{0}'.format(package_size)
@@ -122,18 +122,18 @@ class Builder(object):
         logger.info('Set Web Platform Installer <sha1> to {0}'.format(
             package_sha1_value))
 
-    def delete_installer_cache(self, package_name):
-        installer_dir = os.path.join(self.webpi_installer_cache, package_name)
+    def delete_installer_cache(self, app_name):
+        installer_dir = os.path.join(self.webpi_installer_cache, app_name)
         if os.path.exists(installer_dir):
             logger.info('Removing the cached MSDeploy package: {0}'.format(
                 installer_dir))
             shutil.rmtree(installer_dir)
 
-    def delete_stamp_files(self, package_name):
+    def delete_stamp_files(self, app_name):
         # Clean up likely stale stamp files
         for name in os.listdir(self.iis_sites_home):
             if not (os.path.isdir(os.path.join(self.iis_sites_home, name)) and
-                    name.startswith(package_name)):
+                    name.startswith(app_name)):
                 continue
             stamp_file = os.path.join(
                 self.iis_sites_home, name, 'iis_deploy.stamp')
