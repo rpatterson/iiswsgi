@@ -259,7 +259,6 @@ def loadapp_option(value):
 
 
 def ep_app_option(value):
-    setattr(parser.values, 'entry_point', value)
     import pkg_resources
     ep = pkg_resources.EntryPoint.parse('app=' + value)
     logger.info('Loading WSGI app from entry_point %r' % value)
