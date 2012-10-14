@@ -15,6 +15,20 @@ from distutils import errors
 # TODO upload
 
 
+def get_app_name(package):
+    manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
+    iisapps = manifest.getElementsByTagName('iisApp')
+    if not iisapps:
+        raise ValueError(
+            'No <iisApp> elements found in Manifest.xml'
+            .format(package))
+    elif len(iisapps) > 1:
+        raise ValueError(
+            'Multiple <iisApp> elements found in Manifest.xml'
+            .format(package))
+    return iisapps[0].getAttribute('path')
+
+
 class MSDeployBuild(build.build):
     """Build an MSDeploy zip package for installation into IIS."""
 
