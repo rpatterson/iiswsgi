@@ -257,6 +257,7 @@
           error 80040154" when using full IIS -->
           <productId>IISManagementConsole</productId>
       </relatedProduct>
+      <!-- TODO SQLAlchemy support -->
     </related>
     <installers>
       <installer>
