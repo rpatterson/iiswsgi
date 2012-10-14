@@ -239,6 +239,7 @@ class Deployer(object):
     stamp_filename = 'iis_deploy.stamp'
     script_filename = 'iis_deploy.py'
     requirements_filename = 'requirements.txt'
+    easy_install_filename = 'easy_install.txt'
 
     def __init__(self, args):
         self.args = args
@@ -271,7 +272,8 @@ class Deployer(object):
 
         # vritualenv and requirements
         executable = sys.executable
-        if os.path.exists(self.requirements_filename):
+        if (os.path.exists(self.requirements_filename) or
+            os.path.exists(self.easy_install_filename)):
             args = [os.path.join(os.path.dirname(executable),
                                  'Scripts', 'virtualenv.exe'), '.']
             self.logger.info(
@@ -280,12 +282,21 @@ class Deployer(object):
             subprocess.check_call(args, env=os.environ)
             executable = os.path.abspath(os.path.join('Scripts', 'python.exe'))
 
-            args = [os.path.abspath(os.path.join('Scripts', 'pip.exe')),
-                    'install', '-r', self.requirements_filename]
-            self.logger.info(
-                'Installing dependencies with: {0}'.format(' '.join(args)))
-            self.logger.info('XXX os.getcwd(): {0}'.format(os.getcwd()))
-            subprocess.check_call(args, env=os.environ)
+            if os.path.exists(self.requirements_filename):
+                args = [os.path.abspath(os.path.join('Scripts', 'pip.exe')),
+                        'install', '-r', self.requirements_filename]
+                self.logger.info(
+                    'Installing dependencies with pip: {0}'.format(
+                        ' '.join(args)))
+                subprocess.check_call(args, env=os.environ)
+
+            if os.path.exists(self.easy_install_filename):
+                args = [os.path.abspath(os.path.join(
+                    'Scripts', 'easy_install.exe'))]
+                self.logger.info(
+                    'Installing dependencies with easy_install: {0} < {1}'
+                    .format(' '.join(args), self.easy_install_filename))
+                subprocess.check_call(args, env=os.environ)
 
         if os.path.exists(self.script_filename):
             args = [executable, self.script_filename] + sys.argv[1:]
