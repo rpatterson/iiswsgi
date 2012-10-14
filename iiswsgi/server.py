@@ -299,7 +299,7 @@ app_group.add_argument(
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
     "  [default: iiswsgi:test_app]")
-
+parser.set_defaults(app=test_app)
 
 if __name__ == '__main__':
     run()
