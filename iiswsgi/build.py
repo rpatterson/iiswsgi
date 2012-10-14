@@ -69,22 +69,19 @@ class Builder(object):
     def build_package(self, package):
         try:
             os.chdir(package)
+            dist_name, version = subprocess.check_output(
+                [sys.executable, 'setup.py', '--name', '--version']).split()
             subprocess.check_call(
                 [sys.executable, 'setup.py', 'build', 'sdist'])
-            os.chdir('dist')
-            latest_package = max(
-                (package for package in os.listdir('.')
-                 if os.path.splitext(package)[1] == '.zip'),
-                key=os.path.getmtime)
-            package_size = os.path.getsize(latest_package)
-            package_sha1 = subprocess.check_output([
-                'fciv', '-sha1', latest_package])
+            dist = os.path.join('dist', '{0}-{1}.zip'.format(
+                dist_name, version))
+            package_size = os.path.getsize(dist)
+            package_sha1 = subprocess.check_output(['fciv', '-sha1', dist])
         finally:
             os.chdir(self.cwd)
 
         package_size = int(round(package_size / 1024.0))
-        package_name = latest_package.split('-', 1)[0]
-        return package_name, package_size, package_sha1
+        return dist_name, package_size, package_sha1
 
     def update_feed_entry(
         self, feed, package_name, package_size, package_sha1):
