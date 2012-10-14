@@ -165,8 +165,6 @@
         </dependency>
       </and>
     </dependency>
-    <!-- Bring along Visual Studio Python support, if it is not
-         installed as a related/nice-to-have product, not a dependency -->
     <related>
       <relatedProduct>
           <!--  workaround for "retrieving the com class factory for
@@ -252,8 +250,6 @@
         </dependency>
       </and>
     </dependency>
-    <!-- Bring along Visual Studio Python support, if it is not
-         installed as a related/nice-to-have product, not a dependency -->
     <related>
       <relatedProduct>
           <!--  workaround for "retrieving the com class factory for
