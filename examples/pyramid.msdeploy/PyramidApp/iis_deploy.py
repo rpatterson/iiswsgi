@@ -9,8 +9,6 @@ logger = logging.getLogger('pyramid.iiswsgi')
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
-
     pcreate = os.path.join(os.path.dirname(sys.executable), 'pcreate.exe')
     args = [pcreate, '-s', '__pyramid_scaffold__', '__pyramid_project__']
     logger.info('Creating Pyramid project: {0}'.format(' '.join(args)))
@@ -28,4 +26,5 @@ def main():
         os.chdir(cwd)
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     main()
