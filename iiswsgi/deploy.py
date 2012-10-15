@@ -3,6 +3,7 @@ import sys
 import subprocess
 import argparse
 import logging
+import re
 
 from xml.dom import minidom
 
@@ -236,12 +237,18 @@ class Deployer(object):
     """
 
     logger = logger
+    app_name_pattern = '^{0}[0-9]*$'
     stamp_filename = 'iis_deploy.stamp'
     script_filename = 'iis_deploy.py'
     requirements_filename = 'requirements.txt'
     easy_install_filename = 'easy_install.txt'
 
-    def __init__(self, require_stamp=True, install_fcgi_app=True):
+    def __init__(self, app_name=None,
+                 require_stamp=True, install_fcgi_app=True):
+        self.app_name = app_name
+        if app_name:
+            self.app_name_pattern = re.compile(
+                self.app_name_pattern.format(app_name))
         self.require_stamp = require_stamp
         self.install_fcgi_app = install_fcgi_app
 
@@ -348,9 +355,7 @@ class Deployer(object):
         appl_physical_paths = [
             os.path.join(iis_sites_home, name)
             for name in os.listdir(iis_sites_home)
-            if os.path.isdir(os.path.join(iis_sites_home, name))
-            and os.path.exists(os.path.join(
-                iis_sites_home, name, self.stamp_filename))]
+            if self.is_appl_physical_path(iis_sites_home, name)]
         if not appl_physical_paths:
             raise ValueError(
                 ('Found no {0} stamp file in any of the directories in the '
@@ -372,8 +377,20 @@ class Deployer(object):
             os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
         return appl_physical_path
 
+    def is_appl_physical_path(self, iis_sites_home, name):
+        if self.app_name:
+            if self.app_name_pattern.match(name) is None:
+                return False
+        return (os.path.isdir(os.path.join(iis_sites_home, name))
+                and os.path.exists(os.path.join(
+                    iis_sites_home, name, self.stamp_filename)))
+
 deploy_parser = argparse.ArgumentParser(description=Deployer.__doc__,
                                       parents=[options.parent_parser])
+deploy_parser.add_argument(
+    '-a', '--app-name', help="""\
+When APPL_PHYSICAL_PATH is not set, narrow the search \
+in IIS_SITES_HOME to apps with this name .""")
 deploy_parser.add_argument(
     '-i', '--ignore-stamp', dest='require_stamp', action='store_false',
     help="""\
@@ -391,5 +408,6 @@ stopped a previous run has been addressed.""")
 def deploy_console(args=None):
     logging.basicConfig()
     args = deploy_parser.parse_args(args=args)
-    deployer = Deployer(args.require_stamp, args.install_fcgi_app)
+    deployer = Deployer(
+        args.app_name, args.require_stamp, args.install_fcgi_app)
     deployer()
