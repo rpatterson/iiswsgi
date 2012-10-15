@@ -138,6 +138,7 @@ def make_zipfile(base_name, base_dir, verbose=0, dry_run=0):
     import zipfile
 
     zip_filename = base_name + ".zip"
+    base_len = len(base_dir + os.sep)
     archive_util.mkpath(os.path.dirname(zip_filename), dry_run=dry_run)
 
     archive_util.log.info("creating '%s' and adding '%s' to it",
@@ -150,12 +151,7 @@ def make_zipfile(base_name, base_dir, verbose=0, dry_run=0):
         for dirpath, dirnames, filenames in os.walk(base_dir):
             for name in filenames:
                 src_path = os.path.normpath(os.path.join(dirpath, name))
-                dirpath_split = os.path.split(dirpath)
-                dst_dirpath = dirpath_split[1:]
-                if dirpath_split[0] == '':
-                    dst_dirpath = dirpath_split[2:]
-                dst_path = os.path.normpath(os.path.join(*(
-                    dst_dirpath + (name,))))
+                dst_path = src_path[base_len:]
                 if os.path.isfile(src_path):
                     zip.write(src_path, dst_path)
                     archive_util.log.info("adding '%s'" % dst_path)
