@@ -6,6 +6,7 @@ import subprocess
 import shutil
 import logging
 import argparse
+import urlparse
 
 from xml.dom import minidom
 
@@ -47,12 +48,12 @@ class Builder(object):
         feed = self.parse_feed()
 
         for package in self.packages:
-            package_size, package_sha1 = self.build_package(
+            dist, version, package_size, package_sha1 = self.build_package(
                 package)
             manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
             app_name = setup.get_app_name(manifest)
             self.update_feed_entry(
-                feed, app_name, package_size, package_sha1)
+                feed, app_name, dist, version, package_size, package_sha1)
             self.delete_installer_cache(app_name)
             self.delete_stamp_files(app_name)
 
@@ -84,10 +85,10 @@ class Builder(object):
             os.chdir(self.cwd)
 
         package_size = int(round(package_size / 1024.0))
-        return package_size, package_sha1
+        return os.path.abspath(dist), version, package_size, package_sha1
 
     def update_feed_entry(
-        self, feed, app_name, package_size, package_sha1):
+        self, feed, app_name, dist, version, package_size, package_sha1):
         if feed is None:
             return
 
@@ -98,6 +99,18 @@ class Builder(object):
         else:
             raise ValueError(
                 'Could not find <entry> for {0}'.format(app_name))
+
+        version_elem = entry.getElementsByTagName('version')[0]
+        version_elem.firstChild.data = u'{0}'.format(version)
+        logger.info('Set Web Platform Installer <version> to {0}'.format(
+            version))
+
+        installer_url = urlparse.urlunsplit((
+            'file', '', dist.replace(os.sep, '/'), '', ''))
+        installer_elem = entry.getElementsByTagName('installerURL')[0]
+        installer_elem.firstChild.data = u'{0}'.format(installer_url)
+        logger.info('Set Web Platform Installer <installerURL> to {0}'.format(
+            installer_url))
 
         size_elem = entry.getElementsByTagName('fileSize')[0]
         size_elem.firstChild.data = u'{0}'.format(package_size)
