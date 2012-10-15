@@ -23,7 +23,7 @@
     description="Name your Pyramid project."
     defaultValue="MyProject">
     <parameterEntry kind="TextFile" scope="\\iis_deploy\.py$" match="__pyramid_project__" />
-    <parameterEntry kind="TextFile" scope="\\web\.config$" match="__pyramid_project__" />
+    <parameterEntry kind="TextFile" scope="\\web\.config\.in$" match="__pyramid_project__" />
   </parameter>
 
 </parameters>
