@@ -313,11 +313,18 @@ class Deployer(object):
                 subprocess.check_call(args, env=os.environ)
 
         if os.path.exists(self.script_filename):
-            args = [executable, self.script_filename] + sys.argv[1:]
-            self.logger.info(
-                'Running custom deploy script: {0}'.format(' '.join(args)))
-            # Raises CalledProcessError if it failes
-            subprocess.check_call(args, env=os.environ)
+            self.run_custom_script(executable)
+
+    def run_custom_script(self, executable):
+        if not os.path.exists(self.script_filename):
+            raise ValueError('Custom deploy script does not exist: {0}'.format(
+                self.script_filename))
+
+        args = [executable, self.script_filename] + sys.argv[1:]
+        self.logger.info(
+            'Running custom deploy script: {0}'.format(' '.join(args)))
+        # Raises CalledProcessError if it failes
+        subprocess.check_call(args, env=os.environ)
 
     def get_appl_physical_path(self):
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
@@ -403,6 +410,13 @@ deploy_parser.add_argument(
 Run the deploy process even if the `iis_deploy.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed.""")
+deploy_parser.add_argument(
+    '-d', '--delegate', action='store_true', help="""\
+Only run the custom `iis_deploy.py` script, don't perform any of the default \
+tasks.  When used it is up to the custom script to use `iiswsgi.deploy` to \
+perform any needed tasks.  Useful if the app deployment process needs \
+fine-grained control, such as passing computed arguments into the deployment \
+tasks.""")
 
 
 def deploy_console(args=None):
@@ -410,4 +424,7 @@ def deploy_console(args=None):
     args = deploy_parser.parse_args(args=args)
     deployer = Deployer(
         args.app_name, args.require_stamp, args.install_fcgi_app)
+    if args.delegate:
+        deployer.run_custom_script(sys.executable)
+        return
     deployer()
