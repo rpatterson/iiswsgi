@@ -24,9 +24,14 @@ logger = logging.getLogger('iiswsgi')
 
 # Global logging objects for manipulation once we know better places to log to.
 # log to a file since FCGI is using stdin/stdout
-handler = logging.FileHandler(
-    '{IIS_USER_HOME}\\Logs\\{IISEXPRESS_SITENAME}\\iiswsgi.log'.format(
-        **os.environ))
+try:
+    log_file = (
+        '{IIS_USER_HOME}\\Logs\\{IISEXPRESS_SITENAME}\\iiswsgi.log'.format(
+            **os.environ))
+except KeyError:
+    handler = logging.StreamHandler()
+else:
+    handler = logging.FileHandler(log_file)
 # Include the time
 formatter = logging.Formatter('%(asctime)s:' + logging.BASIC_FORMAT)
 handler.setFormatter(formatter)
@@ -273,9 +278,13 @@ def run(args=None):
 
     try:
         args = parser.parse_args(args=args)
+    except SystemExit:
+        # Don't log intentional exits from the parser
+        raise
     except:
         logger.exception('Error parsing arguments.')
-        raise
+        # Don't print traceback twice when logging to stdout
+        sys.exit(1)
 
     server = IISWSGIServer(args.app)
 
