@@ -288,6 +288,11 @@ def run(args=None):
 
     server = IISWSGIServer(args.app)
 
+    if args.test:
+        logger.info('Successfully created FCGI server with app %r' %
+                    args.app)
+        return
+
     logger.info('Starting FCGI server with app %r' % args.app)
     try:
         server.run()
@@ -308,6 +313,10 @@ app_group.add_argument(
     help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
     "  The default is a simple test app that displays the WSGI environment."
     "  [default: iiswsgi:test_app]")
+parser.add_argument(
+    '-t', '--test', action='store_true', help="""\
+Only load the app and create the server but don't run it.  Useful to assert \
+that the app will at least respond to requests when run by IIS.""")
 parser.set_defaults(app=test_app)
 
 if __name__ == '__main__':
