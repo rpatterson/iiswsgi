@@ -271,49 +271,85 @@ class Deployer(object):
         finally:
             os.chdir(cwd)
 
-    def deploy(self):
-        web_config = open('web.config.in').read()
-        self.logger.info('Doing variable substitution in web.config')
-        open('web.config', 'w').write(web_config.format(**os.environ))
+    def deploy(self, *requirements, **substitutions):
+        self.write_web_config(**substitutions)
 
-        # register the IIS FCGI app
         if self.install_fcgi_app:
             install_fcgi_app()
 
         # vritualenv and requirements
-        executable = sys.executable
         if (os.path.exists(self.requirements_filename) or
             os.path.exists(self.easy_install_filename)):
-            args = [os.path.join(
-                os.environ['SYSTEMDRIVE'] + '\\',
-                'Python{0}{1}'.format(*sys.version_info[:2]),
-                'Scripts', 'virtualenv.exe'), '.']
-            self.logger.info(
-                'Setting up a isolated Python with: {0}'.format(
-                    ' '.join(args)))
-            subprocess.check_call(args, env=os.environ)
-            executable = os.path.abspath(os.path.join('Scripts', 'python.exe'))
+            executable = self.setup_virtualenv()
 
             if os.path.exists(self.requirements_filename):
-                args = [os.path.abspath(os.path.join('Scripts', 'pip.exe')),
-                        'install', '-r', self.requirements_filename]
-                self.logger.info(
-                    'Installing dependencies with pip: {0}'.format(
-                        ' '.join(args)))
-                subprocess.check_call(args, env=os.environ)
+                self.pip_install_requirements()
 
             if os.path.exists(self.easy_install_filename):
-                args = [os.path.abspath(os.path.join(
-                    'Scripts', 'easy_install.exe'))]
-                args.extend(
-                    line.strip() for line in open(self.easy_install_filename))
-                self.logger.info(
-                    'Installing dependencies with easy_install: {0} < {1}'
-                    .format(' '.join(args), self.easy_install_filename))
-                subprocess.check_call(args, env=os.environ)
+                self.easy_install_requirements(*requirements)
 
         if os.path.exists(self.script_filename):
             self.run_custom_script(executable)
+
+    def write_web_config(self, **kw):
+        """
+        Write `web.config.in` to `web.config` substituting variables.
+
+        Substitution is performed by Python `string.format()` kwargs.
+        The variables passed in include the environment variables
+        overridden by the kwargs.
+        """
+        environ = os.environ.copy()
+        environ.update(**kw)
+        web_config = open('web.config.in').read()
+        self.logger.info('Doing variable substitution in web.config')
+        open('web.config', 'w').write(web_config.format(**environ))
+        return environ
+
+    def setup_virtualenv(self, directory='.', **options):
+        """
+        Set up a virtualenv in the `directory` with options.
+        """
+        args = [os.path.join(
+            os.environ['SYSTEMDRIVE'] + '\\',
+            'Python{0}{1}'.format(*sys.version_info[:2]),
+            'Scripts', 'virtualenv.exe')]
+        for option, value in options.iteritems():
+            args += ['--' + option, value]
+        args += [directory]
+        self.logger.info(
+            'Setting up a isolated Python with: {0}'.format(
+                ' '.join(args)))
+        subprocess.check_call(args, env=os.environ)
+        return os.path.abspath(os.path.join('Scripts', 'python.exe'))
+
+    def pip_install_requirements(self, filename=requirements_filename):
+        """Use pip to install requirements from the given file."""
+        args = [os.path.abspath(os.path.join('Scripts', 'pip.exe')),
+                'install', '-r', filename]
+        self.logger.info(
+            'Installing dependencies with pip: {0}'.format(
+                ' '.join(args)))
+        subprocess.check_call(args, env=os.environ)
+
+    def easy_install_requirements(self, *requirements,
+                                  filename=easy_install_filename):
+        """
+        Use easy_install to install requirements.
+
+        The requiremensts can be given as arguments or one per-line in
+        the `filename`.
+        """
+        args = [os.path.abspath(os.path.join(
+            'Scripts', 'easy_install.exe'))]
+        reqs = requiremensts
+        if not reqs:
+            reqs = [line.strip() for line in open(filename)]
+        args.extend(reqs)
+        self.logger.info(
+            'Installing dependencies with easy_install: {0}'
+            .format(' '.join(args))
+        subprocess.check_call(args, env=os.environ)
 
     def run_custom_script(self, executable):
         if not os.path.exists(self.script_filename):
