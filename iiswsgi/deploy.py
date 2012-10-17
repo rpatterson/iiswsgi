@@ -451,6 +451,7 @@ class Deployer(object):
                 and os.path.exists(os.path.join(
                     iis_sites_home, name, self.stamp_filename)))
 
+
 deploy_parser = argparse.ArgumentParser(description=Deployer.__doc__,
                                       parents=[options.parent_parser])
 deploy_parser.add_argument(
@@ -476,7 +477,6 @@ tasks.  When used it is up to the custom script to use `iiswsgi.deploy` to \
 perform any needed tasks.  Useful if the app deployment process needs \
 fine-grained control, such as passing computed arguments into the deployment \
 tasks.""")
-
 
 def deploy_console(args=None):
     logging.basicConfig()
