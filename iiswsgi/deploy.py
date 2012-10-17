@@ -189,6 +189,8 @@ class Deployer(object):
         self.require_stamp = require_stamp
         self.install_fcgi_app = install_fcgi_app
 
+        self.executable = sys.executable
+
     def __call__(self):
         """
         Run all deployment tasks and a custom script as appropriate.
@@ -216,6 +218,8 @@ class Deployer(object):
                 appl_physical_path))
             os.chdir(appl_physical_path)
             self.deploy()
+            if os.path.exists(self.script_filename):
+                self.run_custom_script(executable)
         finally:
             os.chdir(cwd)
 
@@ -250,16 +254,13 @@ class Deployer(object):
         # vritualenv and requirements
         if (os.path.exists(self.requirements_filename) or
             os.path.exists(self.easy_install_filename)):
-            executable = self.setup_virtualenv()
+            self.executable = self.setup_virtualenv()
 
             if os.path.exists(self.requirements_filename):
                 self.pip_install_requirements()
 
             if os.path.exists(self.easy_install_filename):
                 self.easy_install_requirements(*requirements)
-
-        if os.path.exists(self.script_filename):
-            self.run_custom_script(executable)
 
     def write_web_config(self, **kw):
         """
@@ -329,7 +330,7 @@ class Deployer(object):
             .format(' '.join(args))
         subprocess.check_call(args, env=os.environ)
 
-    def run_custom_script(self, executable):
+    def run_custom_script(self, executable=None):
         """
         Run the `iis_deploy.py` script.
 
@@ -344,6 +345,8 @@ class Deployer(object):
             raise ValueError('Custom deploy script does not exist: {0}'.format(
                 self.script_filename))
 
+        if executable is None:
+            executable = self.executable
         args = [executable, self.script_filename] + sys.argv[1:]
         self.logger.info(
             'Running custom deploy script: {0}'.format(' '.join(args)))
