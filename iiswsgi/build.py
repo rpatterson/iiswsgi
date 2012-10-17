@@ -68,7 +68,7 @@ class Builder(object):
         if os.path.exists(feed + '.in'):
             # We have a template
             feed = feed + '.in'
-        return minidom.parse(feed)
+        return minidom.parse(feed).firstNode
 
     def build_package(self, package):
         try:
@@ -162,7 +162,7 @@ class Builder(object):
                 continue
 
             cached_feed_path = os.path.join(self.feed_dir, cached_feed_name)
-            cached_feed = minidom.parse(cached_feed_path)
+            cached_feed = minidom.parse(cached_feed_path).firstNode
             # TODO Assumes that the first <id> element is the feed/id
             # Would not be true if an entry/id came before the feed/id
             ids = cached_feed.getElementsByTagName("id")
