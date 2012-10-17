@@ -246,6 +246,7 @@ class Deployer(object):
             Use `pip` or `easy_install` to install requirements into
             the `virtualenv`.
         """
+        # TODO move to `setup.py install`?
         self.write_web_config(**substitutions)
 
         if self.install_fcgi_app:
