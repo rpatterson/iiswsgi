@@ -304,8 +304,8 @@ class Deployer(object):
 
     def pip_install_requirements(self, filename=requirements_filename):
         """Use pip to install requirements from the given file."""
-        args = [os.path.abspath(os.path.join('Scripts', 'pip.exe')),
-                'install', '-r', filename]
+        args = [os.path.abspath(os.path.join(
+            self.get_scripts_dir(), 'pip.exe')), 'install', '-r', filename]
         self.logger.info(
             'Installing dependencies with pip: {0}'.format(
                 ' '.join(args)))
@@ -320,7 +320,7 @@ class Deployer(object):
         the `filename`.
         """
         args = [os.path.abspath(os.path.join(
-            'Scripts', 'easy_install.exe'))]
+            self.get_scripts_dir(), 'easy_install.exe'))]
         reqs = requiremensts
         if not reqs:
             reqs = [line.strip() for line in open(filename)]
@@ -445,6 +445,18 @@ class Deployer(object):
         if 'APPL_PHYSICAL_PATH' not in os.environ:
             os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
         return appl_physical_path
+
+    def get_scripts_dir(self, executable=None):
+        """
+        Return the path to the directory containing Python console scripts.
+        """
+        if executable is None:
+            executable = self.executable
+        scripts_dir = os.path.dirname(executable)
+        subdir = os.path.join(scripts_dir, 'Scripts')
+        if os.path.isdir(subdir):
+            scripts_dir = subdir
+        return scripts_dir
 
     def is_appl_physical_path(self, iis_sites_home, name):
         if self.app_name:
