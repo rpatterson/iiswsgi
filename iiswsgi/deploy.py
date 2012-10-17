@@ -424,7 +424,7 @@ class Deployer(object):
         appl_physical_paths = [
             os.path.join(iis_sites_home, name)
             for name in os.listdir(iis_sites_home)
-            if self.is_appl_physical_path(iis_sites_home, name)]
+            if self._is_appl_physical_path(iis_sites_home, name)]
         if not appl_physical_paths:
             raise ValueError(
                 ('Found no {0} stamp file in any of the directories in the '
@@ -458,7 +458,7 @@ class Deployer(object):
             scripts_dir = subdir
         return scripts_dir
 
-    def is_appl_physical_path(self, iis_sites_home, name):
+    def _is_appl_physical_path(self, iis_sites_home, name):
         if self.app_name:
             if self.app_name_pattern.match(name) is None:
                 return False
