@@ -158,82 +158,19 @@ class Deployer(object):
     """
     Run post-install tasks for a MS Web Deploy package:
 
-    Set the `APPL_PHYSICAL_PATH` environment variable:
+    * `self.get_appl_physical_path()`: set the `APPL_PHYSICAL_PATH` variable
 
-        If already defined, its value is taken as the location of the
-        IIS application.  If not attempt to infer the appropriate
-        directory.  Until such a time as Web Platform Installer or Web
-        Deploy provide some way to identify the physical path of the
-        `iisApp` being installed when the `runCommand` provider is
-        used, we have to guess at the physical path.  If
-        `IIS_SITES_HOME` is defined, all directories that are direct
-        children of the `IIS_SITES_HOME` will be searched for a
-        `iis_deploy.stamp` file.  If multiple directories are found
-        with the stamp file, an error is raised.  Otherwise, in the
-        case where one directory has the stamp file, it is set as the
-        `APPL_PHYSICAL_PATH`.  Then change to that directory before
-        continuing with the rest of the steps.
+    * `self.write_web_config()`: write variable substitutions into `web.config`
 
-        When installing to "IIS Express", the `IIS_SITES_HOME` environment
-        variable should be available and the stamp file search should
-        succeed to automatically find the right app for which to run
-        post-install script.  In the case of installing to full "IIS",
-        however, neither the `APPL_PHYSICAL_PATH` nor the `IIS_SITES_HOME`
-        environment variables are available and the post-install deploy
-        script won't be run and WebPI will report an error.  The best way
-        to workaround this limitation is to adopt a convention of putting
-        all your IIS apps installed via WebPI in one directory and then
-        set the `IIS_SITES_HOME` enviornment variable.  Then when
-        installing a new IIS app be sure to give a physical path within
-        that directory when prompted to by WebPI.  If that's not possible
-        you can set the `APPL_PHYSICAL_PATH` environment variable to the
-        physical path you will enter when installing via WebPI. Otherwise,
-        when installing to full "IIS" you'll have to follow the steps for
-        manually running the post-install deployment script after you get
-        the error.
+    * `install_fcgi_app()`: install an IIS FastCGI application
 
-    Writing variable substitutions into `web.config`
+    * `self.setup_virtualenv()`: set up an isolated Python environment
 
-        The `web.config` file is re-written substituting environment
-        variables using the Python Format String Syntax:
+    * `self.pip_install_requirements()`,
+      `self.easy_install_requirements()`: install requirements
 
-        http://docs.python.org/library/string.html#formatstrings
-
-        This is probably most useful to substitute APPL_PHYSICAL_PATH
-        to make sure that each app gets unique IIS FastCGI application
-        handlers that can each have their own parameters.
-
-    Install requirements into a `virtualenv`
-
-        If `APPL_PHYSICAL_PATH` has a `requirements.txt` file in `pip
-        requirements format
-        <http://www.pip-installer.org/en/latest/requirements.html>`_,
-        then a `virtualenv` will be setup and `pip` will be used to
-        install those requirements into the `virtualenv`.
-
-    Run the `iis_deploy.py` script
-
-        Look for a `iis_deploy.py` script in `APPL_PHYSICAL_PATH`.  If
-        it is found but `APPL_PHYSICAL_PATH` has no `iis_deploy.stamp`
-        file, an error will be raised.  Otherwise the script is
-        executed and the stamp file is removed.
-
-        The script is often used to build an isolated Python environment
-        for the application (such as with virtualenv or buildout).  Since
-        typically the package will be installed using a Web Platform
-        Installer feed defining IISWSGI as a dependency, the script will
-        be executed with the system Python.  As such, if some of your
-        post-install deployment requires steps to be executed under the
-        applications isolated environment, be sure that your
-        `iis_deploy.py` script uses the Python `subprocess` module to
-        invoke your isolated Python environment as appropriate once its
-        been set up.
-
-        If you get an error indicating that the correct `iis_deploy.py`
-        script could not be found or determined, you may manually run it
-        after you recive the error as follows:
-
-        * TODO provide the right variables and context before running
+    The `deploy()` method can also be used to perform all of the above
+    with automatic detection.
     """
 
     logger = logger
@@ -253,6 +190,17 @@ class Deployer(object):
         self.install_fcgi_app = install_fcgi_app
 
     def __call__(self):
+        """
+        Run all deployment tasks and a custom script as appropriate.
+
+        * `self.get_appl_physical_path()`: determine and set the
+          APPL_PHYSICAL_PATH
+
+        * `self.deploy()`: change to APPL_PHYSICAL_PATH and perform
+          tasks as appropriate
+
+        * `iis_deploy.py`: run the custom script if present
+        """
         appl_physical_path = self.get_appl_physical_path()
         stamp_path = os.path.join(appl_physical_path, self.stamp_filename)
         if os.path.exists(stamp_path):
@@ -272,6 +220,28 @@ class Deployer(object):
             os.chdir(cwd)
 
     def deploy(self, *requirements, **substitutions):
+        """
+        Perform all of the deployment tasks as appropriate.
+
+        `write_web_config()`:
+
+            Write variable substitutions into `web.config`.
+
+        `install_fcgi_app()`:
+
+            Install an IIS FastCGI application.
+
+        `self.setup_virtualenv()`:
+
+            If `APPL_PHYSICAL_PATH` has a `requirements.txt` and/or
+            `easy_install.txt` file then a `virtualenv` will be setup
+            to provide an isolated Python environment.
+
+        `self.pip_install_requirements()`, `self.easy_install_requirements()`:
+
+            Use `pip` or `easy_install` to install requirements into
+            the `virtualenv`.
+        """
         self.write_web_config(**substitutions)
 
         if self.install_fcgi_app:
@@ -295,9 +265,17 @@ class Deployer(object):
         """
         Write `web.config.in` to `web.config` substituting variables.
 
-        Substitution is performed by Python `string.format()` kwargs.
-        The variables passed in include the environment variables
-        overridden by the kwargs.
+        Substitute environment variables overridden by the kwargs
+        using the Python Format String Syntax:
+
+        http://docs.python.org/library/string.html#formatstrings
+
+        This is probably most useful to substitute APPL_PHYSICAL_PATH
+        to make sure that each app gets unique IIS FastCGI application
+        handlers that can each have their own parameters.  If your
+        deployment requires that computed values be included in the
+        substituted variables, then use the `--delegate` option and
+        pass kwargs into `Deployer.deploy()`.
         """
         environ = os.environ.copy()
         environ.update(**kw)
@@ -352,6 +330,16 @@ class Deployer(object):
         subprocess.check_call(args, env=os.environ)
 
     def run_custom_script(self, executable):
+        """
+        Run the `iis_deploy.py` script.
+
+        Look for a `iis_deploy.py` script in `APPL_PHYSICAL_PATH`.  If
+        it is found but `APPL_PHYSICAL_PATH` has no `iis_deploy.stamp`
+        file, an error will be raised.  Otherwise the script is
+        executed and the stamp file is removed.  The stamp file can be
+        ignored if the `Deployer` has been instantiated with
+        `Deployer(require_stamp=False)`.
+        """
         if not os.path.exists(self.script_filename):
             raise ValueError('Custom deploy script does not exist: {0}'.format(
                 self.script_filename))
@@ -363,6 +351,41 @@ class Deployer(object):
         subprocess.check_call(args, env=os.environ)
 
     def get_appl_physical_path(self):
+        """
+        Set the `APPL_PHYSICAL_PATH` environment variable
+
+        If already defined, its value is taken as the location of the
+        IIS application.  If not attempt to infer the appropriate
+        directory.  Until such a time as Web Platform Installer or Web
+        Deploy provide some way to identify the physical path of the
+        `iisApp` being installed when the `runCommand` provider is
+        used, we have to guess at the physical path.  If
+        `IIS_SITES_HOME` is defined, all directories that are direct
+        children of the `IIS_SITES_HOME` will be searched for a
+        `iis_deploy.stamp` file.  If multiple directories are found
+        with the stamp file, an error is raised.  Otherwise, in the
+        case where one directory has the stamp file, it is set as the
+        `APPL_PHYSICAL_PATH`.  Then change to that directory before
+        continuing with the rest of the steps.
+
+        When installing to "IIS Express", the `IIS_SITES_HOME` environment
+        variable should be available and the stamp file search should
+        succeed to automatically find the right app for which to run
+        post-install script.  In the case of installing to full "IIS",
+        however, neither the `APPL_PHYSICAL_PATH` nor the `IIS_SITES_HOME`
+        environment variables are available and the post-install deploy
+        script won't be run and WebPI will report an error.  The best way
+        to workaround this limitation is to adopt a convention of putting
+        all your IIS apps installed via WebPI in one directory and then
+        set the `IIS_SITES_HOME` enviornment variable.  Then when
+        installing a new IIS app be sure to give a physical path within
+        that directory when prompted to by WebPI.  If that's not possible
+        you can set the `APPL_PHYSICAL_PATH` environment variable to the
+        physical path you will enter when installing via WebPI. Otherwise,
+        when installing to full "IIS" you'll have to follow the steps for
+        manually running the post-install deployment script after you get
+        the error.
+        """
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
         if appl_physical_path is not None:
             if not os.path.exists(appl_physical_path):
