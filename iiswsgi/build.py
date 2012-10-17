@@ -161,13 +161,14 @@ class Builder(object):
                 # not a cached feed file
                 continue
 
+            # Compare feed/id elements
             cached_feed_path = os.path.join(self.feed_dir, cached_feed_name)
             cached_feed = minidom.parse(cached_feed_path).firstChild
-            # TODO Assumes that the first <id> element is the feed/id
-            # Would not be true if an entry/id came before the feed/id
-            ids = cached_feed.getElementsByTagName("id")
-            if ids and (ids[0].firstChild.data ==
-                        feed.getElementsByTagName("id")[0].firstChild.data):
+            ids = [node for node in feed.childNodes if node.nodeName == 'id']
+            cached_ids = [node for node in cached_feed.childNodes
+                          if node.nodeName == 'id']
+            if cached_ids and (
+                cached_ids[0].firstChild.data == ids[0].firstChild.data):
                 logger.info(
                     'Removing the Web Platform Installer cached feed at {0}'
                     .format(cached_feed_path))
