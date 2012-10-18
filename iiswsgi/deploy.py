@@ -91,7 +91,11 @@ def install_fcgi_app(appcmd_exe=None,
             '/+[{0}]'.format(appcmd_args), '/commit:apphost')
         logger.info('Installing IIS FastCGI application: {0!r}'.format(
             ' '.join(appcmd_cmd)))
-        subprocess.check_call(appcmd_cmd)
+        if os.path.exists(appcmd_exe):
+            subprocess.check_call(appcmd_cmd)
+        else:
+            logger.info('IIS AppCmd.exe does not exist: {0}'.format(
+                appcmd_exe))
 
 
 def install_fcgi_app_console(args=None):

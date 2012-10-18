@@ -29,9 +29,13 @@ class MSDeployBuild(build.build):
     """Build an MSDeploy zip package for installation into IIS."""
 
     manifest_name = 'Manifest.xml'
-    msdeploy = os.path.join(
-        os.environ['PROGRAMFILES'], 'IIS', 'Microsoft Web Deploy V3',
-        'msdeploy.exe')
+
+    msdeploy = None
+    if 'PROGRAMFILES' in os.environ:
+        msdeploy = os.path.join(
+            os.environ['PROGRAMFILES'], 'IIS', 'Microsoft Web Deploy V3',
+            'msdeploy.exe')
+
     dest_name = 'runCommand.zip'
 
     def initialize_options(self):
