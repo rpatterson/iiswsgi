@@ -7,8 +7,60 @@ Serving Python WSGI applications natively from IIS
 The ``iiswsgi`` module implements a FastCGI to WSGI gateway that is
 compatible with IIS's variation of the FastCGI protocol.  It also
 provides utilities and helpers for building, packaging and deploying
-`Microsoft Web Deploy`_ packages through the `Web Platform
-Installer`_.
+`Microsoft Web Deploy`_ (MSDeploy) packages through the `Web Platform
+Installer`_ (WebPI).
+
+Quick Start
+===========
+
+#. Copy the ``examples\sample.msdeploy`` package
+
+#. Add dependencies to ``IISWSGISampleApp\requirements.txt``
+
+#. Add a WSGI PasteConfig in ``IISWSGISampleApp\development.ini``
+
+#. Search and replace IISWSGISampleApp in:
+
+   * ``setup.py``
+   * ``MANIFEST.in``
+   * ``IISWSGISampleApp`` directory name
+   * ``Manifest.xml.in``
+   * ``Parameters.xml``
+
+Overview
+========
+
+Deploying a Python WSGI application on IIS using the ``iiswsgi``
+toolchain consists of three phases:
+
+* building
+* deploying
+* serving
+
+Building
+--------
+
+The ``iiswsgi_build.exe`` console script can be used to automate most of
+the repetitive tasks involved:
+
+* build Microsoft Web Deploy packages
+* add them to a Web Platform Installer feed
+* clear any relevant caches so changes take effect
+
+Because of the ``Could not find file '\\?\C:\...`` error described below
+in `Known Issues`_, it's not advisable to exit and re-launch WebPI.
+As such, the best way to get feed changes to take effect in WebPI may
+be to:
+
+* Click on the `options` link in the bottom right of WebPI
+* Click the `X` next to your feed to remove it
+* Click `OK` and wait for WebPI to finish updating the remaining feeds
+* Run `iiswsgi_build.exe`
+* Click on the `options` link again in WebPI
+* Enter the feed URL and click `Add Feed` to restore the feed
+* Click `OK` and wait for WebPI again
+
+Now your feed changes should be reflected in WebPI.
 
 Sample Package
 ==============
