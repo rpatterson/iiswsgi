@@ -6,6 +6,27 @@ import logging
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi')
 
+scripts_name = 'Scripts'
+script_ext = '.exe'
+if not sys.platform.startswith('win'):
+    scripts_name = 'bin'
+    script_ext = ''
+
+
+def get_script_path(script, executable=None):
+    """
+    Get a path to a script in a cross-platform compatible way.
+    """
+    if executable is None:
+        executable = sys.executable
+
+    scripts_dir = os.path.dirname(executable)
+    if os.path.exists(os.path.join(scripts_dir, scripts_name)):
+        # Real python, not a virtualenv
+        scripts_dir = os.path.join(scripts_dir, scripts_name)
+
+    return os.path.join(scripts_dir, script + script_ext)
+
 
 class VerboseAction(argparse.Action):
 

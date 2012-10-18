@@ -286,27 +286,25 @@ class Deployer(object):
         open('web.config', 'w').write(web_config.format(**environ))
         return environ
 
-    def setup_virtualenv(self, directory='.', **options):
+    def setup_virtualenv(self, directory='.', **opts):
         """
         Set up a virtualenv in the `directory` with options.
         """
-        args = [os.path.join(
-            os.environ['SYSTEMDRIVE'] + '\\',
-            'Python{0}{1}'.format(*sys.version_info[:2]),
-            'Scripts', 'virtualenv.exe')]
-        for option, value in options.iteritems():
+        args = [options.get_script_path('virtualenv', self.executable)]
+        for option, value in opts.iteritems():
             args += ['--' + option, value]
         args += [directory]
         self.logger.info(
             'Setting up a isolated Python with: {0}'.format(
                 ' '.join(args)))
         subprocess.check_call(args, env=os.environ)
-        return os.path.abspath(os.path.join('Scripts', 'python.exe'))
+        return os.path.abspath(
+            os.path.join(options.scripts_name, 'python' + options.script_ext))
 
     def pip_install_requirements(self, filename=requirements_filename):
         """Use pip to install requirements from the given file."""
-        args = [os.path.abspath(os.path.join(
-            self.get_scripts_dir(), 'pip.exe')), 'install', '-r', filename]
+        args = [os.path.abspath(options.get_script_path(
+            'pip', self.executable)), 'install', '-r', filename]
         self.logger.info(
             'Installing dependencies with pip: {0}'.format(
                 ' '.join(args)))
@@ -320,8 +318,8 @@ class Deployer(object):
         The requiremensts can be given as arguments or one per-line in
         the `filename`.
         """
-        args = [os.path.abspath(os.path.join(
-            self.get_scripts_dir(), 'easy_install.exe'))]
+        args = [os.path.abspath(
+            options.get_script_path('easy_install', self.executable))]
         reqs = requirements
         if not reqs:
             reqs = [line.strip() for line in open(filename)]
@@ -446,18 +444,6 @@ class Deployer(object):
         if 'APPL_PHYSICAL_PATH' not in os.environ:
             os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
         return appl_physical_path
-
-    def get_scripts_dir(self, executable=None):
-        """
-        Return the path to the directory containing Python console scripts.
-        """
-        if executable is None:
-            executable = self.executable
-        scripts_dir = os.path.dirname(executable)
-        subdir = os.path.join(scripts_dir, 'Scripts')
-        if os.path.isdir(subdir):
-            scripts_dir = subdir
-        return scripts_dir
 
     def _is_appl_physical_path(self, iis_sites_home, name):
         if self.app_name:
