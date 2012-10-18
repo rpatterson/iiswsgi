@@ -219,7 +219,7 @@ class Deployer(object):
             os.chdir(appl_physical_path)
             self.deploy()
             if os.path.exists(self.script_filename):
-                self.run_custom_script(executable)
+                self.run_custom_script()
         finally:
             os.chdir(cwd)
 
