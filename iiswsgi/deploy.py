@@ -312,8 +312,8 @@ class Deployer(object):
                 ' '.join(args)))
         subprocess.check_call(args, env=os.environ)
 
-    def easy_install_requirements(self, *requirements,
-                                  filename=easy_install_filename):
+    def easy_install_requirements(
+        self, filename=easy_install_filename, *requirements):
         """
         Use easy_install to install requirements.
 
@@ -322,13 +322,13 @@ class Deployer(object):
         """
         args = [os.path.abspath(os.path.join(
             self.get_scripts_dir(), 'easy_install.exe'))]
-        reqs = requiremensts
+        reqs = requirements
         if not reqs:
             reqs = [line.strip() for line in open(filename)]
         args.extend(reqs)
         self.logger.info(
             'Installing dependencies with easy_install: {0}'
-            .format(' '.join(args))
+            .format(' '.join(args)))
         subprocess.check_call(args, env=os.environ)
 
     def run_custom_script(self, executable=None):
@@ -494,7 +494,10 @@ perform any needed tasks.  Useful if the app deployment process needs \
 fine-grained control, such as passing computed arguments into the deployment \
 tasks.""")
 
+
 def deploy_console(args=None):
+    """
+    """
     logging.basicConfig()
     args = deploy_parser.parse_args(args=args)
     deployer = Deployer(
