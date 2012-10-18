@@ -496,8 +496,6 @@ tasks.""")
 
 
 def deploy_console(args=None):
-    """
-    """
     logging.basicConfig()
     args = deploy_parser.parse_args(args=args)
     deployer = Deployer(
