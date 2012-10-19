@@ -302,8 +302,8 @@ class Deployer(object):
         """
         args = [options.get_script_path('virtualenv', self.executable)]
         for option, value in opts.iteritems():
-            args += ['--' + option, value]
-        args += [directory]
+            args.extend(['--' + option, value])
+        args.extend([directory])
         self.logger.info(
             'Setting up a isolated Python with: {0}'.format(
                 ' '.join(args)))
