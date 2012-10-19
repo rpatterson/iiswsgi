@@ -364,7 +364,7 @@ class Deployer(object):
             args.extend(['--find-links', find_link])
         return args
 
-    def run_custom_script(self, args, executable=None):
+    def run_custom_script(self, args=None, executable=None):
         """
         Run the `iis_deploy.py` script.
 
@@ -381,6 +381,8 @@ class Deployer(object):
 
         if executable is None:
             executable = self.executable
+        if args is None:
+            args = []
         args = [executable, self.script_filename] + args
         self.logger.info(
             'Running custom deploy script: {0}'.format(' '.join(args)))
