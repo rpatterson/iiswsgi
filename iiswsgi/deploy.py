@@ -21,6 +21,7 @@ import subprocess
 import argparse
 import logging
 import re
+import multiprocessing
 
 from xml.dom import minidom
 
@@ -34,7 +35,7 @@ app_attr_defaults_init = dict(
     arguments='-u %SystemDrive%\\Python27\\Scripts\\iiswsgi-script.py',
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
     monitorChangesTo='{SystemDrive}\\Scripts\\iiswsgi-script.py',
-    maxInstances=1)
+    maxInstances=multiprocessing.cpu_count())
 
 
 def get_web_config_apps(web_config):
