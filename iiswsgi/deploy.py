@@ -311,17 +311,23 @@ class Deployer(object):
         return os.path.abspath(
             os.path.join(options.scripts_name, 'python' + options.script_ext))
 
-    def pip_install_requirements(self, filename=requirements_filename):
+    def pip_install_requirements(
+        self, filename=requirements_filename, requirements=()):
         """Use pip to install requirements from the given file."""
         args = [os.path.abspath(options.get_script_path(
-            'pip', self.executable)), 'install', '-r', filename]
+            'pip', self.executable))]
+        args.extend(['install'])
+        if filename:
+            args.extend(['-r', filename])
+        if requirements:
+            args.extend(requirements)
         self.logger.info(
             'Installing dependencies with pip: {0}'.format(
                 ' '.join(args)))
         subprocess.check_call(args, env=os.environ)
 
     def easy_install_requirements(
-        self, filename=easy_install_filename, *requirements):
+        self, filename=easy_install_filename, requirements=()):
         """
         Use easy_install to install requirements.
 
@@ -330,10 +336,10 @@ class Deployer(object):
         """
         args = [os.path.abspath(
             options.get_script_path('easy_install', self.executable))]
-        reqs = requirements
-        if not reqs:
-            reqs = [line.strip() for line in open(filename)]
-        args.extend(reqs)
+        if filename:
+            args.extend([line.strip() for line in open(filename)])
+        if requirements:
+            args.extend(requirements)
         self.logger.info(
             'Installing dependencies with easy_install: {0}'
             .format(' '.join(args)))
