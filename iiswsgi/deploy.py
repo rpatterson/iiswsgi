@@ -337,7 +337,7 @@ class Deployer(object):
             .format(' '.join(args)))
         subprocess.check_call(args, env=os.environ)
 
-    def run_custom_script(self, executable=None):
+    def run_custom_script(self, *args, executable=None):
         """
         Run the `iis_deploy.py` script.
 
@@ -354,7 +354,7 @@ class Deployer(object):
 
         if executable is None:
             executable = self.executable
-        args = [executable, self.script_filename] + sys.argv[1:]
+        args = [executable, self.script_filename] + args
         self.logger.info(
             'Running custom deploy script: {0}'.format(' '.join(args)))
         # Raises CalledProcessError if it failes
@@ -495,6 +495,6 @@ def deploy_console(args=None):
     deployer = Deployer(
         args.app_name, args.require_stamp, args.install_fcgi_app)
     if args.delegate:
-        deployer.run_custom_script(sys.executable)
+        deployer.run_custom_script(sys.argv[1:], executable=sys.executable)
         return
     deployer()
