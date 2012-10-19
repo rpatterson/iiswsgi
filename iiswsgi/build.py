@@ -152,7 +152,7 @@ class Builder(object):
             shutil.rmtree(installer_dir)
 
     def delete_stamp_files(self, app_name):
-        # Clean up likely stale stamp files
+        """Clean up likely stale stamp files."""
         if not self.iis_sites_home:
             logger.error('No IIS sites directory')
             return
