@@ -47,14 +47,31 @@ class MSDeployBuild(build.build):
         # TODO use sub_commands
         result = build.build.run(self)
 
+        app_name = self.write_manifest()
+
+        stamp_template = os.path.join(app_name, 'iis_deploy.stamp.in')
+        if os.path.exists(stamp_template):
+            stamp_path = os.path.splitext(stamp_template)[0]
+            if os.path.exists(stamp_path):
+                log.info('Deleting existing stamp file: {0}'.format(
+                    stamp_path))
+                os.remove(stamp_path)
+            log.info('Copying stamp file template to {0}'.format(
+                stamp_path))
+            shutil.copyfile(stamp_template, stamp_path)
+
+        return result
+
+    def write_manifest(self):
         manifest_template = self.manifest_name + '.in'
         if not os.path.exists(manifest_template):
             log.warn('No Web Deploy manifest template found at {0}'.format(
                 manifest_template))
             # No manifest template, don't update real manifest
-            return result
+            return
 
         manifest = minidom.parse(manifest_template)
+        app_name = get_app_name(manifest)
         for runcommand in manifest.getElementsByTagName('runCommand'):
             # Collect the attributes that need to be passed as settings
             path = None
@@ -90,7 +107,12 @@ class MSDeployBuild(build.build):
                     .format(msdeploy=self.msdeploy, source=source,
                             package=package))
                 log.info('Generating runCommand manifest: {0}'.format(args))
-                subprocess.check_call(args, shell=True)
+                if self.msdeploy and os.path.exists(self.msdeploy):
+                    subprocess.check_call(args, shell=True)
+                else:
+                    log.error('msdeploy.exe does not exist: {0}'.format(
+                                  self.msdeploy))
+                    return app_name
                 tmp_manifest = minidom.parseString(
                     zipfile.ZipFile(package).read('archive.xml'))
             finally:
@@ -115,19 +137,7 @@ class MSDeployBuild(build.build):
             self.manifest_name))
         manifest.writexml(open(self.manifest_name, 'w'))
 
-        app_name = get_app_name(manifest)
-        stamp_template = os.path.join(app_name, 'iis_deploy.stamp.in')
-        if os.path.exists(stamp_template):
-            stamp_path = os.path.splitext(stamp_template)[0]
-            if os.path.exists(stamp_path):
-                log.info('Deleting existing stamp file: {0}'.format(
-                    stamp_path))
-                os.remove(stamp_path)
-            log.info('Copying stamp file template to {0}'.format(
-                stamp_path))
-            shutil.copyfile(stamp_template, stamp_path)
-
-        return result
+        return app_name
 
 
 def make_zipfile(base_name, base_dir, verbose=0, dry_run=0):

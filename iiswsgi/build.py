@@ -7,6 +7,7 @@ import shutil
 import logging
 import argparse
 import urlparse
+import errno
 
 from xml.dom import minidom
 
@@ -31,13 +32,19 @@ class Builder(object):
     """
 
     feed_name = 'web-pi.xml'
-    webpi_installer_cache = os.path.join(
-        os.environ['LOCALAPPDATA'],
-        'Microsoft', 'Web Platform Installer', 'installers')
-    iis_sites_home = os.path.join(
-        os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
-    feed_dir = os.path.join(
-        os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
+    webpi_installer_cache = None
+    if 'LOCALAPPDATA' in os.environ:
+        webpi_installer_cache = os.path.join(
+            os.environ['LOCALAPPDATA'],
+            'Microsoft', 'Web Platform Installer', 'installers')
+    iis_sites_home = None
+    if 'USERPROFILE' in os.environ:
+        iis_sites_home = os.path.join(
+            os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
+    feed_dir = None
+    if 'LOCALAPPDATA' in os.environ:
+        feed_dir = os.path.join(
+            os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
 
     def __init__(self, packages, feed=None):
         self.packages = packages
@@ -80,7 +87,19 @@ class Builder(object):
             dist = os.path.abspath(os.path.join('dist', '{0}-{1}.zip'.format(
                 dist_name, version)))
             package_size = os.path.getsize(dist)
-            package_sha1 = subprocess.check_output(['fciv', '-sha1', dist])
+            args = ['fciv', '-sha1', dist]
+            package_sha1 = ''
+            try:
+                package_sha1_output = subprocess.check_output(args)
+            except OSError, error:
+                if error.errno == errno.ENOENT:
+                    logger.exception('Error getting SHA1: {0}'.format(
+                        ' '.join(args)))
+                else:
+                    raise
+            else:
+                package_sha1 = package_sha1_output.rsplit(
+                    '\r\n', 2)[-2].split(' ', 1)[0]
         finally:
             os.chdir(self.cwd)
 
@@ -117,14 +136,15 @@ class Builder(object):
         logger.info('Set Web Platform Installer <fileSize> to {0}'.format(
             package_size))
 
-        package_sha1_value = package_sha1.rsplit(
-            '\r\n', 2)[-2].split(' ', 1)[0]
         sha1_elem = entry.getElementsByTagName('sha1')[0]
-        sha1_elem.firstChild.data = u'{0}'.format(package_sha1_value)
+        sha1_elem.firstChild.data = u'{0}'.format(package_sha1)
         logger.info('Set Web Platform Installer <sha1> to {0}'.format(
-            package_sha1_value))
+            package_sha1))
 
     def delete_installer_cache(self, app_name):
+        if not self.webpi_installer_cache:
+            logger.error('No WebPI installer cache')
+            return
         installer_dir = os.path.join(self.webpi_installer_cache, app_name)
         if os.path.exists(installer_dir):
             logger.info('Removing the cached MSDeploy package: {0}'.format(
@@ -133,6 +153,9 @@ class Builder(object):
 
     def delete_stamp_files(self, app_name):
         # Clean up likely stale stamp files
+        if not self.iis_sites_home:
+            logger.error('No IIS sites directory')
+            return
         for name in os.listdir(self.iis_sites_home):
             if not (os.path.isdir(os.path.join(self.iis_sites_home, name)) and
                     name.startswith(app_name)):
@@ -156,6 +179,9 @@ class Builder(object):
         if feed is None:
             return
 
+        if not self.feed_dir:
+            logger.error('No WebPI feed directory')
+            return
         for cached_feed_name in os.listdir(self.feed_dir):
             if not os.path.splitext(cached_feed_name)[1] == '.xml':
                 # not a cached feed file

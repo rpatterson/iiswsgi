@@ -64,7 +64,11 @@ def install_fcgi_app(appcmd_exe=None,
             # IIS Express
             # under WebPI at least, this is only set when using IIS Express
             appcmd_exe = '{PROGRAMFILES}\\IIS Express\\appcmd.exe'
-    appcmd_exe = appcmd_exe.format(**os.environ)
+    try:
+        appcmd_exe = appcmd_exe.format(**os.environ)
+    except KeyError:
+        logger.exception('Could not find: {0}'.format(appcmd_exe))
+        return
 
     if web_config is None:
         # Search for default web.config
