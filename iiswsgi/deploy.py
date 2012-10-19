@@ -1,3 +1,20 @@
+"""
+Run post-install tasks for a MS Web Deploy package:
+
+1. set the `APPL_PHYSICAL_PATH` environment variable
+
+2. write variable substitutions into `web.config`
+
+3. install an IIS FastCGI application
+
+4. set up a `virtualenv` isolated Python environment
+
+5. install requirements with `pip` or `easy_install`
+
+Where possible, automatic detection is used when deciding whether to
+run a given task.
+"""
+
 import os
 import sys
 import subprocess
@@ -118,68 +135,52 @@ def install_fcgi_app_console(args=None):
 
 
 install_fcgi_app_parser = argparse.ArgumentParser(
-    description=install_fcgi_app_console.__doc__)
+    description=install_fcgi_app_console.__doc__,
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 install_fcgi_app_parser.add_argument(
     "-m", "--monitor-changes", metavar="PATH",
     default=app_attr_defaults_init['monitorChangesTo'], help="""\
 The path to a file which IIS will monitor and restart the FastCGI \
-process when the file is modified. [default: %default]""")
+process when the file is modified.""")
 install_fcgi_app_parser.add_argument(
     "-n", "--max-instances", type=int,
     default=app_attr_defaults_init['maxInstances'], help="""\
 The maximum number of FastCGI processes which IIS will launch.  For a \
 production deployment, it's usually best to set this to \
-%NUMBER_OF_PROCESSORS%. [default: %default]""")
+%%NUMBER_OF_PROCESSORS%%.""")
 install_fcgi_app_parser.add_argument(
     "-t", "--activity-timeout", type=int,
     default=app_attr_defaults_init['activityTimeout'], help="""\
 Specifies the maximum time, in seconds, that a FastCGI process can \
 take to process. Acceptable values are in the range from 10 through \
-3600.  [default: %default]""")
+3600.""")
 install_fcgi_app_parser.add_argument(
     "-i", "--idle-timeout", type=int,
     default=app_attr_defaults_init['idleTimeout'], help="""\
 Specifies the maximum amount of time, in seconds, that a FastCGI \
 process can be idle before the process is shut down. Acceptable values \
-are in the range from 10 through 604800.  [default: %default]""")
+are in the range from 10 through 604800.""")
 install_fcgi_app_parser.add_argument(
     "-r", "--request-timeout", type=int,
     default=app_attr_defaults_init['requestTimeout'],
     help="""\
 Specifies the maximum time, in seconds, that a FastCGI process request \
 can take. Acceptable values are in the range from 10 through 604800. \
-[default: %default]""")
+[default: %(default)s]""")
 install_fcgi_app_parser.add_argument(
     "-f", "--full-path", metavar="EXECUTABLE",
     default=app_attr_defaults_init['fullPath'], help="""\
 The path to the executable to be launched as the FastCGI process by \
-IIS.  This is usually the path to the Python executable. [default: \
-%default]""")
+IIS.  This is usually the path to the Python executable.""")
 install_fcgi_app_parser.add_argument(
     "-a", "--arguments", default=app_attr_defaults_init['arguments'],
     help="""\
 The arguments to be given the executable when invoked as the FastCGI \
-process by IIS.  [default: %default]""")
+process by IIS.""")
 
 
 class Deployer(object):
-    """
-    Run post-install tasks for a MS Web Deploy package:
-
-    * `self.get_appl_physical_path()`: set the `APPL_PHYSICAL_PATH` variable
-
-    * `self.write_web_config()`: write variable substitutions into `web.config`
-
-    * `install_fcgi_app()`: install an IIS FastCGI application
-
-    * `self.setup_virtualenv()`: set up an isolated Python environment
-
-    * `self.pip_install_requirements()`,
-      `self.easy_install_requirements()`: install requirements
-
-    The `deploy()` method can also be used to perform all of the above
-    with automatic detection.
-    """
+    __doc__ = __doc__
 
     logger = logger
     app_name_pattern = '^{0}[0-9]*$'
@@ -235,7 +236,7 @@ class Deployer(object):
         """
         Perform all of the deployment tasks as appropriate.
 
-        `write_web_config()`:
+        `self.write_web_config()`:
 
             Write variable substitutions into `web.config`.
 
@@ -462,8 +463,7 @@ class Deployer(object):
                     iis_sites_home, name, self.stamp_filename)))
 
 
-deploy_parser = argparse.ArgumentParser(description=Deployer.__doc__,
-                                      parents=[options.parent_parser])
+deploy_parser = argparse.ArgumentParser(add_help=False)
 deploy_parser.add_argument(
     '-a', '--app-name', help="""\
 When APPL_PHYSICAL_PATH is not set, narrow the search \
@@ -487,11 +487,15 @@ tasks.  When used it is up to the custom script to use `iiswsgi.deploy` to \
 perform any needed tasks.  Useful if the app deployment process needs \
 fine-grained control, such as passing computed arguments into the deployment \
 tasks.""")
+deploy_console_parser = argparse.ArgumentParser(
+    description=Deployer.__doc__,
+    parents=[options.parent_parser, deploy_parser],
+    formatter_class=argparse.RawDescriptionHelpFormatter)
 
 
 def deploy_console(args=None):
     logging.basicConfig()
-    args = deploy_parser.parse_args(args=args)
+    args = deploy_console_parser.parse_args(args=args)
     deployer = Deployer(
         args.app_name, args.require_stamp, args.install_fcgi_app)
     if args.delegate:

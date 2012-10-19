@@ -1,4 +1,21 @@
-#!/usr/bin/env python2.7
+"""
+Build IIS WSGI Web Deploy packages performing the following tasks:
+
+1. build the Web Deploy Package
+
+2. calculate the package size and sha1
+
+3. update the size and sha1 in the Web Platform Installer feed
+
+4. delete old Web Deploy packages from the Web Platform Installer cache
+
+5. delete `iis_deploy.stamp` files from all installations of any of the
+   given packages in `%USERPROFILE%\Documents\My Web Sites`
+
+6. write the Web Platform Installer feed to `web-pi.xml`
+
+7. delete copies of the feed from the Web Platform Installer cache
+"""
 
 import sys
 import os
@@ -18,18 +35,7 @@ logger = logging.getLogger('iiswsgi.build')
 
 
 class Builder(object):
-    """
-    Helper for building IIS WSGI Web Deploy packages.
-
-    Performs the following tasks: build the Web Deploy Package,
-    calculate the size and sha1, delete old Web Deploy packages from
-    the Web Platform Installer cache, update the size and sha1 in the
-    Web Platform Installer feed, write the Web Platform Installer feed
-    to `web-pi.xml`, delete copies of the feed from the Web Platform
-    Installer cache, delete `iis_deploy.stamp` files from all
-    installations of any of the given packages in
-    `%USERPROFILE%\Documents\My Web Sites`
-    """
+    __doc__ = __doc__
 
     feed_name = 'web-pi.xml'
     webpi_installer_cache = None
@@ -202,8 +208,10 @@ class Builder(object):
                 break
 
 
-build_parser = argparse.ArgumentParser(description=Builder.__doc__,
-                                     parents=[options.parent_parser])
+build_parser = argparse.ArgumentParser(
+    description=Builder.__doc__,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    parents=[options.parent_parser])
 build_parser.add_argument('-f', '--feed',
                           help="""\
 Web Platform Installer atom feed to update.  If a file of the same name but \
