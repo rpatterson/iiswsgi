@@ -495,6 +495,6 @@ def deploy_console(args=None):
     deployer = Deployer(
         args.app_name, args.require_stamp, args.install_fcgi_app)
     if args.delegate:
-        deployer.run_custom_script(sys.argv[1:], executable=sys.executable)
+        deployer.run_custom_script(sys.argv[1:])
         return
     deployer()
