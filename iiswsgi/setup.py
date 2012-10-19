@@ -112,7 +112,7 @@ class MSDeployBuild(build.build):
                 else:
                     log.error('msdeploy.exe does not exist: {0}'.format(
                                   self.msdeploy))
-                    return app_name
+                    continue
                 tmp_manifest = minidom.parseString(
                     zipfile.ZipFile(package).read('archive.xml'))
             finally:
