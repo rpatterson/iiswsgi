@@ -211,7 +211,7 @@
     
     <updated>2012-03-25T13:22:48.440870</updated>
     <published>2012-03-25T13:22:48.440870</published>
-    <title resourceName="Entry_PyramidApp_Title">Pyramid App</title>
+    <title resourceName="Entry_PyramidApp_Title">Pyramid Application</title>
     <link href="https://raw.github.com/rpatterson/iiswsgi/examples/pyramid.msdeploy"/>
     <summary resourceName="Entry_PyramidApp_Summary">
       Pyramid application project.
