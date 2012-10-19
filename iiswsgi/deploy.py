@@ -312,8 +312,10 @@ class Deployer(object):
             os.path.join(options.scripts_name, 'python' + options.script_ext))
 
     def pip_install_requirements(
-        self, filename=requirements_filename, requirements=()):
+        self, filename=None, requirements=()):
         """Use pip to install requirements from the given file."""
+        if not filename and not requirements:
+            filename = self.requirements_filename
         args = [os.path.abspath(options.get_script_path(
             'pip', self.executable))]
         args.extend(['install'])
@@ -327,13 +329,15 @@ class Deployer(object):
         subprocess.check_call(args, env=os.environ)
 
     def easy_install_requirements(
-        self, filename=easy_install_filename, requirements=()):
+        self, filename=None, requirements=()):
         """
         Use easy_install to install requirements.
 
         The requiremensts can be given as arguments or one per-line in
         the `filename`.
         """
+        if not filename and not requirements:
+            filename = self.easy_install_filename
         args = [os.path.abspath(
             options.get_script_path('easy_install', self.executable))]
         if filename:
