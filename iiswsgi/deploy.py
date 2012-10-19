@@ -339,7 +339,7 @@ class Deployer(object):
             .format(' '.join(args)))
         subprocess.check_call(args, env=os.environ)
 
-    def run_custom_script(self, *args, executable=None):
+    def run_custom_script(self, args, executable=None):
         """
         Run the `iis_deploy.py` script.
 
