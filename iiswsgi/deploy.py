@@ -190,14 +190,15 @@ class Deployer(object):
     requirements_filename = 'requirements.txt'
     easy_install_filename = 'easy_install.txt'
 
-    def __init__(self, app_name=None,
-                 require_stamp=True, install_fcgi_app=True):
+    def __init__(self, app_name=None, require_stamp=True,
+                 install_fcgi_app=True, find_links=None):
         self.app_name = app_name
         if app_name:
             self.app_name_pattern = re.compile(
                 self.app_name_pattern.format(app_name))
         self.require_stamp = require_stamp
         self.install_fcgi_app = install_fcgi_app
+        self.find_links = find_links
 
         self.executable = sys.executable
 
@@ -312,12 +313,14 @@ class Deployer(object):
             os.path.join(options.scripts_name, 'python' + options.script_ext))
 
     def pip_install_requirements(
-        self, filename=None, requirements=()):
+        self, filename=None, requirements=(),
+        find_links=None):
         """Use pip to install requirements from the given file."""
         if not filename and not requirements:
             filename = self.requirements_filename
         args = [os.path.abspath(options.get_script_path(
             'pip', self.executable))]
+        self._add_find_links(args, find_links)
         args.extend(['install'])
         if filename:
             args.extend(['-r', filename])
@@ -329,7 +332,7 @@ class Deployer(object):
         subprocess.check_call(args, env=os.environ)
 
     def easy_install_requirements(
-        self, filename=None, requirements=()):
+        self, filename=None, requirements=(), find_links=None):
         """
         Use easy_install to install requirements.
 
@@ -340,6 +343,7 @@ class Deployer(object):
             filename = self.easy_install_filename
         args = [os.path.abspath(
             options.get_script_path('easy_install', self.executable))]
+        self._add_find_links(args, find_links)
         if filename:
             args.extend([line.strip() for line in open(filename)])
         if requirements:
@@ -348,6 +352,17 @@ class Deployer(object):
             'Installing dependencies with easy_install: {0}'
             .format(' '.join(args)))
         subprocess.check_call(args, env=os.environ)
+
+    def _add_find_links(self, args, find_links=None):
+        if find_links is None:
+            find_links = ()
+            if self.find_links:
+                find_links = self.find_links
+        if isinstance(find_links, str):
+            find_links = (find_links, )
+        for find_link in find_links:
+            args.extend(['--find-links', find_link])
+        return args
 
     def run_custom_script(self, args, executable=None):
         """
