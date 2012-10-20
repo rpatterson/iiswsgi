@@ -11,6 +11,8 @@ Run post-install tasks for a MS Web Deploy package:
 
 5. install requirements with `pip` or `easy_install`
 
+6. run a custom `iis_deploy.py` script
+
 Where possible, automatic detection is used when deciding whether to
 run a given task.
 """
