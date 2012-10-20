@@ -494,8 +494,9 @@ class Deployer(object):
         web_config = minidom.parse('web.config')
         for handler in web_config.getElementsByTagName("handlers"):
             for add in handler.getElementsByTagName("add"):
-                args = add.getAttribute(
-                    'scriptProcessor').replace('|', ' ', 1) + ' --test'
+                fullPath, arguments = add.getAttribute(
+                    'scriptProcessor').split('|', 1)
+                args = '"{0}" {1} --test'.format(fullPath, arguments)
                 logger.info('Testing the WSGI app: {0}'.format(args))
                 subprocess.check_call(args, shell=True)
 
