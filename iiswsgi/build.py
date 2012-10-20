@@ -86,8 +86,11 @@ class Builder(object):
     def build_package(self, package):
         try:
             os.chdir(package)
+            environ = os.environ.copy()
+            environ.pop('DISTUTILS_DEBUG')
             dist_name, version = subprocess.check_output(
-                [sys.executable, 'setup.py', '--name', '--version']).split()
+                [sys.executable, 'setup.py', '--name', '--version'],
+                env=environ).split()
             subprocess.check_call(
                 [sys.executable, 'setup.py', 'build', 'sdist', '-q'])
             dist = os.path.abspath(os.path.join('dist', '{0}-{1}.zip'.format(
