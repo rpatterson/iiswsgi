@@ -29,9 +29,18 @@ import errno
 from xml.dom import minidom
 
 from iiswsgi import options
-from iiswsgi import setup
 
 logger = logging.getLogger('iiswsgi.build')
+
+
+def get_app_name(manifest):
+    """Return the <iisApp> name from a Manifest.xml DOM."""
+    iisapps = manifest.getElementsByTagName('iisApp')
+    if not iisapps:
+        raise ValueError('No <iisApp> elements found in Manifest.xml')
+    elif len(iisapps) > 1:
+        raise ValueError('Multiple <iisApp> elements found in Manifest.xml')
+    return iisapps[0].getAttribute('path')
 
 
 class Builder(object):
@@ -64,7 +73,7 @@ class Builder(object):
             dist, version, package_size, package_sha1 = self.build_package(
                 package)
             manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
-            app_name = setup.get_app_name(manifest)
+            app_name = get_app_name(manifest)
             self.update_feed_entry(
                 feed, app_name, dist, version, package_size, package_sha1)
             self.delete_installer_cache(app_name)

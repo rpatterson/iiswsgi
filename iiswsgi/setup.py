@@ -15,20 +15,11 @@ from distutils import errors
 # TODO upload
 
 
-def get_app_name(manifest):
-    """Return the <iisApp> name from a Manifest.xml DOM."""
-    iisapps = manifest.getElementsByTagName('iisApp')
-    if not iisapps:
-        raise ValueError('No <iisApp> elements found in Manifest.xml')
-    elif len(iisapps) > 1:
-        raise ValueError('Multiple <iisApp> elements found in Manifest.xml')
-    return iisapps[0].getAttribute('path')
-
-
 class MSDeployBuild(build.build):
     """Build an MSDeploy zip package for installation into IIS."""
 
     manifest_name = 'Manifest.xml'
+    stamp_template = 'iis_deploy.stamp.in'
 
     msdeploy = None
     if 'PROGRAMFILES' in os.environ:
@@ -47,18 +38,17 @@ class MSDeployBuild(build.build):
         # TODO use sub_commands
         result = build.build.run(self)
 
-        app_name = self.write_manifest()
+        self.write_manifest()
 
-        stamp_template = os.path.join(app_name, 'iis_deploy.stamp.in')
-        if os.path.exists(stamp_template):
-            stamp_path = os.path.splitext(stamp_template)[0]
+        if os.path.exists(self.stamp_template):
+            stamp_path = os.path.splitext(self.stamp_template)[0]
             if os.path.exists(stamp_path):
                 log.info('Deleting existing stamp file: {0}'.format(
                     stamp_path))
                 os.remove(stamp_path)
             log.info('Copying stamp file template to {0}'.format(
                 stamp_path))
-            shutil.copyfile(stamp_template, stamp_path)
+            shutil.copyfile(self.stamp_template, stamp_path)
 
         return result
 
@@ -71,7 +61,6 @@ class MSDeployBuild(build.build):
             return
 
         manifest = minidom.parse(manifest_template)
-        app_name = get_app_name(manifest)
         for runcommand in manifest.getElementsByTagName('runCommand'):
             # Collect the attributes that need to be passed as settings
             path = None
@@ -136,8 +125,6 @@ class MSDeployBuild(build.build):
         log.info('Writing Web Deploy manifest to {0}'.format(
             self.manifest_name))
         manifest.writexml(open(self.manifest_name, 'w'))
-
-        return app_name
 
 
 class MSDeploySDist(sdist.sdist):
