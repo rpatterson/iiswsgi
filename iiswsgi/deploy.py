@@ -363,8 +363,7 @@ class Deployer(object):
                 find_links = self.find_links
         if isinstance(find_links, str):
             find_links = (find_links, )
-        for find_link in find_links:
-            args.extend(['--find-links', find_link])
+        args.extend('--find-links=' + find_link for find_link in find_links)
         return args
 
     def run_custom_script(self, args=None, executable=None):
