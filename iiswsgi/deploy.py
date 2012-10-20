@@ -528,4 +528,4 @@ def deploy_console(args=None):
     args, custom_args = deploy_console_parser.parse_known_args(args=args)
     deployer = Deployer(
         args.app_name, args.require_stamp, args.install_fcgi_app)
-    deployer(custom_args, args.delegate)
+    deployer(sys.argv[1:], args.delegate)
