@@ -525,7 +525,7 @@ deploy_console_parser = argparse.ArgumentParser(
 
 def deploy_console(args=None):
     logging.basicConfig()
-    args = deploy_console_parser.parse_args(args=args)
+    args, custom_args = deploy_console_parser.parse_known_args(args=args)
     deployer = Deployer(
         args.app_name, args.require_stamp, args.install_fcgi_app)
-    deployer(sys.argv[1:], args.delegate)
+    deployer(custom_args, args.delegate)
