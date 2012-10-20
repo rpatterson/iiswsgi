@@ -87,7 +87,7 @@ class Builder(object):
         try:
             os.chdir(package)
             environ = os.environ.copy()
-            environ.pop('DISTUTILS_DEBUG')
+            environ.pop('DISTUTILS_DEBUG', None)
             dist_name, version = subprocess.check_output(
                 [sys.executable, 'setup.py', '--name', '--version'],
                 env=environ).split()
