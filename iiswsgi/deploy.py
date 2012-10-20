@@ -43,7 +43,7 @@ app_attr_defaults_init = dict(
 def get_web_config_apps(web_config):
     doc = minidom.parse(web_config)
     for fcgi in doc.getElementsByTagName("fastCgi"):
-        for app in doc.getElementsByTagName("application"):
+        for app in fcgi.getElementsByTagName("application"):
             yield dict((key, value) for key, value in app.attributes.items())
 
 
