@@ -13,6 +13,8 @@ Run post-install tasks for a MS Web Deploy package:
 
 6. run a custom `iis_deploy.py` script
 
+7. test the IIS WSGI app
+
 Where possible, automatic detection is used when deciding whether to
 run a given task.
 """
@@ -236,6 +238,7 @@ class Deployer(object):
                 self.deploy()
                 if os.path.exists(self.script_filename):
                     self.run_custom_script(args)
+                self.test()
         finally:
             os.chdir(cwd)
 
@@ -485,6 +488,16 @@ class Deployer(object):
             'Running custom deploy script: {0}'.format(' '.join(args)))
         # Raises CalledProcessError if it failes
         subprocess.check_call(args, env=os.environ)
+
+    def test(self):
+        """Test the WSGI application and FCGI server."""
+        web_config = minidom.parse('web.config')
+        for handler in web_config.getElementsByTagName("handlers"):
+            for add in handler.getElementsByTagName("add"):
+                args = add.getAttribute(
+                    'scriptProcessor').replace('|', ' ', 1) + ' --test'
+                logger.info('Testing the WSGI app: {0}'.format(args))
+                subprocess.check_call(args, shell=True)
 
     def _is_appl_physical_path(self, iis_sites_home, name):
         if self.app_name:
