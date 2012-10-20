@@ -277,6 +277,99 @@ class Deployer(object):
             if os.path.exists(self.easy_install_filename):
                 self.easy_install_requirements(*requirements)
 
+    def get_appl_physical_path(self):
+        """
+        Set the `APPL_PHYSICAL_PATH` environment variable
+
+        If already defined, its value is taken as the location of the
+        IIS application.  If not attempt to infer the appropriate
+        directory.  Until such a time as Web Platform Installer or Web
+        Deploy provide some way to identify the physical path of the
+        `iisApp` being installed when the `runCommand` provider is
+        used, we have to guess at the physical path.  If
+        `IIS_SITES_HOME` is defined, all directories that are direct
+        children of the `IIS_SITES_HOME` will be searched for a
+        `iis_deploy.stamp` file.  If multiple directories are found
+        with the stamp file, an error is raised.  Otherwise, in the
+        case where one directory has the stamp file, it is set as the
+        `APPL_PHYSICAL_PATH`.  Then change to that directory before
+        continuing with the rest of the steps.
+
+        When installing to "IIS Express", the `IIS_SITES_HOME` environment
+        variable should be available and the stamp file search should
+        succeed to automatically find the right app for which to run
+        post-install script.  In the case of installing to full "IIS",
+        however, neither the `APPL_PHYSICAL_PATH` nor the `IIS_SITES_HOME`
+        environment variables are available and the post-install deploy
+        script won't be run and WebPI will report an error.  The best way
+        to workaround this limitation is to adopt a convention of putting
+        all your IIS apps installed via WebPI in one directory and then
+        set the `IIS_SITES_HOME` enviornment variable.  Then when
+        installing a new IIS app be sure to give a physical path within
+        that directory when prompted to by WebPI.  If that's not possible
+        you can set the `APPL_PHYSICAL_PATH` environment variable to the
+        physical path you will enter when installing via WebPI. Otherwise,
+        when installing to full "IIS" you'll have to follow the steps for
+        manually running the post-install deployment script after you get
+        the error.
+        """
+        appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
+        if appl_physical_path is not None:
+            if not os.path.exists(appl_physical_path):
+                raise ValueError(
+                    ('The APPL_PHYSICAL_PATH environment variable value is a '
+                     'non-existent path: {0}').format(appl_physical_path))
+            else:
+                self.logger.info(
+                    ('Found IIS app in APPL_PHYSICAL_PATH environment '
+                     'variable at {0}').format(appl_physical_path))
+                return appl_physical_path
+        else:
+            self.logger.info(
+                'APPL_PHYSICAL_PATH environment variable not set')
+
+        iis_sites_home = os.environ.get('IIS_SITES_HOME')
+        if iis_sites_home is None:
+            raise ValueError(
+                'Neither the APPL_PHYSICAL_PATH nor the IIS_SITES_HOME '
+                'environment variables are set.')
+        elif not os.path.exists(iis_sites_home):
+            raise ValueError(
+                ('The IIS_SITES_HOME environment variable value is a '
+                 'non-existent path: {0}').format(iis_sites_home))
+        elif not os.path.isdir(iis_sites_home):
+            raise ValueError(
+                ('The IIS_SITES_HOME environment variable value is '
+                 'not a directory: {0}').format(iis_sites_home))
+
+        self.logger.info(
+            'Searching the directory in the IIS_SITES_HOME environment '
+            'variable for the app to deploy')
+        appl_physical_paths = [
+            os.path.join(iis_sites_home, name)
+            for name in os.listdir(iis_sites_home)
+            if self._is_appl_physical_path(iis_sites_home, name)]
+        if not appl_physical_paths:
+            raise ValueError(
+                ('Found no {0} stamp file in any of the directories in the '
+                 'IIS_SITES_HOME environment variable: {0}').format(
+                    self.stamp_filename, iis_sites_home))
+        elif len(appl_physical_paths) > 1:
+            raise ValueError(
+                ('Found multiple {0} stamp files in the directories in the '
+                 'IIS_SITES_HOME environment variable: {0}').format(
+                    self.stamp_filename, iis_sites_home))
+
+        appl_physical_path = appl_physical_paths[0]
+        self.logger.info(
+            ('Found IIS app with a stamp file in just one of the directories '
+             'in the IIS_SITES_HOME environment variable: {0}').format(
+                    appl_physical_path))
+
+        if 'APPL_PHYSICAL_PATH' not in os.environ:
+            os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
+        return appl_physical_path
+
     def write_web_config(self, **kw):
         """
         Write `web.config.in` to `web.config` substituting variables.
@@ -390,99 +483,6 @@ class Deployer(object):
             'Running custom deploy script: {0}'.format(' '.join(args)))
         # Raises CalledProcessError if it failes
         subprocess.check_call(args, env=os.environ)
-
-    def get_appl_physical_path(self):
-        """
-        Set the `APPL_PHYSICAL_PATH` environment variable
-
-        If already defined, its value is taken as the location of the
-        IIS application.  If not attempt to infer the appropriate
-        directory.  Until such a time as Web Platform Installer or Web
-        Deploy provide some way to identify the physical path of the
-        `iisApp` being installed when the `runCommand` provider is
-        used, we have to guess at the physical path.  If
-        `IIS_SITES_HOME` is defined, all directories that are direct
-        children of the `IIS_SITES_HOME` will be searched for a
-        `iis_deploy.stamp` file.  If multiple directories are found
-        with the stamp file, an error is raised.  Otherwise, in the
-        case where one directory has the stamp file, it is set as the
-        `APPL_PHYSICAL_PATH`.  Then change to that directory before
-        continuing with the rest of the steps.
-
-        When installing to "IIS Express", the `IIS_SITES_HOME` environment
-        variable should be available and the stamp file search should
-        succeed to automatically find the right app for which to run
-        post-install script.  In the case of installing to full "IIS",
-        however, neither the `APPL_PHYSICAL_PATH` nor the `IIS_SITES_HOME`
-        environment variables are available and the post-install deploy
-        script won't be run and WebPI will report an error.  The best way
-        to workaround this limitation is to adopt a convention of putting
-        all your IIS apps installed via WebPI in one directory and then
-        set the `IIS_SITES_HOME` enviornment variable.  Then when
-        installing a new IIS app be sure to give a physical path within
-        that directory when prompted to by WebPI.  If that's not possible
-        you can set the `APPL_PHYSICAL_PATH` environment variable to the
-        physical path you will enter when installing via WebPI. Otherwise,
-        when installing to full "IIS" you'll have to follow the steps for
-        manually running the post-install deployment script after you get
-        the error.
-        """
-        appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
-        if appl_physical_path is not None:
-            if not os.path.exists(appl_physical_path):
-                raise ValueError(
-                    ('The APPL_PHYSICAL_PATH environment variable value is a '
-                     'non-existent path: {0}').format(appl_physical_path))
-            else:
-                self.logger.info(
-                    ('Found IIS app in APPL_PHYSICAL_PATH environment '
-                     'variable at {0}').format(appl_physical_path))
-                return appl_physical_path
-        else:
-            self.logger.info(
-                'APPL_PHYSICAL_PATH environment variable not set')
-
-        iis_sites_home = os.environ.get('IIS_SITES_HOME')
-        if iis_sites_home is None:
-            raise ValueError(
-                'Neither the APPL_PHYSICAL_PATH nor the IIS_SITES_HOME '
-                'environment variables are set.')
-        elif not os.path.exists(iis_sites_home):
-            raise ValueError(
-                ('The IIS_SITES_HOME environment variable value is a '
-                 'non-existent path: {0}').format(iis_sites_home))
-        elif not os.path.isdir(iis_sites_home):
-            raise ValueError(
-                ('The IIS_SITES_HOME environment variable value is '
-                 'not a directory: {0}').format(iis_sites_home))
-
-        self.logger.info(
-            'Searching the directory in the IIS_SITES_HOME environment '
-            'variable for the app to deploy')
-        appl_physical_paths = [
-            os.path.join(iis_sites_home, name)
-            for name in os.listdir(iis_sites_home)
-            if self._is_appl_physical_path(iis_sites_home, name)]
-        if not appl_physical_paths:
-            raise ValueError(
-                ('Found no {0} stamp file in any of the directories in the '
-                 'IIS_SITES_HOME environment variable: {0}').format(
-                    self.stamp_filename, iis_sites_home))
-        elif len(appl_physical_paths) > 1:
-            raise ValueError(
-                ('Found multiple {0} stamp files in the directories in the '
-                 'IIS_SITES_HOME environment variable: {0}').format(
-                    self.stamp_filename, iis_sites_home))
-
-        appl_physical_path = appl_physical_paths[0]
-        self.logger.info(
-            ('Found IIS app with a stamp file in just one of the directories '
-             'in the IIS_SITES_HOME environment variable: {0}').format(
-                    appl_physical_path))
-
-        if 'APPL_PHYSICAL_PATH' not in os.environ:
-            os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
-        return appl_physical_path
 
     def _is_appl_physical_path(self, iis_sites_home, name):
         if self.app_name:
