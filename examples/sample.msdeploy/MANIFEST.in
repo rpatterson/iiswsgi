@@ -1,7 +1,5 @@
-include IISWSGISampleApp/*.py
+include *.py
 
-include Manifest.xml
-include Parameters.xml
-include IISWSGISampleApp/web.config.in
-include IISWSGISampleApp/iis_fcgi.ini
-include IISWSGISampleApp/iis_deploy.stamp
+include web.config.in
+include iis_fcgi.ini
+include iis_deploy.stamp
