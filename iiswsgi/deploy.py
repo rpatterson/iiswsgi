@@ -202,7 +202,7 @@ class Deployer(object):
 
         self.executable = sys.executable
 
-    def __call__(self):
+    def __call__(self, args=None, delegate=False):
         """
         Run all deployment tasks and a custom script as appropriate.
 
@@ -228,9 +228,12 @@ class Deployer(object):
             self.logger.info('Changing to application directory {0}'.format(
                 appl_physical_path))
             os.chdir(appl_physical_path)
-            self.deploy()
-            if os.path.exists(self.script_filename):
-                self.run_custom_script()
+            if delegate:
+                self.run_custom_script(args)
+            else:
+                self.deploy()
+                if os.path.exists(self.script_filename):
+                    self.run_custom_script(args)
         finally:
             os.chdir(cwd)
 
@@ -526,7 +529,4 @@ def deploy_console(args=None):
     args = deploy_console_parser.parse_args(args=args)
     deployer = Deployer(
         args.app_name, args.require_stamp, args.install_fcgi_app)
-    if args.delegate:
-        deployer.run_custom_script(sys.argv[1:])
-        return
-    deployer()
+    deployer(sys.argv[1:], args.delegate)
