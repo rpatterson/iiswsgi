@@ -1,8 +1,6 @@
 """
 Run post-install tasks for a MS Web Deploy package:
 
-1. set the `APPL_PHYSICAL_PATH` environment variable
-
 2. write variable substitutions into `web.config`
 
 3. install an IIS FastCGI application
@@ -308,7 +306,7 @@ class Installer(object):
 
     def get_appl_physical_path(self):
         """
-        Find the `APPL_PHYSICAL_PATH`.
+        Finding the `APPL_PHYSICAL_PATH`.
 
         If already defined, its value is taken as the location of the
         IIS application.  If not attempt to infer the appropriate
@@ -418,7 +416,8 @@ Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed.""")
 install_console_parser = argparse.ArgumentParser(
-    description=Installer.__doc__,
+    description=help(Installer),
+    epilog=help(Installer.get_appl_physical_path),
     parents=[options.parent_parser, install_parser],
     formatter_class=argparse.RawDescriptionHelpFormatter)
 
