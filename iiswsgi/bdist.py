@@ -19,7 +19,7 @@ class MSDeployBuild(build.build):
     """Build an MSDeploy zip package for installation into IIS."""
 
     manifest_name = 'Manifest.xml'
-    stamp_template = 'iis_deploy.stamp.in'
+    stamp_template = 'iis_install.stamp.in'
 
     msdeploy = None
     if 'PROGRAMFILES' in os.environ:

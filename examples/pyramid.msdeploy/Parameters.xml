@@ -14,7 +14,7 @@
     description="Select the type of Pyramid project."
     defaultValue="starter">
     <parameterValidation type="Enumeration" validationString="starter,zodb,alchemy" />
-    <parameterEntry kind="TextFile" scope="\\iis_deploy\.py$" match="__pyramid_scaffold__" />
+    <parameterEntry kind="TextFile" scope="\\iis_install\.py$" match="__pyramid_scaffold__" />
   </parameter>
 
   <parameter 
@@ -22,7 +22,7 @@
     friendlyName="Project Name"
     description="Name your Pyramid project."
     defaultValue="MyProject">
-    <parameterEntry kind="TextFile" scope="\\iis_deploy\.py$" match="__pyramid_project__" />
+    <parameterEntry kind="TextFile" scope="\\iis_install\.py$" match="__pyramid_project__" />
     <parameterEntry kind="TextFile" scope="\\web\.config\.in$" match="__pyramid_project__" />
   </parameter>
 

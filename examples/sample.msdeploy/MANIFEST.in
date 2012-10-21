@@ -2,4 +2,4 @@ include *.py
 
 include web.config.in
 include iis_fcgi.ini
-include iis_deploy.stamp
+include iis_install.stamp

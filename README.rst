@@ -40,7 +40,7 @@ toolchain consists of three phases:
 Building
 --------
 
-The ``iiswsgi_build.exe`` console script can be used to automate most of
+The ``iiswsgi_webpi.exe`` console script can be used to automate most of
 the repetitive tasks involved:
 
 * build Microsoft Web Deploy packages
@@ -55,7 +55,7 @@ be to:
 * Click on the `options` link in the bottom right of WebPI
 * Click the `X` next to your feed to remove it
 * Click `OK` and wait for WebPI to finish updating the remaining feeds
-* Run `iiswsgi_build.exe`
+* Run `iiswsgi_webpi.exe`
 * Click on the `options` link again in WebPI
 * Enter the feed URL and click `Add Feed` to restore the feed
 * Click `OK` and wait for WebPI again
@@ -116,7 +116,7 @@ specified in FastCGI.
 IIS FastCGI Applications
 ------------------------
 
-The ``iiswsgi.deploy`` package provides helpers which can be using an
+The ``iiswsgi.install`` package provides helpers which can be using an
 an application's `Manifest.xml`_ file to automate the installation of
 an IIS FastCGI application.  For those needing more control, the
 following may help understand what's involved.

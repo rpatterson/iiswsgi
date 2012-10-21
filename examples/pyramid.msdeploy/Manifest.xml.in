@@ -2,7 +2,7 @@
 <msDeploy.iisApp>
   <iisApp path="PyramidApp" />
   <runCommand
-      path="%SystemDrive%\Python27\Scripts\iiswsgi_deploy.exe -v -a PyramidApp"
+      path="%SystemDrive%\Python27\Scripts\iiswsgi_install.exe -v -a PyramidApp"
       waitAttempts="10" waitInterval="60000" successReturnCodes="0x0"
       MSDeploy.MSDeployKeyAttributeName="path" />
 </msDeploy.iisApp>

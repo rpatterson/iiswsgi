@@ -7,7 +7,7 @@ build/
 examples/web-pi.xml
 examples/*.msdeploy/MANIFEST
 examples/*.msdeploy/Manifest.xml
-examples/*.msdeploy/iis_deploy.stamp
+examples/*.msdeploy/iis_install.stamp
 examples/*.msdeploy/web.config
 Include/
 Lib/

@@ -11,7 +11,7 @@ Run post-install tasks for a MS Web Deploy package:
 
 5. install requirements with `pip` or `easy_install`
 
-6. run a custom `iis_deploy.py` script
+6. run a custom `iis_install.py` script
 
 7. test the IIS WSGI app
 
@@ -32,7 +32,7 @@ from xml.dom import minidom
 from iiswsgi import options
 
 root = logging.getLogger()
-logger = logging.getLogger('iiswsgi.deploy')
+logger = logging.getLogger('iiswsgi.install')
 
 app_attr_defaults_init = dict(
     fullPath='%SystemDrive%\\Python27\\python.exe',
@@ -184,13 +184,13 @@ The arguments to be given the executable when invoked as the FastCGI \
 process by IIS.""")
 
 
-class Deployer(object):
+class Installer(object):
     __doc__ = __doc__
 
     logger = logger
     app_name_pattern = '^{0}[0-9]*$'
-    stamp_filename = 'iis_deploy.stamp'
-    script_filename = 'iis_deploy.py'
+    stamp_filename = 'iis_install.stamp'
+    script_filename = 'iis_install.py'
     requirements_filename = 'requirements.txt'
     easy_install_filename = 'easy_install.txt'
 
@@ -213,10 +213,10 @@ class Deployer(object):
         * `self.get_appl_physical_path()`: determine and set the
           APPL_PHYSICAL_PATH
 
-        * `self.deploy()`: change to APPL_PHYSICAL_PATH and perform
+        * `self.install()`: change to APPL_PHYSICAL_PATH and perform
           tasks as appropriate
 
-        * `iis_deploy.py`: run the custom script if present
+        * `iis_install.py`: run the custom script if present
         """
         appl_physical_path = self.get_appl_physical_path()
         stamp_path = os.path.join(appl_physical_path, self.stamp_filename)
@@ -225,7 +225,7 @@ class Deployer(object):
             os.remove(stamp_path)
         elif self.require_stamp:
             raise ValueError(
-                'No IIS deploy stamp file found at {0}'.format(stamp_path))
+                'No IIS install stamp file found at {0}'.format(stamp_path))
 
         cwd = os.getcwd()
         try:
@@ -235,14 +235,14 @@ class Deployer(object):
             if delegate:
                 self.run_custom_script(args)
             else:
-                self.deploy()
+                self.install()
                 if os.path.exists(self.script_filename):
                     self.run_custom_script(args)
                 self.test()
         finally:
             os.chdir(cwd)
 
-    def deploy(self, *requirements, **substitutions):
+    def install(self, *requirements, **substitutions):
         """
         Perform all of the deployment tasks as appropriate.
 
@@ -294,7 +294,7 @@ class Deployer(object):
         used, we have to guess at the physical path.  If
         `IIS_SITES_HOME` is defined, all directories that are direct
         children of the `IIS_SITES_HOME` will be searched for a
-        `iis_deploy.stamp` file.  If multiple directories are found
+        `iis_install.stamp` file.  If multiple directories are found
         with the stamp file, an error is raised.  Otherwise, in the
         case where one directory has the stamp file, it is set as the
         `APPL_PHYSICAL_PATH`.  Then change to that directory before
@@ -389,7 +389,7 @@ class Deployer(object):
         handlers that can each have their own parameters.  If your
         deployment requires that computed values be included in the
         substituted variables, then use the `--delegate` option and
-        pass kwargs into `Deployer.deploy()`.
+        pass kwargs into `Installer.install()`.
         """
         environ = os.environ.copy()
         environ.update(**kw)
@@ -466,17 +466,17 @@ class Deployer(object):
 
     def run_custom_script(self, args=None, executable=None):
         """
-        Run the `iis_deploy.py` script.
+        Run the `iis_install.py` script.
 
-        Look for a `iis_deploy.py` script in `APPL_PHYSICAL_PATH`.  If
-        it is found but `APPL_PHYSICAL_PATH` has no `iis_deploy.stamp`
+        Look for a `iis_install.py` script in `APPL_PHYSICAL_PATH`.  If
+        it is found but `APPL_PHYSICAL_PATH` has no `iis_install.stamp`
         file, an error will be raised.  Otherwise the script is
         executed and the stamp file is removed.  The stamp file can be
-        ignored if the `Deployer` has been instantiated with
-        `Deployer(require_stamp=False)`.
+        ignored if the `Installer` has been instantiated with
+        `Installer(require_stamp=False)`.
         """
         if not os.path.exists(self.script_filename):
-            raise ValueError('Custom deploy script does not exist: {0}'.format(
+            raise ValueError('Custom install script does not exist: {0}'.format(
                 self.script_filename))
 
         if executable is None:
@@ -485,7 +485,7 @@ class Deployer(object):
             args = []
         args = [executable, self.script_filename] + args
         self.logger.info(
-            'Running custom deploy script: {0}'.format(' '.join(args)))
+            'Running custom install script: {0}'.format(' '.join(args)))
         # Raises CalledProcessError if it failes
         subprocess.check_call(args, env=os.environ)
 
@@ -509,39 +509,39 @@ class Deployer(object):
                     iis_sites_home, name, self.stamp_filename)))
 
 
-deploy_parser = argparse.ArgumentParser(add_help=False)
-deploy_parser.add_argument(
+install_parser = argparse.ArgumentParser(add_help=False)
+install_parser.add_argument(
     '-a', '--app-name', help="""\
 When APPL_PHYSICAL_PATH is not set, narrow the search \
 in IIS_SITES_HOME to apps with this name .""")
-deploy_parser.add_argument(
+install_parser.add_argument(
     '-i', '--ignore-stamp', dest='require_stamp', action='store_false',
     help="""\
-Run the deploy process even if the `iis_deploy.stamp` file is not present.  \
+Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed.""")
-deploy_parser.add_argument(
+install_parser.add_argument(
     '-s', '--skip-fcgi-app-install', dest='install_fcgi_app',
     action='store_false', help="""\
-Run the deploy process even if the `iis_deploy.stamp` file is not present.  \
+Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed.""")
-deploy_parser.add_argument(
+install_parser.add_argument(
     '-d', '--delegate', action='store_true', help="""\
-Only run the custom `iis_deploy.py` script, don't perform any of the default \
-tasks.  When used it is up to the custom script to use `iiswsgi.deploy` to \
+Only run the custom `iis_install.py` script, don't perform any of the default \
+tasks.  When used it is up to the custom script to use `iiswsgi.install` to \
 perform any needed tasks.  Useful if the app deployment process needs \
 fine-grained control, such as passing computed arguments into the deployment \
 tasks.""")
-deploy_console_parser = argparse.ArgumentParser(
-    description=Deployer.__doc__,
-    parents=[options.parent_parser, deploy_parser],
+install_console_parser = argparse.ArgumentParser(
+    description=Installer.__doc__,
+    parents=[options.parent_parser, install_parser],
     formatter_class=argparse.RawDescriptionHelpFormatter)
 
 
-def deploy_console(args=None):
+def install_console(args=None):
     logging.basicConfig()
-    args, custom_args = deploy_console_parser.parse_known_args(args=args)
-    deployer = Deployer(
+    args, custom_args = install_console_parser.parse_known_args(args=args)
+    installer = Installer(
         args.app_name, args.require_stamp, args.install_fcgi_app)
-    deployer(sys.argv[1:], args.delegate)
+    installer(sys.argv[1:], args.delegate)

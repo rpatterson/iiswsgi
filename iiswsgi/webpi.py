@@ -9,7 +9,7 @@ Build IIS WSGI Web Deploy packages performing the following tasks:
 
 4. delete old Web Deploy packages from the Web Platform Installer cache
 
-5. delete `iis_deploy.stamp` files from all installations of any of the
+5. delete `iis_install.stamp` files from all installations of any of the
    given packages in `%USERPROFILE%\Documents\My Web Sites`
 
 6. write the Web Platform Installer feed to `web-pi.xml`
@@ -179,10 +179,10 @@ class Builder(object):
                     name.startswith(app_name)):
                 continue
             stamp_file = os.path.join(
-                self.iis_sites_home, name, 'iis_deploy.stamp')
+                self.iis_sites_home, name, 'iis_install.stamp')
             if os.path.exists(stamp_file):
                 logger.info(
-                    'Removing stale deploy stamp file: {0}'.format(stamp_file))
+                    'Removing stale install stamp file: {0}'.format(stamp_file))
                 os.remove(stamp_file)
 
     def write_feed(self, feed):
@@ -232,7 +232,7 @@ Useful to avoid versioning irrellevant feed changes.""")
 build_parser.add_argument('packages', nargs='+',
                           help="""\
 One or more Web Deploy package directories.  Each must contain `setup.py` \
-files which use the `iiswsgi.setup` `distutils` commands to \
+files which use the `iiswsgi` `distutils` commands to \
 generate a package.""")
 
 
