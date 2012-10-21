@@ -38,7 +38,9 @@ from iiswsgi import build_msdeploy
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.install')
 
-setup_commands = __name__.rsplit('.', 1)[1]
+# Default to running this command: ['install_msdeploy']
+command = __name__.rsplit('.', 1)[1]
+setup_args = [command]
 
 
 class install_msdeploy(cmd.Command):
@@ -252,7 +254,12 @@ install.install.sub_commands.append(
 
 
 class Installer(object):
-    __doc__ = __doc__
+    """
+    Find the APPL_PHYSICAL_PATH and run setup.py there.
+
+    Any additional arguments are passed as arguments to the setup.py
+    script.  If there are None, then the default args are '{0}'.
+    """.format(' '.join(setup_args))
 
     logger = logger
     app_name_pattern = '^{0}[0-9]*$'
@@ -273,7 +280,7 @@ class Installer(object):
 
         self.executable = sys.executable
 
-    def __call__(self, setup_commands=setup_commands, setup_args=[]):
+    def __call__(self, setup_args=setup_args):
         appl_physical_path = self.get_appl_physical_path()
         if 'APPL_PHYSICAL_PATH' not in os.environ:
             os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
@@ -292,7 +299,7 @@ class Installer(object):
                 appl_physical_path))
             os.chdir(appl_physical_path)
 
-            cmd = [sys.executable, 'setup.py'] + setup_commands + setup_args
+            cmd = [sys.executable, 'setup.py'] + setup_args
             self.logger.info('Installing aplication: {0}'.format(
                 ' '.join(cmd)))
             subprocess.check_call(cmd)
@@ -420,4 +427,4 @@ def install_console(args=None):
     logging.basicConfig()
     args, setup_args = install_console_parser.parse_known_args(args=args)
     installer = Installer(args.app_name, args.require_stamp)
-    installer(setup_args=setup_args)
+    installer(setup_args)
