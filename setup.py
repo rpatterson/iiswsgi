@@ -21,9 +21,6 @@ setup(name='iiswsgi',
       license='GPL',
       packages=find_packages(),
       include_package_data=True,
-      dependency_links = [
-          "http://downloads.sourceforge.net/project/pywin32/pywin32/Build%20217/pywin32-217.win32-py2.7.exe"
-          ],
       setup_requires=['setuptools-git'],
       install_requires=['flup'],
       extras_require=dict(config=['PasteDeploy']),
