@@ -35,9 +35,6 @@ class build_msdeploy(build.build):
         self.build_base = 'build/'
 
     def run(self):
-        # TODO use sub_commands
-        result = build.build.run(self)
-
         self.write_manifest()
 
         if os.path.exists(self.stamp_template):
@@ -49,8 +46,6 @@ class build_msdeploy(build.build):
             log.info('Copying stamp file template to {0}'.format(
                 stamp_path))
             shutil.copyfile(self.stamp_template, stamp_path)
-
-        return result
 
     def write_manifest(self):
         manifest_template = self.manifest_name + '.in'
@@ -127,6 +122,12 @@ class build_msdeploy(build.build):
         manifest.writexml(open(self.manifest_name, 'w'))
 
 
+def has_msdeploy_manifest(self):
+    return os.path.exists(self.msdeploy_manifest)
+
+build.build.sub_commands.append(('build_msdeploy', has_msdeploy_manifest))
+
+
 class bdist_msdeploy(sdist.sdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
@@ -193,6 +194,5 @@ class bdist_msdeploy(sdist.sdist):
         return zip_filename
 
 
-# TODO separate actions, msdeploy_package depending on msdeploy_build
 cmdclass = dict(build_msdeploy=build_msdeploy,
                 bdist_msdeploy=bdist_msdeploy)
