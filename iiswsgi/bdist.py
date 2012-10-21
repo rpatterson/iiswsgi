@@ -6,16 +6,16 @@ import shutil
 
 from xml.dom import minidom
 
+from distutils import cmd
 from distutils.command import build
-from distutils.command import sdist
+from distutils.command import bdist_dumb
 from distutils import archive_util
 from distutils import log
 from distutils import errors
 
 # TODO upload
 
-
-class build_msdeploy(build.build):
+class build_msdeploy(cmd.Command):
     """Build an MSDeploy zip package for installation into IIS."""
 
     manifest_name = 'Manifest.xml'
@@ -31,7 +31,7 @@ class build_msdeploy(build.build):
 
     def initialize_options(self):
         """Be more discriminating about what to prune."""
-        build.build.initialize_options(self)
+        cmd.Command.initialize_options(self)
         self.build_base = 'build/'
 
     def run(self):
@@ -158,7 +158,7 @@ class bdist_msdeploy(sdist.sdist):
         self.archive_files = archive_files
 
         if not self.keep_temp:
-            sdist.dir_util.remove_tree(base_dir, dry_run=self.dry_run)
+            bdist_dumb.dir_util.remove_tree(base_dir, dry_run=self.dry_run)
 
     def make_archive(self, base_name, format, root_dir=None, base_dir=None,
                      owner=None, group=None):
