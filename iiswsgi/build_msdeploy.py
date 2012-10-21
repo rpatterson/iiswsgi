@@ -120,6 +120,6 @@ class build_msdeploy(cmd.Command):
 
 
 def has_msdeploy_manifest(self):
-    return os.path.exists(self.msdeploy_manifest)
+    return os.path.exists(self.msdeploy_manifest + '.in') and self.msdeploy
 
 build.build.sub_commands.append(('build_msdeploy', has_msdeploy_manifest))
