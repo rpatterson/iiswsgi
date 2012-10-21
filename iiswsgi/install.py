@@ -304,19 +304,20 @@ class Installer(object):
         variable should be available and the stamp file search should
         succeed to automatically find the right app for which to run
         post-install script.  In the case of installing to full "IIS",
-        however, neither the `APPL_PHYSICAL_PATH` nor the `IIS_SITES_HOME`
-        environment variables are available and the post-install deploy
-        script won't be run and WebPI will report an error.  The best way
-        to workaround this limitation is to adopt a convention of putting
-        all your IIS apps installed via WebPI in one directory and then
-        set the `IIS_SITES_HOME` enviornment variable.  Then when
-        installing a new IIS app be sure to give a physical path within
-        that directory when prompted to by WebPI.  If that's not possible
-        you can set the `APPL_PHYSICAL_PATH` environment variable to the
-        physical path you will enter when installing via WebPI. Otherwise,
-        when installing to full "IIS" you'll have to follow the steps for
-        manually running the post-install deployment script after you get
-        the error.
+        however, neither the `APPL_PHYSICAL_PATH` nor the
+        `IIS_SITES_HOME` environment variables are available and the
+        post-install script won't be run and WebPI will report an
+        error.  The best way to workaround this limitation is to adopt
+        a convention of putting all your IIS apps installed via WebPI
+        in one directory and then set the `IIS_SITES_HOME` enviornment
+        variable.  Then when installing a new IIS app be sure to give
+        a physical path within that directory when prompted to by
+        WebPI.  If that's not possible you can set the
+        `APPL_PHYSICAL_PATH` environment variable to the physical path
+        you will enter when installing via WebPI. Otherwise, when
+        installing to full"IIS" you'll have to follow the steps for
+        manually running the post-install deployment script after you
+        get the error.
         """
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
         if appl_physical_path is not None:
@@ -349,7 +350,7 @@ class Installer(object):
 
         self.logger.info(
             'Searching the directory in the IIS_SITES_HOME environment '
-            'variable for the app to deploy')
+            'variable for the app to install')
         appl_physical_paths = [
             os.path.join(iis_sites_home, name)
             for name in os.listdir(iis_sites_home)
