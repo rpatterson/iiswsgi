@@ -131,7 +131,7 @@ build.build.sub_commands.append(('build_msdeploy', has_msdeploy_manifest))
 class bdist_msdeploy(bdist_dumb.bdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
-    msdeploy_files = ('Manifest.xml', 'Parameters.xml')
+    msdeploy_files = (build_msdeploy.manifest_name, 'Parameters.xml')
 
     def make_distribution(self):
         """Minimize path lenght to avoid windows issues."""
