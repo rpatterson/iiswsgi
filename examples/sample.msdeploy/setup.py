@@ -1,11 +1,5 @@
 from distutils.core import setup
 
-try:
-    from iiswsgi.bdist import cmdclass
-    cmdclass  # pyflakes
-except ImportError:
-    cmdclass = dict()
-
 version = '0.1'
 
 setup(name='IISWSGISampleApp',
@@ -28,5 +22,4 @@ with Microsoft Web Deploy.""",
       # in the python
       setup_requires=['setuptools-git',
                       'iiswsgi'],
-      cmdclass=cmdclass,
       )

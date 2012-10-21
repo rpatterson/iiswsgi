@@ -101,7 +101,7 @@ class Builder(object):
                 [sys.executable, 'setup.py', '--name', '--version'],
                 env=environ).split()
             subprocess.check_call(
-                [sys.executable, 'setup.py', 'build', 'sdist', '-q'])
+                [sys.executable, 'setup.py', 'build', 'bdist_msdeploy', '-q'])
             dist = os.path.abspath(os.path.join('dist', '{0}-{1}.zip'.format(
                 dist_name, version)))
             package_size = os.path.getsize(dist)

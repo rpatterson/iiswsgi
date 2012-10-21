@@ -1,11 +1,5 @@
 from distutils.core import setup
 
-try:
-    from iiswsgi.bdist import cmdclass
-    cmdclass  # pyflakes
-except ImportError:
-    cmdclass = dict()
-
 version = '0.1'
 
 setup(name='PyramidApp',
@@ -27,5 +21,4 @@ setup(name='PyramidApp',
       # in the python
       setup_requires=['setuptools-git',
                       'iiswsgi'],
-      cmdclass=cmdclass,
       )

@@ -15,7 +15,7 @@ from distutils import errors
 # TODO upload
 
 
-class MSDeployBuild(build.build):
+class build_msdeploy(build.build):
     """Build an MSDeploy zip package for installation into IIS."""
 
     manifest_name = 'Manifest.xml'
@@ -127,7 +127,7 @@ class MSDeployBuild(build.build):
         manifest.writexml(open(self.manifest_name, 'w'))
 
 
-class MSDeploySDist(sdist.sdist):
+class bdist_msdeploy(sdist.sdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
     msdeploy_files = ('Manifest.xml', 'Parameters.xml')
@@ -194,5 +194,5 @@ class MSDeploySDist(sdist.sdist):
 
 
 # TODO separate actions, msdeploy_package depending on msdeploy_build
-cmdclass = dict(build=MSDeployBuild,
-                sdist=MSDeploySDist)
+cmdclass = dict(build_msdeploy=build_msdeploy,
+                bdist_msdeploy=bdist_msdeploy)
