@@ -29,7 +29,6 @@ setup(name='iiswsgi',
           'console_scripts':
           ['iiswsgi = iiswsgi.server:run',
            'iiswsgi_install = iiswsgi.install:install_console',
-           'iiswsgi_install_fcgi_app'
-           ' = iiswsgi.install:install_fcgi_app_console',
+           'iiswsgi_install_fcgi_app = iiswsgi.fcgi:install_fcgi_app_console',
            'iiswsgi_webpi = iiswsgi.webpi:webpi_console'],
           'paste.app_factory': ['test_app = iiswsgi.server:make_test_app']})
