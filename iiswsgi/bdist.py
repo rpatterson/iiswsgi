@@ -128,7 +128,7 @@ def has_msdeploy_manifest(self):
 build.build.sub_commands.append(('build_msdeploy', has_msdeploy_manifest))
 
 
-class bdist_msdeploy(sdist.sdist):
+class bdist_msdeploy(bdist_dumb.bdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
     msdeploy_files = ('Manifest.xml', 'Parameters.xml')
