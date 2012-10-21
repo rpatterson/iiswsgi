@@ -232,8 +232,7 @@ Useful to avoid versioning irrellevant feed changes.""")
 build_parser.add_argument('packages', nargs='+',
                           help="""\
 One or more Web Deploy package directories.  Each must contain `setup.py` \
-files which use the `iiswsgi` `distutils` commands to \
-generate a package.""")
+files which use the `iiswsgi` `distutils` commands to generate a package.""")
 
 
 def build_console(args=None):
