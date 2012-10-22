@@ -95,7 +95,7 @@ stopped a previous run has been addressed.""")]
         # TODO move to `setup.py install`?
         self.write_web_config(**substitutions)
 
-        if self.install_fcgi_app:
+        if not self.skip_fcgi_app_install:
             fcgi.install_fcgi_app()
 
         # vritualenv and requirements
@@ -238,7 +238,6 @@ class Installer(object):
             self.app_name_pattern = re.compile(
                 self.app_name_pattern.format(app_name))
         self.require_stamp = require_stamp
-        self.install_fcgi_app = install_fcgi_app
         self.find_links = find_links
 
         self.executable = sys.executable
