@@ -2,7 +2,7 @@ import os
 import subprocess
 import logging
 
-from distutils.core import setup
+from setuptools import setup
 
 from iiswsgi import options
 from iiswsgi import install_msdeploy
