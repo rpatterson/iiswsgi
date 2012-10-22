@@ -238,13 +238,14 @@ virtualenv."""),
                 fullPath, arguments = add.getAttribute(
                     'scriptProcessor').split('|', 1)
                 cmd = '"{0}" {1} --test'.format(fullPath, arguments)
-                if not os.path.exists(fullPath):
-                    logger.error(
-                        'IIS FCGI application fullPath does not exist: {0}'
-                        .format(cmd))
-                    return
                 logger.info('Testing the WSGI app: {0}'.format(cmd))
-                subprocess.check_call(cmd, shell=True)
+                try:
+                    subprocess.check_call(cmd, shell=True)
+                except subprocess.CalledProcessError, exc:
+                    if exc.returncode == 127:
+                        logger.exception(
+                            'FCGI app scriptProcessor not found: {0}'
+                            .format(cmd))
 
 
 def has_msdeploy_manifest(self):
