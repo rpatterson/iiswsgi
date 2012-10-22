@@ -8,8 +8,6 @@
            sent to the browser.  Hence we use `python.exe -u
            *-script.py`. -->
       <!-- Can't use environment variables in monitorChangesTo -->
-      <!-- XXX getting an error on first page load but works fine on
-           refresh and thereafter -->
       <application
           fullPath="{APPL_PHYSICAL_PATH}\Scripts\python.exe"
           arguments="-u &quot;{APPL_PHYSICAL_PATH}\Scripts\iiswsgi-script.py&quot; -v -c &quot;{APPL_PHYSICAL_PATH}\__pyramid_project__\development.ini&quot;"

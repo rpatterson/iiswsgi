@@ -23,20 +23,6 @@ if __debug__:
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi')
 
-# Global logging objects for manipulation once we know better places to log to.
-# log to a file since FCGI is using stdin/stdout
-try:
-    log_file = (
-        '{IIS_USER_HOME}\\Logs\\{IISEXPRESS_SITENAME}\\iiswsgi.log'.format(
-            **os.environ))
-except KeyError:
-    handler = logging.StreamHandler()
-else:
-    handler = logging.FileHandler(log_file)
-# Include the time
-formatter = logging.Formatter('%(asctime)s:' + logging.BASIC_FORMAT)
-handler.setFormatter(formatter)
-
 
 class IISRecord(fcgi_base.Record):
 
@@ -284,7 +270,9 @@ def ep_app_option(value):
 
 
 def run_trace(server):
-    sys.stdout = handler.stream
+    for handler in root.handlers:
+        if isinstance(handler, logging.StreamHandler):
+            sys.stdout = handler.stream
     import trace
     tracer = trace.Trace(
         ignoremods=('pprint', 'logging', 'warnings',
@@ -297,8 +285,45 @@ def run_trace(server):
 
 def run(args=None):
     """Run a WSGI app as an IIS FastCGI process."""
-    # Setup logging in case something happens during option parsing
-    root.addHandler(handler)
+    # Need to setup file logging as soon as possible as IIS seems to
+    # swallow everything on startup, safest fallback possible
+    handler = log_dir = None
+    try:
+        log_dir = os.environ.get('TEMP', os.sep)
+        handler = logging.FileHandler(os.path.join(log_dir, 'iiswsgi.log'))
+        root.addHandler(handler)
+    except BaseException:
+        # Better to keep running than to fail silently
+        pass
+
+    try:
+        _run_with_logging(handler, log_dir, args)
+    except BaseException, exc:
+        logger.exception('Exception starting FCGI server:')
+        # Don't print traceback twice when logging to stdout
+        sys.exit(getattr(exc, 'code', 1))
+
+
+def _run_with_logging(handler, log_dir, args=None):
+    # Include the time
+    formatter = logging.Formatter('%(asctime)s:' + logging.BASIC_FORMAT)
+    handler.setFormatter(formatter)
+
+    # Find a better log file
+    if 'IIS_USER_HOME' in os.environ:
+        log_dir = os.path.join(os.environ['IIS_USER_HOME'], 'Logs')
+    if 'IISEXPRESS_SITENAME' in os.environ:
+        log_dir = os.path.join(log_dir, os.environ['IISEXPRESS_SITENAME'])
+    if not os.path.exists(log_dir):
+        # Directory doesn't exist until IIS logs the first request
+        os.makedirs(log_dir)
+    new_log = os.path.join(
+        log_dir, os.path.basename(handler.stream.name))
+    if new_log != handler.stream.name:
+        new_handler = logging.FileHandler(new_log)
+        new_handler.setFormatter(formatter)
+        root.addHandler(new_handler)
+        root.removeHandler(handler)
 
     try:
         args = parser.parse_args(args=args)
