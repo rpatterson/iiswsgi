@@ -123,12 +123,6 @@ virtualenv."""),
             Use `pip` or `easy_install` to install requirements into
             the `virtualenv`.
         """
-        # TODO move to `setup.py install`?
-        self.write_web_config(**substitutions)
-
-        if not self.skip_fcgi_app_install:
-            fcgi.install_fcgi_app()
-
         # vritualenv and requirements
         if (os.path.exists(self.requirements_filename) or
             os.path.exists(self.easy_install_filename)):
@@ -139,6 +133,13 @@ virtualenv."""),
 
             if os.path.exists(self.easy_install_filename):
                 self.easy_install_requirements(*requirements)
+
+        # TODO move to `setup.py install`?
+        self.write_web_config(**substitutions)
+
+        if not self.skip_fcgi_app_install:
+            fcgi.install_fcgi_app()
+
 
     def write_web_config(self, **kw):
         """
