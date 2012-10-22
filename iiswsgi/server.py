@@ -283,6 +283,16 @@ def ep_app_option(value):
     return app
 
 
+def run_trace(server):
+    sys.stdout = handler.stream
+    import trace
+    tracer = trace.Trace()
+    logger.warn(
+        'Running the FCGI server with line execution tracing: {0}'.format(
+            sys.stdout))
+    tracer.runfunc(server.run)
+
+
 def run(args=None):
     """Run a WSGI app as an IIS FastCGI process."""
     # Setup logging in case something happens during option parsing
@@ -307,7 +317,10 @@ def run(args=None):
 
     logger.info('Starting FCGI server with app %r' % args.app)
     try:
-        server.run()
+        if args.trace:
+            run_trace(server)
+        else:
+            server.run()
     except BaseException:
         logger.exception('server.run() raised an exception')
         raise
@@ -329,6 +342,9 @@ parser.add_argument(
     '-t', '--test', action='store_true', help="""\
 Only load the app and create the server but don't run it.  Useful to assert \
 that the app will at least respond to requests when run by IIS.""")
+parser.add_argument(
+    '-r', '--trace', action='store_true', help="""\
+Trace execution of the WSGI app from the point where the server is started.""")
 parser.set_defaults(app=test_app)
 
 if __name__ == '__main__':
