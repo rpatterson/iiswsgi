@@ -60,6 +60,7 @@ virtualenv.""")]
         self.skip_fcgi_app_install = False
         self.requirements_filename = 'requirements.txt'
         self.easy_install_filename = 'easy_install.txt'
+        self.executable = sys.executable
 
     def finalize_options(self):
         # Configure logging
