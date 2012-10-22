@@ -52,7 +52,9 @@ stopped a previous run has been addressed."""),
          "Path to a pip requirements file to install into a virtualenv."),
         ('easy-install-filename=', 'e', """\
 Path to file with one easy_install requirement per line install into a \
-virtualenv.""")]
+virtualenv."""),
+        ('find-links=', 'f',
+         "Additional find_links for easy_install and pip")]
 
     logger = logger
 
@@ -61,6 +63,7 @@ virtualenv.""")]
         self.requirements_filename = 'requirements.txt'
         self.easy_install_filename = 'easy_install.txt'
         self.executable = sys.executable
+        self.find_links = None
 
     def finalize_options(self):
         # Configure logging
@@ -69,6 +72,8 @@ virtualenv.""")]
 
         if 'APPL_PHYSICAL_PATH' not in os.environ:
             os.environ['APPL_PHYSICAL_PATH'] = os.getcwd()
+
+        self.ensure_string_list('find_links')
 
     def run(self):
         """
@@ -253,13 +258,12 @@ class Installer(object):
     stamp_filename = build_msdeploy.stamp_filename
 
     def __init__(self, app_name=None, require_stamp=True,
-                 install_fcgi_app=True, find_links=None):
+                 install_fcgi_app=True):
         self.app_name = app_name
         if app_name:
             self.app_name_pattern = re.compile(
                 self.app_name_pattern.format(app_name))
         self.require_stamp = require_stamp
-        self.find_links = find_links
 
         self.executable = sys.executable
 
