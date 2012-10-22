@@ -100,8 +100,12 @@ class WebPIBuilder(object):
             dist_name, version = subprocess.check_output(
                 [sys.executable, 'setup.py', '--name', '--version'],
                 env=environ).split()
-            subprocess.check_call(
-                [sys.executable, 'setup.py', '-q'] + args)
+
+            cmd = [sys.executable, 'setup.py', '-q']
+            cmd.extend(args)
+            logger.info('Building package: {0}'.format(' '.join(cmd)))
+            subprocess.check_call(cmd)
+
             dist = os.path.abspath(os.path.join('dist', '{0}-{1}.zip'.format(
                 dist_name, version)))
             package_size = os.path.getsize(dist)
