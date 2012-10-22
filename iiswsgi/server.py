@@ -143,14 +143,17 @@ class IISWSGIServer(fcgi_single.WSGIServer):
         # timeout argument
         self._jobArgs = self._jobArgs + (None,)
 
+        self.fcgi_listensock_fileno = sys.stdin.fileno()
+
     def _setupSocket(self):
         try:
             import msvcrt
-            msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
+            msvcrt.setmode(self.fcgi_listensock_fileno, os.O_BINARY)
         except ImportError:
             logger.exception('msvcrt module not available')
-        stdout = os.fdopen(sys.stdin.fileno(), 'w', 0)
-        return FileSocket(None, stdout)
+        stdin = os.fdopen(self.fcgi_listensock_fileno, 'r', 0)
+        stdout = os.fdopen(self.fcgi_listensock_fileno, 'w', 0)
+        return FileSocket(stdin, stdout)
 
     def run(self):
         """Support IIS's non-compliant FCGI protocol."""
