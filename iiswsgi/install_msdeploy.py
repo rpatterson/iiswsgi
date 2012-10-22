@@ -333,7 +333,7 @@ class Installer(object):
         WebPI.  If that's not possible you can set the
         `APPL_PHYSICAL_PATH` environment variable to the physical path
         you will enter when installing via WebPI. Otherwise, when
-        installing to full"IIS" you'll have to follow the steps for
+        installing to full "IIS" you'll have to follow the steps for
         manually running setup.py after you get the error.
         """
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
