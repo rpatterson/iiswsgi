@@ -31,4 +31,8 @@ setup(name='iiswsgi',
            'iiswsgi_install = iiswsgi.install:install_console',
            'iiswsgi_install_fcgi_app = iiswsgi.fcgi:install_fcgi_app_console',
            'iiswsgi_webpi = iiswsgi.webpi:webpi_console'],
-          'paste.app_factory': ['test_app = iiswsgi.server:make_test_app']})
+          'paste.app_factory': ['test_app = iiswsgi.server:make_test_app']
+          "distutils.commands": [
+            "build_msdeploy = iiswsgi.build_msdeploy:build_msdeploy",
+            "install_msdeploy = iiswsgi.install_msdeploy:install_msdeploy",
+            "bdist_msdeploy = iiswsgi.bdist_msdeploy:bdist_msdeploy"]})
