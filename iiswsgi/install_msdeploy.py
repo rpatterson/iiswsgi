@@ -37,9 +37,10 @@ logger = logging.getLogger('iiswsgi.install')
 # Default to running this command: ['install_msdeploy']
 command = __name__.rsplit('.', 1)[1]
 setup_args = [command]
-find_links_opt = (
-    'find-links=', None,
-    "Additional find_links for easy_install and pip")
+index_opts = [('index=', None,
+               "Use an alternate index for easy_install and pip"),
+              ('find-links=', None,
+               "Additional find-links for easy_install and pip")]
 
 
 class install_msdeploy(cmd.Command):
@@ -55,8 +56,7 @@ stopped a previous run has been addressed."""),
          "Path to a pip requirements file to install into a virtualenv."),
         ('easy-install-filename=', 'e', """\
 Path to file with one easy_install requirement per line install into a \
-virtualenv."""),
-        find_links_opt]
+virtualenv.""")] + index_opts
 
     logger = logger
 
@@ -65,6 +65,7 @@ virtualenv."""),
         self.requirements_filename = 'requirements.txt'
         self.easy_install_filename = 'easy_install.txt'
         self.executable = sys.executable
+        self.index = None
         self.find_links = None
         self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
@@ -84,8 +85,6 @@ virtualenv."""),
             self.count = 0
 
         self.ensure_string_list('find_links')
-        if not self.find_links:
-            self.find_links = []
 
     def run(self):
         """
@@ -184,13 +183,13 @@ virtualenv."""),
 
     def pip_install_requirements(
         self, filename=None, requirements=(),
-        find_links=None):
+        index=None, find_links=None):
         """Use pip to install requirements from the given file."""
         if not filename and not requirements:
             filename = self.requirements_filename
         cmd = [os.path.abspath(options.get_script_path(
             'pip', self.executable)), 'install']
-        self._add_find_links(cmd, find_links)
+        self._add_indexes(cmd, find_links)
         if filename:
             cmd.extend(['-r', filename])
         if requirements:
@@ -201,7 +200,7 @@ virtualenv."""),
         subprocess.check_call(cmd, env=os.environ)
 
     def easy_install_requirements(
-        self, filename=None, requirements=(), find_links=None):
+        self, filename=None, requirements=(), index=None, find_links=None):
         """
         Use easy_install to install requirements.
 
@@ -212,7 +211,7 @@ virtualenv."""),
             filename = self.easy_install_filename
         cmd = [os.path.abspath(
             options.get_script_path('easy_install', self.executable))]
-        self._add_find_links(cmd, find_links)
+        self._add_indexes(cmd, find_links)
         if filename:
             cmd.extend([line.strip() for line in open(filename)])
         if requirements:
@@ -222,7 +221,11 @@ virtualenv."""),
             .format(' '.join(cmd)))
         subprocess.check_call(cmd, env=os.environ)
 
-    def _add_find_links(self, cmd, find_links=None):
+    def _add_indexes(self, cmd, index=None, find_links=None):
+        if index is None:
+            index = self.index
+        if index is not None:
+            cmd.append('--index=' + index)
         if find_links is None:
             find_links = ()
             if self.find_links:

@@ -13,13 +13,14 @@ from iiswsgi import install_msdeploy
 class bdist_msdeploy(sdist.sdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
-    user_options = sdist.sdist.user_options + [install_msdeploy.find_links_opt]
+    user_options = sdist.sdist.user_options + install_msdeploy.index_opts
 
     msdeploy_files = (build_msdeploy.manifest_filename,
                       'Parameters.xml')
 
     def initialize_options(self):
         sdist.sdist.initialize_options(self)
+        self.index = None
         self.find_links = None
 
     def finalize_options(self):
@@ -32,6 +33,7 @@ class bdist_msdeploy(sdist.sdist):
         install = self.distribution.get_command_obj('install_msdeploy')
         install.ensure_finalized()
         install.skip_fcgi_app_install = True
+        install.index = self.index
         install.find_links = self.find_links
         install.run()
 
