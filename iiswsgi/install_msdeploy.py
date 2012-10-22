@@ -421,6 +421,9 @@ install_console_parser = argparse.ArgumentParser(
 
 def install_console(args=None):
     logging.basicConfig()
-    args, setup_args = install_console_parser.parse_known_args(args=args)
+    setup = setup_args
+    args, unknown = install_console_parser.parse_known_args(args=args)
+    if unknown:
+        setup = unknown
     installer = Installer(args.app_name, args.require_stamp)
-    installer(setup_args)
+    installer(setup)
