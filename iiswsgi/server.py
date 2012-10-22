@@ -286,7 +286,9 @@ def ep_app_option(value):
 def run_trace(server):
     sys.stdout = handler.stream
     import trace
-    tracer = trace.Trace()
+    tracer = trace.Trace(
+        ignoremods=('pprint', 'logging', 'warnings',
+                    'posixpath', 'ntpath', 'genericpath'))
     logger.warn(
         'Running the FCGI server with line execution tracing: {0}'.format(
             sys.stdout))
