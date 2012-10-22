@@ -17,8 +17,12 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         """Add a project from a scaffold before testing."""
         self.install()
 
+        scaffold = '__pyramid_scaffold__'
+        if scaffold == '__' + 'pyramid_scaffold' + '__':
+            # Testing outside of WebPI
+            scaffold = "starter"
         pcreate = options.get_script_path('pcreate', self.executable)
-        args = [pcreate, '-s', '__pyramid_scaffold__', '__pyramid_project__']
+        args = [pcreate, '-s', scaffold, '__pyramid_project__']
         logger.info('Creating Pyramid project: {0}'.format(' '.join(args)))
         subprocess.check_call(args)
 
