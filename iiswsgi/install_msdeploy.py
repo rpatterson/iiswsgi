@@ -61,6 +61,10 @@ virtualenv.""")]
         self.requirements_filename = 'requirements.txt'
         self.easy_install_filename = 'easy_install.txt'
 
+    def finalize_options(self):
+        if 'APPL_PHYSICAL_PATH' not in os.environ:
+            os.environ['APPL_PHYSICAL_PATH'] = os.getcwd()
+
     def run(self):
         """
         Run all deployment tasks and a custom script as appropriate.
