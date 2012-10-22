@@ -6,26 +6,52 @@ Serving Python WSGI applications natively from IIS
 
 The ``iiswsgi`` module implements a FastCGI to WSGI gateway that is
 compatible with IIS's variation of the FastCGI protocol.  It also
-provides utilities and helpers for building, packaging and deploying
+provides distutils commands for building, distributing and installing
 `Microsoft Web Deploy`_ (MSDeploy) packages through the `Web Platform
 Installer`_ (WebPI).
+
+``iiswsgi.exe``
+
+    This console script is the FastCGI to WSGI gateway.  IIS invokes
+    this script to start a Python WSGI app as a FastCGI process.
+
+``iiswsgi_install.exe``
+
+    This console script attempts to workaround the fact that WebPI and
+    MSDeploy don't provide any context to the app being installed.
+    Specifically, when using the ``runCommand`` MSDeploy provider in the
+    ``Manifest.xml``, the process started by ``runCommand`` has no way
+    to know which app it's being invoked for on install: not the
+    current working directory, not in an argument, nor in any
+    environment variable.
+
+    As such this script has to search for the app before calling it's
+    ``setup.py`` script.  It looks in ``IIS_SITES_HOME`` for
+    directories with the right app name and a stamp file still in
+    place.  See ``> Scripts\iiswsgi_install.exe --help`` for more
+    details.  This is far too fragile and it would be vastly
+    preferable if MSDeploy or WebPI set the APPL_PHYSICAL_PATH
+    environment variable for ``runCommand``.  Anyone with a MS support
+    contract, please submit a request about this.
+
+
 
 Quick Start
 ===========
 
-#. Copy the ``examples\sample.msdeploy`` package
+#. Copy the ``examples\pyramid.msdeploy`` package
 
-#. Add dependencies to ``IISWSGISampleApp\requirements.txt``
+#. Add dependencies to ``requirements.txt``
 
-#. Add a WSGI PasteConfig in ``IISWSGISampleApp\development.ini``
+#. Add a WSGI PasteConfig in ``development.ini``
 
 #. Search and replace IISWSGISampleApp in:
 
    * ``setup.py``
    * ``MANIFEST.in``
-   * ``IISWSGISampleApp`` directory name
    * ``Manifest.xml.in``
    * ``Parameters.xml``
+
 
 Overview
 ========
