@@ -30,7 +30,7 @@ from xml.dom import minidom
 
 from iiswsgi import options
 
-logger = logging.getLogger('iiswsgi.build')
+logger = logging.getLogger('iiswsgi.webpi')
 
 
 def get_app_name(manifest):
@@ -43,7 +43,7 @@ def get_app_name(manifest):
     return iisapps[0].getAttribute('path')
 
 
-class Builder(object):
+class WebPIBuilder(object):
     __doc__ = __doc__
 
     feed_name = 'web-pi.xml'
@@ -220,23 +220,23 @@ class Builder(object):
                 break
 
 
-build_parser = argparse.ArgumentParser(
-    description=Builder.__doc__,
+webpi_parser = argparse.ArgumentParser(
+    description=WebPIBuilder.__doc__,
     formatter_class=argparse.RawDescriptionHelpFormatter,
     parents=[options.parent_parser])
-build_parser.add_argument('-f', '--feed',
+webpi_parser.add_argument('-f', '--feed',
                           help="""\
 Web Platform Installer atom feed to update.  If a file of the same name but \
 with a `*.in` extension exists it will be used as a template.  \
 Useful to avoid versioning irrellevant feed changes.""")
-build_parser.add_argument('packages', nargs='+',
+webpi_parser.add_argument('packages', nargs='+',
                           help="""\
 One or more Web Deploy package directories.  Each must contain `setup.py` \
 files which use the `iiswsgi` `distutils` commands to generate a package.""")
 
 
-def build_console(args=None):
+def webpi_console(args=None):
     logging.basicConfig()
-    args = build_parser.parse_args(args=args)
-    builder = Builder(args.packages, feed=args.feed)
+    args = webpi_parser.parse_args(args=args)
+    builder = WebPIBuilder(args.packages, feed=args.feed)
     builder()
