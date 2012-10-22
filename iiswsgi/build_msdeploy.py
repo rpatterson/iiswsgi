@@ -15,6 +15,11 @@ from distutils import errors
 
 manifest_filename = 'Manifest.xml'
 stamp_filename = 'iis_install.stamp'
+msdeploy_exe = None
+if 'PROGRAMFILES' in os.environ:
+    msdeploy_exe = os.path.join(
+        os.environ['PROGRAMFILES'], 'IIS', 'Microsoft Web Deploy V3',
+        'msdeploy.exe')
 
 
 class build_msdeploy(cmd.Command):
@@ -38,11 +43,7 @@ class build_msdeploy(cmd.Command):
     def initialize_options(self):
         self.manifest_filename = manifest_filename
         self.stamp_filename = stamp_filename
-        self.msdeploy_exe = None
-        if 'PROGRAMFILES' in os.environ:
-            msdeploy_exe = os.path.join(
-                os.environ['PROGRAMFILES'], 'IIS', 'Microsoft Web Deploy V3',
-                'msdeploy.exe')
+        self.msdeploy_exe = msdeploy_exe
 
     def run(self):
         self.write_manifest()
