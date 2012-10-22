@@ -3,6 +3,8 @@ import zipfile
 
 from distutils.command import sdist
 from distutils import archive_util
+from distutils import dir_util
+from distutils import log
 
 # TODO upload
 
@@ -38,7 +40,7 @@ class bdist_msdeploy(sdist.sdist):
         self.archive_files = archive_files
 
         if not self.keep_temp:
-            bdist_dumb.dir_util.remove_tree(base_dir, dry_run=self.dry_run)
+            dir_util.remove_tree(base_dir, dry_run=self.dry_run)
 
     def make_archive(self, base_name, format, root_dir=None, base_dir=None,
                      owner=None, group=None):
@@ -51,7 +53,7 @@ class bdist_msdeploy(sdist.sdist):
         base_len = len(base_dir)
         archive_util.mkpath(os.path.dirname(zip_filename), dry_run=dry_run)
 
-        archive_util.log.info("creating '%s' and adding '%s' to it",
+        log.info("creating '%s' and adding '%s' to it",
                  zip_filename, base_dir)
 
         if not dry_run:
@@ -59,7 +61,7 @@ class bdist_msdeploy(sdist.sdist):
                                   compression=zipfile.ZIP_DEFLATED)
 
             for filename in self.msdeploy_files:
-                archive_util.log.info("adding '%s'" % filename)
+                log.info("adding '%s'" % filename)
                 zip.write(filename, filename)
 
             for dirpath, dirnames, filenames in os.walk(base_dir):
@@ -68,7 +70,7 @@ class bdist_msdeploy(sdist.sdist):
                     dst_path = dist_name + src_path[base_len:]
                     if os.path.isfile(src_path):
                         zip.write(src_path, dst_path)
-                        archive_util.log.info("adding '%s'" % dst_path)
+                        log.info("adding '%s'" % dst_path)
             zip.close()
 
         return zip_filename
