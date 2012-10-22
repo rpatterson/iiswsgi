@@ -48,8 +48,8 @@ class install_msdeploy(cmd.Command):
 Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed."""),
-        ('requirements-filename=', 'r', """\
-Path to a pip requirements file to install into a virtualenv."""),
+        ('requirements-filename=', 'r',
+         "Path to a pip requirements file to install into a virtualenv."),
         ('easy-install-filename=', 'e', """\
 Path to file with one easy_install requirement per line install into a \
 virtualenv.""")]
