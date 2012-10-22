@@ -1,15 +1,14 @@
 import os
 import zipfile
 
-from distutils.command import bdist_dumb
+from distutils.command import sdist
 from distutils import archive_util
 
 # TODO upload
 
 from iiswsgi import build
 
-
-class bdist_msdeploy(bdist_dumb.bdist):
+class bdist_msdeploy(sdist.sdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
     msdeploy_files = (build.build_msdeploy.manifest_name, 'Parameters.xml')
