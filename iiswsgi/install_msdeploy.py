@@ -65,7 +65,7 @@ virtualenv.""")] + index_opts
         self.requirements_filename = 'requirements.txt'
         self.easy_install_filename = 'easy_install.txt'
         self.executable = sys.executable
-        self.index = None
+        self.index_url = None
         self.find_links = None
         self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
@@ -183,7 +183,7 @@ virtualenv.""")] + index_opts
 
     def pip_install_requirements(
         self, filename=None, requirements=(),
-        index=None, find_links=None):
+        index_url=None, find_links=None):
         """Use pip to install requirements from the given file."""
         if not filename and not requirements:
             filename = self.requirements_filename
@@ -200,7 +200,7 @@ virtualenv.""")] + index_opts
         subprocess.check_call(cmd, env=os.environ)
 
     def easy_install_requirements(
-        self, filename=None, requirements=(), index=None, find_links=None):
+        self, filename=None, requirements=(), index_url=None, find_links=None):
         """
         Use easy_install to install requirements.
 
@@ -221,11 +221,11 @@ virtualenv.""")] + index_opts
             .format(' '.join(cmd)))
         subprocess.check_call(cmd, env=os.environ)
 
-    def _add_indexes(self, cmd, index=None, find_links=None):
-        if index is None:
-            index = self.index
-        if index is not None:
-            cmd.append('--index=' + index)
+    def _add_indexes(self, cmd, index_url=None, find_links=None):
+        if index_url is None:
+            index_url = self.index_url
+        if index_url is not None:
+            cmd.append('--index-url=' + index_url)
         if find_links is None:
             find_links = ()
             if self.find_links:
