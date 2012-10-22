@@ -6,9 +6,11 @@ import logging
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi')
 
+lib_name = 'Lib'
 scripts_name = 'Scripts'
 script_ext = '.exe'
 if not sys.platform.startswith('win'):
+    lib_name = 'lib'
     scripts_name = 'bin'
     script_ext = ''
 
