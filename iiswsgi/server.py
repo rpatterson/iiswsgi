@@ -249,9 +249,15 @@ def test_app(environ, start_response,
     response = response_template.format(
         wsgi_environ_table=table_template.format(
             title='WSGI Environment', body=wsgi_rows))
-    start_response('200 OK', [('Content-Type', 'text/html'),
-                              ('Content-Length', str(len(response)))])
+    status = '200 OK'
+    headers = [('Content-Type', 'text/html'),
+               ('Content-Length', str(len(response)))]
+    logger.debug('Starting WSGI response: {0}\n{1}'.format(
+        status, pprint.pformat(dict(headers))))
+    start_response(status, headers)
+    logger.debug('Returning WSGI response body')
     yield response
+    logger.debug('Returning WSGI response finished')
 
 
 def make_test_app(global_config):
