@@ -11,7 +11,7 @@ version = '0.1'
 logger = logging.getLogger('pyramid.iiswsgi')
 
 
-class install_pyramid_msdeploy(install_msdeploy):
+class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
 
     def run(self):
         """Add a project from a scaffold before testing."""
