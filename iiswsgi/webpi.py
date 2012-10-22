@@ -62,6 +62,8 @@ class WebPIBuilder(object):
             os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
 
     def __init__(self, packages, feed=None):
+        if not packages:
+            raise ValueError('At least one MSDeploy package must be given')
         self.packages = packages
         self.feed = feed
         self.cwd = os.getcwd()
