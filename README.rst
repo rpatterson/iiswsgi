@@ -31,13 +31,44 @@ Quick Start
 Overview
 ========
 
-Deploying a Python WSGI application on IIS using the ``iiswsgi``
-toolchain consists of three phases:
+A developer releasing a MSDeploy package of a Python web app,
+interacts with ``iiswsgi`` though the following files in a Python
+distribution:
 
-* building
-* deploying
-* serving
+``setup.py``
 
+    As with other Python build, distribute, and install tasks, this is
+    where to control how the MSDeploy package is built, what is
+    distributed, and how it's installed.
+
+``MANIFEST.in``
+
+    Use Python's source distribution manifest format to declare what
+    will be in the package.
+
+``Manifest.xml.in``
+
+``Parameters.xml``
+
+``web.config.in``
+
+``..\web-pi.xml``
+
+``iis_install.stamp.in``
+
+``setup.cfg``
+
+    This is only necessary if your ``setup.py`` is not using
+    ``setuptools``.  IOW, under ``setuptools`` the commands are
+    automatically available is ``iiswsgi`` is installed and there's no
+    need for this file.  Without ``setuptools``, use the following to
+    make the ``iiswsgi`` distutils commands available to your
+    package::
+
+        [global]
+        command_packages = iiswsgi
+
+The moving parts of ``iiswsgi`` are as follows:
 
 ``>iiswsgi.exe``
 
@@ -126,6 +157,9 @@ be to:
 * Click `OK` and wait for WebPI again
 
 Now your feed changes should be reflected in WebPI.
+
+Debugging
+=========
 
 Sample Package
 ==============
