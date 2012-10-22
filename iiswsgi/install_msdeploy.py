@@ -187,9 +187,8 @@ virtualenv."""),
         if not filename and not requirements:
             filename = self.requirements_filename
         cmd = [os.path.abspath(options.get_script_path(
-            'pip', self.executable))]
+            'pip', self.executable)), 'install']
         self._add_find_links(cmd, find_links)
-        cmd.extend(['install'])
         if filename:
             cmd.extend(['-r', filename])
         if requirements:
