@@ -1,3 +1,5 @@
+"""Build an MSDeploy zip package for installation into IIS."""
+
 import os
 import subprocess
 import tempfile
@@ -11,41 +13,53 @@ from distutils.command import build
 from distutils import log
 from distutils import errors
 
+manifest_filename = 'Manifest.xml'
+stamp_filename = 'iis_install.stamp'
+
 
 class build_msdeploy(cmd.Command):
-    """Build an MSDeploy zip package for installation into IIS."""
+    description = __doc__ = __doc__
 
-    manifest_name = 'Manifest.xml'
-    stamp_template = 'iis_install.stamp.in'
-
-    msdeploy = None
-    if 'PROGRAMFILES' in os.environ:
-        msdeploy = os.path.join(
-            os.environ['PROGRAMFILES'], 'IIS', 'Microsoft Web Deploy V3',
-            'msdeploy.exe')
+    user_options = [
+        ('manifest-name=', 'm',
+         "Path to a MS/Web Deploy package manifest to build "
+         "from a *.in template."),
+        ('stamp-filename=', 's',
+         "Path to a install_msdeploy stamp file to copy from a *.in template."
+         ),
+        ('stamp-filename=', 's',
+         "Path to a install_msdeploy stamp file to copy from a *.in template."
+         ),
+        ('msdeploy-exe', 'e',
+         """Path to the Web Deploy msdeploy.exe executable."""]
 
     dest_name = 'runCommand.zip'
 
     def initialize_options(self):
-        """Be more discriminating about what to prune."""
-        cmd.Command.initialize_options(self)
-        self.build_base = 'build/'
+        self.manifest_filename = manifest_filename
+        self.stamp_filename = stamp_filename
+        self.msdeploy_exe = None
+        if 'PROGRAMFILES' in os.environ:
+            msdeploy_exe = os.path.join(
+                os.environ['PROGRAMFILES'], 'IIS', 'Microsoft Web Deploy V3',
+                'msdeploy.exe')
 
     def run(self):
         self.write_manifest()
 
-        if os.path.exists(self.stamp_template):
-            stamp_path = os.path.splitext(self.stamp_template)[0]
+        stamp_template = self.stamp_filename + '.in'
+        if os.path.exists():
+            stamp_path = os.path.splitext(stamp_template)[0]
             if os.path.exists(stamp_path):
                 log.info('Deleting existing stamp file: {0}'.format(
                     stamp_path))
                 os.remove(stamp_path)
             log.info('Copying stamp file template to {0}'.format(
                 stamp_path))
-            shutil.copyfile(self.stamp_template, stamp_path)
+            shutil.copyfile(stamp_template, stamp_path)
 
     def write_manifest(self):
-        manifest_template = self.manifest_name + '.in'
+        manifest_template = self.manifest_filename + '.in'
         if not os.path.exists(manifest_template):
             log.warn('No Web Deploy manifest template found at {0}'.format(
                 manifest_template))
@@ -85,14 +99,14 @@ class build_msdeploy(cmd.Command):
             try:
                 args = (
                     '"{msdeploy}" -verb:sync {source} -dest:package={package}'
-                    .format(msdeploy=self.msdeploy, source=source,
+                    .format(msdeploy=self.msdeploy_exe, source=source,
                             package=package))
                 log.info('Generating runCommand manifest: {0}'.format(args))
-                if self.msdeploy and os.path.exists(self.msdeploy):
+                if self.msdeploy_exe and os.path.exists(self.msdeploy_exe):
                     subprocess.check_call(args, shell=True)
                 else:
                     log.error('msdeploy.exe does not exist: {0}'.format(
-                                  self.msdeploy))
+                                  self.msdeploy_exe))
                     continue
                 tmp_manifest = minidom.parseString(
                     zipfile.ZipFile(package).read('archive.xml'))
@@ -115,11 +129,11 @@ class build_msdeploy(cmd.Command):
                 'MSDeploy.MSDeployProviderOptions', options)
 
         log.info('Writing Web Deploy manifest to {0}'.format(
-            self.manifest_name))
-        manifest.writexml(open(self.manifest_name, 'w'))
+            self.manifest_filename))
+        manifest.writexml(open(self.manifest_filename, 'w'))
 
 
 def has_msdeploy_manifest(self):
-    return os.path.exists(self.msdeploy_manifest + '.in') and self.msdeploy
+    return os.path.exists(self.msdeploy_manifest + '.in') and self.msdeploy_exe
 
 build.build.sub_commands.append(('build_msdeploy', has_msdeploy_manifest))

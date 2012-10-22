@@ -236,7 +236,7 @@ class Installer(object):
 
     logger = logger
     app_name_pattern = '^{0}[0-9]*$'
-    stamp_filename = 'iis_install.stamp'
+    stamp_filename = build_msdeploy.stamp_filename
 
     def __init__(self, app_name=None, require_stamp=True,
                  install_fcgi_app=True, find_links=None):
