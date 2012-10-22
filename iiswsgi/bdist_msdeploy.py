@@ -17,6 +17,7 @@ class bdist_msdeploy(sdist.sdist):
 
     def run(self):
         self.run_command('build_msdeploy')
+        self.run_command('install_msdeploy')
         sdist.sdist.run(self)
 
     def make_distribution(self):
