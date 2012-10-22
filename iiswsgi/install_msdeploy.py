@@ -56,8 +56,9 @@ stopped a previous run has been addressed.""")]
         """
         Run all deployment tasks and a custom script as appropriate.
 
-        * `get_appl_physical_path()`: determine and set the APPL_PHYSICAL_PATH
+        * `self.install()`: perform tasks as appropriate
 
+        * `self.test()`: test the WSGI application and FCGI server
 
         To excercise custom control over installation, override this
         method in a subclass and use:
