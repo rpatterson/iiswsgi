@@ -17,7 +17,12 @@ class bdist_msdeploy(sdist.sdist):
 
     def run(self):
         self.run_command('build_msdeploy')
-        self.run_command('install_msdeploy')
+
+        install = self.distribution.get_command_obj('install_msdeploy')
+        install.ensure_finalized()
+        install.skip_fcgi_app_install = True
+        install.run()
+
         sdist.sdist.run(self)
 
     def make_distribution(self):

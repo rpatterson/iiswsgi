@@ -243,6 +243,6 @@ def webpi_console(args=None):
     logging.basicConfig()
     args, unknown = webpi_parser.parse_known_args(args=args)
     if not unknown:
-        unknown = ['bdist_msdeploy', '-s']
+        unknown = ['bdist_msdeploy']
     builder = WebPIBuilder(args.packages, feed=args.feed)
     builder(*unknown)
