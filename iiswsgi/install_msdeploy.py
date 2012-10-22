@@ -37,6 +37,9 @@ logger = logging.getLogger('iiswsgi.install')
 # Default to running this command: ['install_msdeploy']
 command = __name__.rsplit('.', 1)[1]
 setup_args = [command]
+find_links_opt = (
+    'find-links=', None,
+    "Additional find_links for easy_install and pip")
 
 
 class install_msdeploy(cmd.Command):
@@ -53,8 +56,7 @@ stopped a previous run has been addressed."""),
         ('easy-install-filename=', 'e', """\
 Path to file with one easy_install requirement per line install into a \
 virtualenv."""),
-        ('find-links=', 'f',
-         "Additional find_links for easy_install and pip")]
+        find_links_opt]
 
     logger = logger
 

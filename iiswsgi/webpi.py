@@ -228,15 +228,15 @@ webpi_parser = argparse.ArgumentParser(
     description=WebPIBuilder.__doc__,
     formatter_class=argparse.RawDescriptionHelpFormatter,
     parents=[options.parent_parser])
-webpi_parser.add_argument('-f', '--feed',
-                          help="""\
+webpi_parser.add_argument('-f', '--feed', help="""\
 Web Platform Installer atom feed to update.  If a file of the same name but \
 with a `*.in` extension exists it will be used as a template.  \
 Useful to avoid versioning irrellevant feed changes.""")
-webpi_parser.add_argument('packages', nargs='+',
-                          help="""\
-One or more Web Deploy package directories.  Each must contain `setup.py` \
-files which use the `iiswsgi` `distutils` commands to generate a package.""")
+webpi_parser.add_argument(
+    '-p', '--package', dest='packages', action='append', help="""\
+A Web Deploy package directory.  Must contain a `setup.py` file which uses \
+the `iiswsgi` `distutils` commands to generate a package.  May be
+given multiple times.""")
 
 
 def webpi_console(args=None):

@@ -7,13 +7,24 @@ from distutils import dir_util
 from distutils import log
 
 from iiswsgi import build_msdeploy
+from iiswsgi import install_msdeploy
 
 
 class bdist_msdeploy(sdist.sdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
+    user_options = sdist.sdist.user_options + [install_msdeploy.find_links_opt]
+
     msdeploy_files = (build_msdeploy.manifest_filename,
                       'Parameters.xml')
+
+    def initialize_options(self):
+        sdist.sdist.initialize_options(self)
+        self.find_links = None
+
+    def finalize_options(self):
+        sdist.sdist.finalize_options(self)
+        self.ensure_string_list('find_links')
 
     def run(self):
         self.run_command('build_msdeploy')
@@ -21,6 +32,7 @@ class bdist_msdeploy(sdist.sdist):
         install = self.distribution.get_command_obj('install_msdeploy')
         install.ensure_finalized()
         install.skip_fcgi_app_install = True
+        install.find_links = self.find_links
         install.run()
 
         sdist.sdist.run(self)
