@@ -66,12 +66,12 @@ class WebPIBuilder(object):
         self.feed = feed
         self.cwd = os.getcwd()
 
-    def __call__(self):
+    def __call__(self, *args):
         feed = self.parse_feed()
 
         for package in self.packages:
             dist, version, package_size, package_sha1 = self.build_package(
-                package)
+                package, *args)
             manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
             app_name = get_app_name(manifest)
             self.update_feed_entry(
@@ -92,7 +92,7 @@ class WebPIBuilder(object):
             feed = feed + '.in'
         return minidom.parse(feed).firstChild
 
-    def build_package(self, package):
+    def build_package(self, package, *args):
         try:
             os.chdir(package)
             environ = os.environ.copy()
@@ -101,7 +101,7 @@ class WebPIBuilder(object):
                 [sys.executable, 'setup.py', '--name', '--version'],
                 env=environ).split()
             subprocess.check_call(
-                [sys.executable, 'setup.py', 'build', 'bdist_msdeploy', '-q'])
+                [sys.executable, 'setup.py', '-q'] + args)
             dist = os.path.abspath(os.path.join('dist', '{0}-{1}.zip'.format(
                 dist_name, version)))
             package_size = os.path.getsize(dist)
@@ -237,6 +237,8 @@ files which use the `iiswsgi` `distutils` commands to generate a package.""")
 
 def webpi_console(args=None):
     logging.basicConfig()
-    args = webpi_parser.parse_args(args=args)
+    args, unknown = webpi_parser.parse_known_args(args=args)
+    if not unknown:
+        unknown = ['bdist_msdeploy']
     builder = WebPIBuilder(args.packages, feed=args.feed)
-    builder()
+    builder(*unknown)
