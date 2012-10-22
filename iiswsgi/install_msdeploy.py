@@ -47,10 +47,19 @@ class install_msdeploy(cmd.Command):
         ('skip-fcgi-app-install', 's', """\
 Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
-stopped a previous run has been addressed.""")]
+stopped a previous run has been addressed."""),
+        ('requirements-filename=', 'r', """\
+Path to a pip requirements file to install into a virtualenv."""),
+        ('easy-install-filename=', 'e', """\
+Path to file with one easy_install requirement per line install into a \
+virtualenv.""")]
+
+    logger = logger
 
     def initialize_options(self):
         self.skip_fcgi_app_install = False
+        self.requirements_filename = 'requirements.txt'
+        self.easy_install_filename = 'easy_install.txt'
 
     def run(self):
         """
@@ -228,8 +237,6 @@ class Installer(object):
     logger = logger
     app_name_pattern = '^{0}[0-9]*$'
     stamp_filename = 'iis_install.stamp'
-    requirements_filename = 'requirements.txt'
-    easy_install_filename = 'easy_install.txt'
 
     def __init__(self, app_name=None, require_stamp=True,
                  install_fcgi_app=True, find_links=None):
