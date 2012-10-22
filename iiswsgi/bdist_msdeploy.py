@@ -6,14 +6,14 @@ from distutils import archive_util
 from distutils import dir_util
 from distutils import log
 
-# TODO upload
+from iiswsgi import build_msdeploy
 
-from iiswsgi import build
 
 class bdist_msdeploy(sdist.sdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
-    msdeploy_files = (build.build_msdeploy.manifest_name, 'Parameters.xml')
+    msdeploy_files = (build_msdeploy.manifest_filename,
+                      'Parameters.xml')
 
     def make_distribution(self):
         """Minimize path lenght to avoid windows issues."""

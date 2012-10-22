@@ -220,7 +220,7 @@ virtualenv.""")]
 
 
 def has_msdeploy_manifest(self):
-    return os.path.exists(build_msdeploy.build_msdeploy.msdeploy_manifest)
+    return os.path.exists(build_msdeploy.manifest_filename)
 
 install.install.sub_commands.append(
     ('install_msdeploy', has_msdeploy_manifest))
