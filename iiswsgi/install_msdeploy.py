@@ -142,7 +142,6 @@ virtualenv."""),
         if not self.skip_fcgi_app_install:
             fcgi.install_fcgi_app()
 
-
     def write_web_config(self, **kw):
         """
         Write `web.config.in` to `web.config` substituting variables.
