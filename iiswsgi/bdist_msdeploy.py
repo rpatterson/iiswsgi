@@ -15,6 +15,10 @@ class bdist_msdeploy(sdist.sdist):
     msdeploy_files = (build_msdeploy.manifest_filename,
                       'Parameters.xml')
 
+    def run(self):
+        self.run_command('build_msdeploy')
+        sdist.sdist.run(self)
+
     def make_distribution(self):
         """Minimize path lenght to avoid windows issues."""
         # Copied from distutils.command.sdist.sdist.make_distribution
