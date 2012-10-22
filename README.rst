@@ -28,8 +28,8 @@ Quick Start
    * ``Parameters.xml``
 
 
-Overview
-========
+Web Deploy Package Contents
+===========================
 
 A developer releasing a MSDeploy package of a Python web app,
 interacts with ``iiswsgi`` though the following files in a Python
@@ -67,6 +67,14 @@ distribution:
 
         [global]
         command_packages = iiswsgi
+
+Aside from these files, a Web Deploy package using ``iiswsgi`` is no
+different than any other Python distribution or project nor should any
+of the ``iiswsgi`` pieces interfere with any thing.
+
+
+IIS WSGI Tools
+==============
 
 The moving parts of ``iiswsgi`` are as follows:
 
