@@ -22,7 +22,7 @@ setup(name='iiswsgi',
       packages=find_packages(),
       include_package_data=True,
       setup_requires=['setuptools-git'],
-      install_requires=['flup'],
+      install_requires=['flup>=1.0.3.dev_20110405'],
       extras_require=dict(config=['PasteDeploy']),
       scripts=['test.ini'],
       entry_points={
