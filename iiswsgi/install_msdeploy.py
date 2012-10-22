@@ -64,14 +64,22 @@ virtualenv."""),
         self.easy_install_filename = 'easy_install.txt'
         self.executable = sys.executable
         self.find_links = None
+        self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
     def finalize_options(self):
         # Configure logging
         build = self.distribution.get_command_obj('build_msdeploy')
         build.ensure_finalized()
 
+        cwd = os.getcwd()
         if 'APPL_PHYSICAL_PATH' not in os.environ:
-            os.environ['APPL_PHYSICAL_PATH'] = os.getcwd()
+            os.environ['APPL_PHYSICAL_PATH'] = cwd
+
+        count = self.app_name_pattern.match(cwd).group(2)
+        if count:
+            self.count = int(count)
+        else:
+            self.count = 0
 
         self.ensure_string_list('find_links')
 
