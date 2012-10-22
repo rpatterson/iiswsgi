@@ -395,8 +395,8 @@ Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed.""")
 install_console_parser = argparse.ArgumentParser(
-    description=help(Installer),
-    epilog=help(Installer.get_appl_physical_path),
+    description=Installer.__doc__,
+    epilog=Installer.get_appl_physical_path.__doc__,
     parents=[options.parent_parser, install_parser],
     formatter_class=argparse.RawDescriptionHelpFormatter)
 
