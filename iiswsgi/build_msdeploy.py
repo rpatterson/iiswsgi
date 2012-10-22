@@ -45,6 +45,9 @@ class build_msdeploy(cmd.Command):
         self.stamp_filename = stamp_filename
         self.msdeploy_exe = msdeploy_exe
 
+    def finalize_options(self):
+        pass
+
     def run(self):
         self.write_manifest()
 
