@@ -84,6 +84,8 @@ virtualenv."""),
             self.count = 0
 
         self.ensure_string_list('find_links')
+        if not self.find_links:
+            self.find_links = []
 
     def run(self):
         """
