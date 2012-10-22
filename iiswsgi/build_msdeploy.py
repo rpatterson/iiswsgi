@@ -36,7 +36,7 @@ class build_msdeploy(cmd.Command):
          "Path to a install_msdeploy stamp file to copy from a *.in template."
          ),
         ('msdeploy-exe', 'e',
-         """Path to the Web Deploy msdeploy.exe executable."""]
+         """Path to the Web Deploy msdeploy.exe executable.""")]
 
     dest_name = 'runCommand.zip'
 
