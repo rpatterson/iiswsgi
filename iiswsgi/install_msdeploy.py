@@ -9,8 +9,6 @@ Run post-install tasks for a MS Web Deploy package:
 
 5. install requirements with `pip` or `easy_install`
 
-6. run a custom `iis_install.py` script
-
 7. test the IIS WSGI app
 
 Where possible, automatic detection is used when deciding whether to
@@ -49,17 +47,10 @@ class install_msdeploy(cmd.Command):
         ('skip-fcgi-app-install', '-s', """\
 Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
-stopped a previous run has been addressed."""),
-        ('delegate', '-d', """\
-Only run the custom `iis_install.py` script, don't perform any of the default \
-tasks.  When used it is up to the custom script to use `iiswsgi.install` to \
-perform any needed tasks.  Useful if the app deployment process needs \
-fine-grained control, such as passing computed arguments into the deployment \
-tasks.""")]
+stopped a previous run has been addressed.""")]
 
     def initialize_options(self):
         self.skip_fcgi_app_install = False
-        self.delegate = False
 
     def run(self):
         """
@@ -67,18 +58,15 @@ tasks.""")]
 
         * `get_appl_physical_path()`: determine and set the APPL_PHYSICAL_PATH
 
-        * `self.install()`: change to APPL_PHYSICAL_PATH and perform
-          tasks as appropriate
 
-        * `iis_install.py`: run the custom script if present
+        To excercise custom control over installation, override this
+        method in a subclass and use:
+
+            setup(...
+                cmdclass=dict(install_msdeploy=<install_msdeploy_subclass>)...
         """
-        if self.delegate:
-            self.run_custom_script()
-        else:
-            self.install()
-            if os.path.exists(self.script_filename):
-                self.run_custom_script()
-            self.test()
+        self.install()
+        self.test()
 
     def install(self, *requirements, **substitutions):
         """
@@ -209,29 +197,6 @@ tasks.""")]
         args.extend('--find-links=' + find_link for find_link in find_links)
         return args
 
-    def run_custom_script(self, executable=None):
-        """
-        Run the `iis_install.py` script.
-
-        Look for a `iis_install.py` script in `APPL_PHYSICAL_PATH`.  If
-        it is found but `APPL_PHYSICAL_PATH` has no `iis_install.stamp`
-        file, an error will be raised.  Otherwise the script is
-        executed and the stamp file is removed.  The stamp file can be
-        ignored if the `Installer` has been instantiated with
-        `Installer(require_stamp=False)`.
-        """
-        if not os.path.exists(self.script_filename):
-            raise ValueError('Custom install script does not exist: {0}'.format(
-                self.script_filename))
-
-        if executable is None:
-            executable = self.executable
-        args = [executable, self.script_filename]
-        self.logger.info(
-            'Running custom install script: {0}'.format(' '.join(args)))
-        # Raises CalledProcessError if it failes
-        subprocess.check_call(args, env=os.environ)
-
     def test(self):
         """Test the WSGI application and FCGI server."""
         web_config = minidom.parse('web.config')
@@ -262,7 +227,6 @@ class Installer(object):
     logger = logger
     app_name_pattern = '^{0}[0-9]*$'
     stamp_filename = 'iis_install.stamp'
-    script_filename = 'iis_install.py'
     requirements_filename = 'requirements.txt'
     easy_install_filename = 'easy_install.txt'
 
@@ -321,24 +285,23 @@ class Installer(object):
         case where one directory has the stamp file, it is assumed to
         be the `APPL_PHYSICAL_PATH`.
 
-        When installing to "IIS Express", the `IIS_SITES_HOME` environment
-        variable should be available and the stamp file search should
-        succeed to automatically find the right app for which to run
-        post-install script.  In the case of installing to full "IIS",
-        however, neither the `APPL_PHYSICAL_PATH` nor the
+        When installing to "IIS Express", the `IIS_SITES_HOME`
+        environment variable should be available and the stamp file
+        search should succeed to automatically find the right app for
+        which to run setup.py.  In the case of installing to full
+        "IIS", however, neither the `APPL_PHYSICAL_PATH` nor the
         `IIS_SITES_HOME` environment variables are available and the
-        post-install script won't be run and WebPI will report an
-        error.  The best way to workaround this limitation is to adopt
-        a convention of putting all your IIS apps installed via WebPI
-        in one directory and then set the `IIS_SITES_HOME` enviornment
+        setup.py won't be run and WebPI will report an error.  The
+        best way to workaround this limitation is to adopt a
+        convention of putting all your IIS apps installed via WebPI in
+        one directory and then set the `IIS_SITES_HOME` enviornment
         variable.  Then when installing a new IIS app be sure to give
         a physical path within that directory when prompted to by
         WebPI.  If that's not possible you can set the
         `APPL_PHYSICAL_PATH` environment variable to the physical path
         you will enter when installing via WebPI. Otherwise, when
         installing to full"IIS" you'll have to follow the steps for
-        manually running the post-install deployment script after you
-        get the error.
+        manually running setup.py after you get the error.
         """
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
         if appl_physical_path is not None:
