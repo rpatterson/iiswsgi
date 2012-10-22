@@ -167,14 +167,14 @@ virtualenv."""),
         """
         Set up a virtualenv in the `directory` with options.
         """
-        args = [options.get_script_path('virtualenv', self.executable)]
+        cmd = [options.get_script_path('virtualenv', self.executable)]
         for option, value in opts.iteritems():
-            args.extend(['--' + option, value])
-        args.extend([directory])
+            cmd.extend(['--' + option, value])
+        cmd.extend([directory])
         self.logger.info(
             'Setting up a isolated Python with: {0}'.format(
-                ' '.join(args)))
-        subprocess.check_call(args, env=os.environ)
+                ' '.join(cmd)))
+        subprocess.check_call(cmd, env=os.environ)
         return os.path.abspath(
             os.path.join(options.scripts_name, 'python' + options.script_ext))
 
@@ -184,18 +184,18 @@ virtualenv."""),
         """Use pip to install requirements from the given file."""
         if not filename and not requirements:
             filename = self.requirements_filename
-        args = [os.path.abspath(options.get_script_path(
+        cmd = [os.path.abspath(options.get_script_path(
             'pip', self.executable))]
-        self._add_find_links(args, find_links)
-        args.extend(['install'])
+        self._add_find_links(cmd, find_links)
+        cmd.extend(['install'])
         if filename:
-            args.extend(['-r', filename])
+            cmd.extend(['-r', filename])
         if requirements:
-            args.extend(requirements)
+            cmd.extend(requirements)
         self.logger.info(
             'Installing dependencies with pip: {0}'.format(
-                ' '.join(args)))
-        subprocess.check_call(args, env=os.environ)
+                ' '.join(cmd)))
+        subprocess.check_call(cmd, env=os.environ)
 
     def easy_install_requirements(
         self, filename=None, requirements=(), find_links=None):
@@ -207,27 +207,27 @@ virtualenv."""),
         """
         if not filename and not requirements:
             filename = self.easy_install_filename
-        args = [os.path.abspath(
+        cmd = [os.path.abspath(
             options.get_script_path('easy_install', self.executable))]
-        self._add_find_links(args, find_links)
+        self._add_find_links(cmd, find_links)
         if filename:
-            args.extend([line.strip() for line in open(filename)])
+            cmd.extend([line.strip() for line in open(filename)])
         if requirements:
-            args.extend(requirements)
+            cmd.extend(requirements)
         self.logger.info(
             'Installing dependencies with easy_install: {0}'
-            .format(' '.join(args)))
-        subprocess.check_call(args, env=os.environ)
+            .format(' '.join(cmd)))
+        subprocess.check_call(cmd, env=os.environ)
 
-    def _add_find_links(self, args, find_links=None):
+    def _add_find_links(self, cmd, find_links=None):
         if find_links is None:
             find_links = ()
             if self.find_links:
                 find_links = self.find_links
         if isinstance(find_links, str):
             find_links = (find_links, )
-        args.extend('--find-links=' + find_link for find_link in find_links)
-        return args
+        cmd.extend('--find-links=' + find_link for find_link in find_links)
+        return cmd
 
     def test(self):
         """Test the WSGI application and FCGI server."""
@@ -236,14 +236,14 @@ virtualenv."""),
             for add in handler.getElementsByTagName("add"):
                 fullPath, arguments = add.getAttribute(
                     'scriptProcessor').split('|', 1)
-                args = '"{0}" {1} --test'.format(fullPath, arguments)
+                cmd = '"{0}" {1} --test'.format(fullPath, arguments)
                 if not os.path.exists(fullPath):
                     logger.error(
                         'IIS FCGI application fullPath does not exist: {0}'
-                        .format(args))
+                        .format(cmd))
                     return
-                logger.info('Testing the WSGI app: {0}'.format(args))
-                subprocess.check_call(args, shell=True)
+                logger.info('Testing the WSGI app: {0}'.format(cmd))
+                subprocess.check_call(cmd, shell=True)
 
 
 def has_msdeploy_manifest(self):

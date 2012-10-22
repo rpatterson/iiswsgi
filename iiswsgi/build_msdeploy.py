@@ -112,14 +112,14 @@ class build_msdeploy(cmd.Command):
             tmp = tempfile.mkdtemp()
             package = os.path.join(tmp, 'runCommand.zip')
             try:
-                args = (
+                cmd = (
                     '"{msdeploy}" -verb:sync {source} -dest:package={package}'
                     .format(msdeploy=self.msdeploy_exe, source=source,
                             package=package))
                 self.logger.info(
-                    'Generating runCommand manifest: {0}'.format(args))
+                    'Generating runCommand manifest: {0}'.format(cmd))
                 if self.msdeploy_exe and os.path.exists(self.msdeploy_exe):
-                    subprocess.check_call(args, shell=True)
+                    subprocess.check_call(cmd, shell=True)
                 else:
                     self.logger.error(
                         'msdeploy.exe does not exist: {0}'.format(

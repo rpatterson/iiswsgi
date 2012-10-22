@@ -105,14 +105,14 @@ class WebPIBuilder(object):
             dist = os.path.abspath(os.path.join('dist', '{0}-{1}.zip'.format(
                 dist_name, version)))
             package_size = os.path.getsize(dist)
-            args = ['fciv', '-sha1', dist]
+            cmd = ['fciv', '-sha1', dist]
             package_sha1 = ''
             try:
-                package_sha1_output = subprocess.check_output(args)
+                package_sha1_output = subprocess.check_output(cmd)
             except OSError, error:
                 if error.errno == errno.ENOENT:
                     logger.exception('Error getting SHA1: {0}'.format(
-                        ' '.join(args)))
+                        ' '.join(cmd)))
                 else:
                     raise
             else:
