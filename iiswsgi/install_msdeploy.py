@@ -44,7 +44,7 @@ class install_msdeploy(cmd.Command):
     description = __doc__ = __doc__
 
     user_options = [
-        ('skip-fcgi-app-install', '-s', """\
+        ('skip-fcgi-app-install', 's', """\
 Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed.""")]
