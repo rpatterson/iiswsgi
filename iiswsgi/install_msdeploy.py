@@ -219,6 +219,11 @@ virtualenv.""")]
                 fullPath, arguments = add.getAttribute(
                     'scriptProcessor').split('|', 1)
                 args = '"{0}" {1} --test'.format(fullPath, arguments)
+                if not os.path.exists(fullPath):
+                    logger.error(
+                        'IIS FCGI application fullPath does not exist: {0}'
+                        .format(args))
+                    return
                 logger.info('Testing the WSGI app: {0}'.format(args))
                 subprocess.check_call(args, shell=True)
 
