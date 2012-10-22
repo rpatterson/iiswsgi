@@ -28,18 +28,22 @@ def get_script_path(script, executable=None):
     return os.path.join(scripts_dir, script + script_ext)
 
 
+def increase_verbosity():
+    root.setLevel(root.level - 10)
+    if root.level == logging.DEBUG:
+        # Some useful startup debugging info
+        logger.debug('os.getcwd(): {0}'.format(os.getcwd()))
+        logger.debug('sys.argv: {0}'.format(sys.argv))
+        logger.debug('os.environ:\n{0}'.format(
+            '\n'.join('{0}={1}'.format(key, value)
+                      for key, value in os.environ.iteritems())))
+    return root.level
+
+
 class VerboseAction(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
-        root.setLevel(root.level - 10)
-        if root.level == logging.DEBUG:
-            # Some useful startup debugging info
-            logger.debug('os.getcwd(): {0}'.format(os.getcwd()))
-            logger.debug('sys.argv: {0}'.format(sys.argv))
-            logger.debug('os.environ:\n{0}'.format(
-                '\n'.join('{0}={1}'.format(key, value)
-                          for key, value in os.environ.iteritems())))
-        setattr(namespace, self.dest, root.level)
+        setattr(namespace, self.dest, increase_verbosity())
 
 parent_parser = argparse.ArgumentParser(add_help=False)
 verbose = parent_parser.add_argument(

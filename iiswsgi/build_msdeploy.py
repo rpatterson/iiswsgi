@@ -5,13 +5,15 @@ import subprocess
 import tempfile
 import shutil
 import zipfile
+import logging
 
 from xml.dom import minidom
 
 from distutils import cmd
 from distutils.command import build
-from distutils import log
 from distutils import errors
+
+from iiswsgi import options
 
 manifest_filename = 'Manifest.xml'
 stamp_filename = 'iis_install.stamp'
@@ -20,6 +22,9 @@ if 'PROGRAMFILES' in os.environ:
     msdeploy_exe = os.path.join(
         os.environ['PROGRAMFILES'], 'IIS', 'Microsoft Web Deploy V3',
         'msdeploy.exe')
+
+root = logging.getLogger()
+logger = logging.getLogger('iiswsgi.build')
 
 
 class build_msdeploy(cmd.Command):
@@ -40,13 +45,18 @@ class build_msdeploy(cmd.Command):
 
     dest_name = 'runCommand.zip'
 
+    logger = logger
+
     def initialize_options(self):
         self.manifest_filename = manifest_filename
         self.stamp_filename = stamp_filename
         self.msdeploy_exe = msdeploy_exe
 
     def finalize_options(self):
-        pass
+        # Ensure that logging is configured per the verbosity setting
+        logging.basicConfig()
+        for idx in range(self.verbose):
+            options.increase_verbosity()
 
     def run(self):
         self.write_manifest()
@@ -55,18 +65,19 @@ class build_msdeploy(cmd.Command):
         if os.path.exists(stamp_template):
             stamp_path = os.path.splitext(stamp_template)[0]
             if os.path.exists(stamp_path):
-                log.info('Deleting existing stamp file: {0}'.format(
+                self.logger.info('Deleting existing stamp file: {0}'.format(
                     stamp_path))
                 os.remove(stamp_path)
-            log.info('Copying stamp file template to {0}'.format(
+            self.logger.info('Copying stamp file template to {0}'.format(
                 stamp_path))
             shutil.copyfile(stamp_template, stamp_path)
 
     def write_manifest(self):
         manifest_template = self.manifest_filename + '.in'
         if not os.path.exists(manifest_template):
-            log.warn('No Web Deploy manifest template found at {0}'.format(
-                manifest_template))
+            self.logger.warn(
+                'No Web Deploy manifest template found at {0}'.format(
+                    manifest_template))
             # No manifest template, don't update real manifest
             return
 
@@ -105,12 +116,14 @@ class build_msdeploy(cmd.Command):
                     '"{msdeploy}" -verb:sync {source} -dest:package={package}'
                     .format(msdeploy=self.msdeploy_exe, source=source,
                             package=package))
-                log.info('Generating runCommand manifest: {0}'.format(args))
+                self.logger.info(
+                    'Generating runCommand manifest: {0}'.format(args))
                 if self.msdeploy_exe and os.path.exists(self.msdeploy_exe):
                     subprocess.check_call(args, shell=True)
                 else:
-                    log.error('msdeploy.exe does not exist: {0}'.format(
-                                  self.msdeploy_exe))
+                    self.logger.error(
+                        'msdeploy.exe does not exist: {0}'.format(
+                            self.msdeploy_exe))
                     continue
                 tmp_manifest = minidom.parseString(
                     zipfile.ZipFile(package).read('archive.xml'))
@@ -132,7 +145,7 @@ class build_msdeploy(cmd.Command):
             runcommand.setAttribute(
                 'MSDeploy.MSDeployProviderOptions', options)
 
-        log.info('Writing Web Deploy manifest to {0}'.format(
+        self.logger.info('Writing Web Deploy manifest to {0}'.format(
             self.manifest_filename))
         manifest.writexml(open(self.manifest_filename, 'w'))
 

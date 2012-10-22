@@ -62,6 +62,10 @@ virtualenv.""")]
         self.easy_install_filename = 'easy_install.txt'
 
     def finalize_options(self):
+        # Configure logging
+        build = self.distribution.get_command_obj('build_msdeploy')
+        build.ensure_finalized()
+
         if 'APPL_PHYSICAL_PATH' not in os.environ:
             os.environ['APPL_PHYSICAL_PATH'] = os.getcwd()
 
