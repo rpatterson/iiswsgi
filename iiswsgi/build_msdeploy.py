@@ -52,7 +52,7 @@ class build_msdeploy(cmd.Command):
         self.write_manifest()
 
         stamp_template = self.stamp_filename + '.in'
-        if os.path.exists():
+        if os.path.exists(stamp_template):
             stamp_path = os.path.splitext(stamp_template)[0]
             if os.path.exists(stamp_path):
                 log.info('Deleting existing stamp file: {0}'.format(
