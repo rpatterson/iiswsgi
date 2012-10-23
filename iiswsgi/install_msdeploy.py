@@ -21,6 +21,7 @@ import subprocess
 import argparse
 import logging
 import re
+import sysconfig
 
 from xml.dom import minidom
 
@@ -85,6 +86,8 @@ virtualenv.""")] + index_opts
             self.count = 0
 
         self.ensure_string_list('find_links')
+
+        self.sysconfig_vars = dict()
 
     def run(self):
         """
@@ -165,11 +168,17 @@ virtualenv.""")] + index_opts
         open('web.config', 'w').write(web_config.format(**environ))
         return environ
 
-    def setup_virtualenv(self, directory='.', **opts):
+    def get_script_path(self, script, sysconfig_vars=None):
+        if sysconfig_vars is None:
+            sysconfig_vars = self.sysconfig_vars
+        return os.path.join(sysconfig.get_path('scripts', vars=sysconfig_vars),
+                            script + sysconfig.get_config_var('EXE'))
+
+    def setup_virtualenv(self, directory=os.curdir, **opts):
         """
         Set up a virtualenv in the `directory` with options.
         """
-        cmd = [options.get_script_path('virtualenv', self.executable)]
+        cmd = [self.get_script_path('virtualenv')]
         for option, value in opts.iteritems():
             cmd.extend(['--' + option, value])
         cmd.extend([directory])
@@ -177,8 +186,8 @@ virtualenv.""")] + index_opts
             'Setting up a isolated Python with: {0}'.format(
                 ' '.join(cmd)))
         subprocess.check_call(cmd, env=os.environ)
-        return os.path.abspath(
-            os.path.join(options.scripts_name, 'python' + options.script_ext))
+        self.sysconfig_vars['base'] = directory
+        return os.path.abspath(self.get_script_path('python'))
 
     def pip_install_requirements(
         self, filename=None, requirements=(),
@@ -186,8 +195,7 @@ virtualenv.""")] + index_opts
         """Use pip to install requirements from the given file."""
         if not filename and not requirements:
             filename = self.requirements_filename
-        cmd = [os.path.abspath(options.get_script_path(
-            'pip', self.executable)), 'install']
+        cmd = [self.get_script_path('pip'), 'install']
         self._add_indexes(cmd, find_links)
         if filename:
             cmd.extend(['-r', filename])
@@ -208,8 +216,7 @@ virtualenv.""")] + index_opts
         """
         if not filename and not requirements:
             filename = self.easy_install_filename
-        cmd = [os.path.abspath(
-            options.get_script_path('easy_install', self.executable))]
+        cmd = [self.get_script_path('easy_install')]
         self._add_indexes(cmd, find_links)
         if filename:
             cmd.extend([line.strip() for line in open(filename)])

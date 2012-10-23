@@ -4,7 +4,6 @@ import logging
 
 from setuptools import setup
 
-from iiswsgi import options
 from iiswsgi import install_msdeploy
 
 version = '0.1'
@@ -21,7 +20,7 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         if scaffold == '__' + 'pyramid_scaffold' + '__':
             # Testing outside of WebPI
             scaffold = "starter"
-        pcreate = options.get_script_path('pcreate', self.executable)
+        pcreate = self.get_script_path('pcreate')
         args = [pcreate, '-s', scaffold, '__pyramid_project__']
         logger.info('Creating Pyramid project: {0}'.format(' '.join(args)))
         subprocess.check_call(args)
