@@ -9,6 +9,7 @@ examples/*.msdeploy/MANIFEST
 examples/*.msdeploy/Manifest.xml
 examples/*.msdeploy/iis_install.stamp
 examples/*.msdeploy/web.config
+examples/*.msdeploy/__*_project__
 Include/
 Lib/
 Scripts/
