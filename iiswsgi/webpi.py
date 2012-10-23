@@ -29,6 +29,9 @@ import errno
 from xml.dom import minidom
 
 from iiswsgi import options
+from iiswsgi import build_msdeploy
+from iiswsgi import install_msdeploy
+from iiswsgi import bdist_msdeploy
 
 logger = logging.getLogger('iiswsgi.webpi')
 
@@ -248,3 +251,8 @@ def webpi_console(args=None):
         unknown = ['-q', 'bdist_msdeploy']
     builder = WebPIBuilder(args.packages, feed=args.feed)
     builder(*unknown)
+
+
+cmdclass = dict(build_msdeploy=build_msdeploy.build_msdeploy,
+                install_msdeploy=install_msdeploy.install_msdeploy,
+                bdist_msdeploy=bdist_msdeploy.bdist_msdeploy)

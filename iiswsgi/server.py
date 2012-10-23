@@ -2,29 +2,35 @@
 
 import sys
 import os
-import struct
-import select
-import socket
-import errno
-import argparse
 import logging
-import pprint
+import argparse
 
-from iiswsgi.filesocket import FileSocket
-from iiswsgi import options
+from struct import unpack
+from select import error as select_error
+from socket import error as socket_error
+from errno import EBADF
 
-from flup.server import singleserver
-from flup.server import fcgi_base
+from flup.server.fcgi_base import Record
+from flup.server.fcgi_base import Connection
+from flup.server.fcgi_base import (
+    FCGI_HEADER_LEN, FCGI_Header, FCGI_NULL_REQUEST_ID,
+    FCGI_ABORT_REQUEST, FCGI_BEGIN_REQUEST, FCGI_DATA, FCGI_PARAMS,
+    FCGI_STDIN, FCGI_GET_VALUES,
+    )
 from flup.server import fcgi_single
+from flup.server import singleserver
 
 if __debug__:
     from flup.server.fcgi_base import _debug
+
+from iiswsgi import options
+from iiswsgi.filesocket import FileSocket
 
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi')
 
 
-class IISRecord(fcgi_base.Record):
+class IISRecord(Record):
 
     def read(self, sock, header_len=None):
         """Read and decode a Record from a socket."""
@@ -32,15 +38,15 @@ class IISRecord(fcgi_base.Record):
             header, length = header_len
         else:
             try:
-                header, length = self._recvall(sock, fcgi_base.FCGI_HEADER_LEN)
+                header, length = self._recvall(sock, FCGI_HEADER_LEN)
             except:
                 raise EOFError
 
-        if length < fcgi_base.FCGI_HEADER_LEN:
+        if length < FCGI_HEADER_LEN:
             raise EOFError
 
         self.version, self.type, self.requestId, self.contentLength, \
-            self.paddingLength = struct.unpack(fcgi_base.FCGI_Header, header)
+            self.paddingLength = unpack(FCGI_Header, header)
 
         if __debug__:
             _debug(9, 'read: fd = %d, type = %d, requestId = %d, '
@@ -64,7 +70,7 @@ class IISRecord(fcgi_base.Record):
                 raise EOFError
 
 
-class IISConnection(fcgi_base.Connection):
+class IISConnection(Connection):
 
     def __init__(self, sock, addr, init_header, server, timeout):
         super(IISConnection, self).__init__(sock, addr, server, timeout)
@@ -79,8 +85,8 @@ class IISConnection(fcgi_base.Connection):
                 self.process_input(init_header)
             except (EOFError, KeyboardInterrupt):
                 break
-            except (select.error, socket.error), e:
-                if e[0] == errno.EBADF:  # Socket was closed by Request.
+            except (select_error, socket_error), e:
+                if e[0] == EBADF:  # Socket was closed by Request.
                     break
                 raise
 
@@ -99,19 +105,19 @@ class IISConnection(fcgi_base.Connection):
         rec = IISRecord()
         rec.read(self._sock, init_header)
 
-        if rec.type == fcgi_base.FCGI_GET_VALUES:
+        if rec.type == FCGI_GET_VALUES:
             self._do_get_values(rec)
-        elif rec.type == fcgi_base.FCGI_BEGIN_REQUEST:
+        elif rec.type == FCGI_BEGIN_REQUEST:
             self._do_begin_request(rec)
-        elif rec.type == fcgi_base.FCGI_ABORT_REQUEST:
+        elif rec.type == FCGI_ABORT_REQUEST:
             self._do_abort_request(rec)
-        elif rec.type == fcgi_base.FCGI_PARAMS:
+        elif rec.type == FCGI_PARAMS:
             self._do_params(rec)
-        elif rec.type == fcgi_base.FCGI_STDIN:
+        elif rec.type == FCGI_STDIN:
             self._do_stdin(rec)
-        elif rec.type == fcgi_base.FCGI_DATA:
+        elif rec.type == FCGI_DATA:
             self._do_data(rec)
-        elif rec.requestId == fcgi_base.FCGI_NULL_REQUEST_ID:
+        elif rec.requestId == FCGI_NULL_REQUEST_ID:
             self._do_unknown_type(rec)
         else:
             # Need to complain about this.
@@ -178,12 +184,12 @@ class IISWSGIServer(fcgi_single.WSGIServer):
 
         # Main loop.
         while self._keepGoing:
-            r = sock.recv(fcgi_base.FCGI_HEADER_LEN)
+            r = sock.recv(FCGI_HEADER_LEN)
 
             if r:
                 # Hand off to Connection.
                 conn = self._jobClass(sock, '<IIS_FCGI>',
-                                      (r, fcgi_base.FCGI_HEADER_LEN),
+                                      (r, FCGI_HEADER_LEN),
                                       *self._jobArgs)
                 conn.run()
 
@@ -231,6 +237,7 @@ row_template = """\
 def test_app(environ, start_response,
              response_template=response_template, row_template=row_template):
     """Render the WSGI environment as an HTML table."""
+    import pprint
     logger.debug('Recieved WSGI request with environ: {0}'.format(
         pprint.pformat(environ)))
     wsgi_rows = '\n'.join(
