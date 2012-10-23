@@ -103,7 +103,7 @@ class WebPIBuilder(object):
                 [sys.executable, 'setup.py', '--name', '--version'],
                 env=environ).split()
 
-            cmd = [sys.executable, 'setup.py', '-q']
+            cmd = [sys.executable, 'setup.py']
             cmd.extend(args)
             logger.info('Building package: {0}'.format(' '.join(cmd)))
             subprocess.check_call(cmd)
@@ -245,6 +245,6 @@ def webpi_console(args=None):
     logging.basicConfig()
     args, unknown = webpi_parser.parse_known_args(args=args)
     if not unknown:
-        unknown = ['bdist_msdeploy']
+        unknown = ['-q', 'bdist_msdeploy']
     builder = WebPIBuilder(args.packages, feed=args.feed)
     builder(*unknown)
