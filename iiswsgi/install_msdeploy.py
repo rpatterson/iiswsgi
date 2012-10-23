@@ -312,7 +312,7 @@ class Installer(object):
         finally:
             os.chdir(cwd)
 
-    def get_appl_physical_path(self):
+    def get_appl_physical_path(self, appcmd_exe=None):
         """
         Finding the `APPL_PHYSICAL_PATH`.
 
@@ -321,31 +321,13 @@ class Installer(object):
         directory.  Until such a time as Web Platform Installer or Web
         Deploy provide some way to identify the physical path of the
         `iisApp` being installed when the `runCommand` provider is
-        used, we have to guess at the physical path.  If
-        `IIS_SITES_HOME` is defined, all directories that are direct
-        children of the `IIS_SITES_HOME` will be searched for a
-        `iis_install.stamp` file.  If multiple directories are found
-        with the stamp file, an error is raised.  Otherwise, in the
-        case where one directory has the stamp file, it is assumed to
-        be the `APPL_PHYSICAL_PATH`.
+        used, we have to guess the physical path.
 
-        When installing to "IIS Express", the `IIS_SITES_HOME`
-        environment variable should be available and the stamp file
-        search should succeed to automatically find the right app for
-        which to run setup.py.  In the case of installing to full
-        "IIS", however, neither the `APPL_PHYSICAL_PATH` nor the
-        `IIS_SITES_HOME` environment variables are available and the
-        setup.py won't be run and WebPI will report an error.  The
-        best way to workaround this limitation is to adopt a
-        convention of putting all your IIS apps installed via WebPI in
-        one directory and then set the `IIS_SITES_HOME` enviornment
-        variable.  Then when installing a new IIS app be sure to give
-        a physical path within that directory when prompted to by
-        WebPI.  If that's not possible you can set the
-        `APPL_PHYSICAL_PATH` environment variable to the physical path
-        you will enter when installing via WebPI. Otherwise, when
-        installing to full "IIS" you'll have to follow the steps for
-        manually running setup.py after you get the error.
+        Start by querying appcmd.exe for all
+        sites/site/application/virtualDirectory/@physicalPath
+        definitions whose sites/site/@name matches the app name if
+        given.  The first such physicalPath with a stamp file is taken
+        to be the APPL_PHYSICAL_PATH.
         """
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
         if appl_physical_path is not None:
@@ -362,53 +344,46 @@ class Installer(object):
             self.logger.info(
                 'APPL_PHYSICAL_PATH environment variable not set')
 
-        iis_sites_home = os.environ.get('IIS_SITES_HOME')
-        if iis_sites_home is None:
-            raise ValueError(
-                'Neither the APPL_PHYSICAL_PATH nor the IIS_SITES_HOME '
-                'environment variables are set.')
-        elif not os.path.exists(iis_sites_home):
-            raise ValueError(
-                ('The IIS_SITES_HOME environment variable value is a '
-                 'non-existent path: {0}').format(iis_sites_home))
-        elif not os.path.isdir(iis_sites_home):
-            raise ValueError(
-                ('The IIS_SITES_HOME environment variable value is '
-                 'not a directory: {0}').format(iis_sites_home))
-
+        appcmd_exe = fcgi.get_appcmd_exe(appcmd_exe)
+        cmd = [appcmd_exe, 'list', 'config', '/section:sites', '/xml']
         self.logger.info(
-            'Searching the directory in the IIS_SITES_HOME environment '
-            'variable for the app to install')
-        appl_physical_paths = [
-            os.path.join(iis_sites_home, name)
-            for name in os.listdir(iis_sites_home)
-            if self._is_appl_physical_path(iis_sites_home, name)]
+            ('Querying appcmd.exe for '
+             'sites/site/application/virtualDirectory/@physicalPath: {0}'
+             ).format(' '.join(cmd)))
+        sites_output = subprocess.check_output(cmd)
+        sites_dom = minidom.parseString(sites_output)
+        appl_physical_paths = []
+        for site in reversed(sites_dom.getElementsByTagName('site')):
+            site_name = site.getAttribute('name')
+            if self.app_name and self.app_name_pattern.match(
+                site_name) is None:
+                # Not an instance of this app
+                continue
+
+            for app in site.getElementsByTagName('application'):
+                for vdir in app.getElementsByTagName('virtualDirectory'):
+                    path = vdir.getAttribute('physicalPath')
+                    if os.path.exists(os.path.join(path, self.stamp_filename)):
+                        appl_physical_paths.append(path)
+
         if not appl_physical_paths:
             raise ValueError(
-                ('Found no {0} stamp file in any of the directories in the '
-                 'IIS_SITES_HOME environment variable: {0}').format(
-                    self.stamp_filename, iis_sites_home))
+                ('Found no {0} stamp file in any of the virtual directories '
+                 'returned by appcmd.exe').format(self.stamp_filename))
         elif len(appl_physical_paths) > 1:
-            raise ValueError(
-                ('Found multiple {0} stamp files in the directories in the '
-                 'IIS_SITES_HOME environment variable: {0}').format(
-                    self.stamp_filename, iis_sites_home))
-
-        appl_physical_path = appl_physical_paths[0]
-        self.logger.info(
-            ('Found IIS app with a stamp file in just one of the directories '
-             'in the IIS_SITES_HOME environment variable: {0}').format(
+            appl_physical_path = appl_physical_paths[0]
+            logger.error(
+                ('Found multiple {0} stamp files in the virtual directories, '
+                 '{1}.  Choosing the most recent one: {2}').format(
+                    self.stamp_filename, appl_physical_paths[1:],
                     appl_physical_path))
+        else:
+            appl_physical_path = appl_physical_paths[0]
+            self.logger.info(
+                ('Found just one IIS app with a stamp file: {0}'
+                 ).format(appl_physical_path))
 
         return appl_physical_path
-
-    def _is_appl_physical_path(self, iis_sites_home, name):
-        if self.app_name:
-            if self.app_name_pattern.match(name) is None:
-                return False
-        return (os.path.isdir(os.path.join(iis_sites_home, name))
-                and os.path.exists(os.path.join(
-                    iis_sites_home, name, self.stamp_filename)))
 
 
 install_parser = argparse.ArgumentParser(add_help=False)

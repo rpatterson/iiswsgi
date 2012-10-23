@@ -127,13 +127,14 @@ The moving parts of ``iiswsgi`` are as follows:
     environment variable.
 
     As such this script has to search for the app before calling it's
-    ``setup.py`` script.  It looks in ``IIS_SITES_HOME`` for
-    directories with the right app name and a stamp file still in
-    place.  See ``>Scripts\iiswsgi_install.exe --help`` for more
-    details.  This is far too fragile and it would be vastly
-    preferable if MSDeploy or WebPI set the APPL_PHYSICAL_PATH
-    environment variable for ``runCommand``.  Anyone with a MS support
-    contract, please submit a request about this.
+    ``setup.py`` script.  It uses ``appcmd.exe`` to look in virtual
+    directories whose site matches the app name and which contain a
+    stamp file still in place.  See ``>Scripts\iiswsgi_install.exe
+    --help`` for more details.  This is far too fragile and it would
+    be vastly preferable if MSDeploy or WebPI set the
+    APPL_PHYSICAL_PATH environment variable for ``runCommand``.
+    Anyone with a MS support contract, please submit a request about
+    this.
 
 ``>iiswsgi_webpi.exe``
 
