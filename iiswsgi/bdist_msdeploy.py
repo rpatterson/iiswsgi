@@ -22,11 +22,18 @@ class bdist_msdeploy(sdist.sdist):
     def initialize_options(self):
         sdist.sdist.initialize_options(self)
         self.index = None
-        self.find_links = None
+        self.find_links = []
 
     def finalize_options(self):
         sdist.sdist.finalize_options(self)
+
         self.ensure_string_list('find_links')
+
+        self.install = self.distribution.get_command_obj('install_msdeploy')
+        self.install.find_links.extend(self.find_links)
+        self.install.ensure_finalized()
+        self.install.skip_fcgi_app_install = True
+        self.install.index = self.index
 
     def run(self):
         self.run_command('build_msdeploy')
@@ -35,12 +42,7 @@ class bdist_msdeploy(sdist.sdist):
                 'No Web Deploy manifest found at {0}'.format(
                     self.manifest_filename))
 
-        install = self.distribution.get_command_obj('install_msdeploy')
-        install.ensure_finalized()
-        install.skip_fcgi_app_install = True
-        install.index = self.index
-        install.find_links = self.find_links
-        install.run()
+        self.install.run()
 
         sdist.sdist.run(self)
 
