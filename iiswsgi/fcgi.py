@@ -23,6 +23,19 @@ def get_web_config_apps(web_config):
             yield dict((key, value) for key, value in app.attributes.items())
 
 
+def get_appcmd_exe(appcmd_exe=None):
+    if appcmd_exe is None:
+        appcmd_exe = '{WINDIR}\\System32\\inetsrv\\appcmd.exe'
+        if 'IIS_BIN' in os.environ:
+            # IIS Express
+            # under WebPI at least, this is only set when using IIS Express
+            appcmd_exe = '{PROGRAMFILES}\\IIS Express\\appcmd.exe'
+    try:
+        return appcmd_exe.format(**os.environ)
+    except KeyError:
+        logger.exception('Could not find: {0}'.format(appcmd_exe))
+
+
 def install_fcgi_app(appcmd_exe=None,
                      web_config=None,
                      app_attr_defaults=app_attr_defaults_init,
@@ -55,17 +68,7 @@ def install_fcgi_app(appcmd_exe=None,
     http://www.iis.net/ConfigReference/system.webServer/fastCgi/application
     for more details on the valid attributes and their affects.
     """
-    if appcmd_exe is None:
-        appcmd_exe = '{WINDIR}\\System32\\inetsrv\\appcmd.exe'
-        if 'IIS_BIN' in os.environ:
-            # IIS Express
-            # under WebPI at least, this is only set when using IIS Express
-            appcmd_exe = '{PROGRAMFILES}\\IIS Express\\appcmd.exe'
-    try:
-        appcmd_exe = appcmd_exe.format(**os.environ)
-    except KeyError:
-        logger.exception('Could not find: {0}'.format(appcmd_exe))
-        return
+    appcmd_exe = get_appcmd_exe(appcmd_exe)
 
     if web_config is None:
         # Search for default web.config
