@@ -250,7 +250,7 @@ virtualenv.""")] + index_opts
                 find_links = self.find_links
         if isinstance(find_links, str):
             find_links = (find_links, )
-        cmd.extend('--find-links=' + find_link for find_link in find_links)
+        cmd.append('--find-links=' + ' '.join(find_links))
         return cmd
 
     def test(self):
