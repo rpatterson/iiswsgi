@@ -132,7 +132,7 @@ virtualenv.""")] + index_opts
         # vritualenv and requirements
         if (os.path.exists(self.requirements_filename) or
             os.path.exists(self.easy_install_filename)):
-            self.executable = self.setup_virtualenv()
+            self.setup_virtualenv()
 
             if os.path.exists(self.requirements_filename):
                 self.pip_install_requirements()
@@ -187,7 +187,8 @@ virtualenv.""")] + index_opts
                 ' '.join(cmd)))
         subprocess.check_call(cmd, env=os.environ)
         self.sysconfig_vars['base'] = directory
-        return os.path.abspath(self.get_script_path('python'))
+        self.executable = os.path.abspath(self.get_script_path('python'))
+        return self.executable
 
     def pip_install_requirements(
         self, filename=None, requirements=(),
