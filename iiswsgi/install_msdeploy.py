@@ -171,11 +171,11 @@ virtualenv.""")] + index_opts
         open('web.config', 'w').write(web_config.format(**environ))
         return environ
 
-    def get_script_path(self, script, sysconfig_vars=None):
-        if sysconfig_vars is None:
-            sysconfig_vars = self.sysconfig_vars
+    def get_script_path(self, script, **sysconfig_vars):
+        vars_ = self.sysconfig_vars.copy()
+        vars_.update(sysconfig_vars)
         path = os.path.join(
-            sysconfig.get_path('scripts', vars=sysconfig_vars.copy()),
+            sysconfig.get_path('scripts', vars=vars_),
             script + sysconfig.get_config_var('EXE'))
         if not (os.path.isabs(path) or
                 path.startswith(os.curdir) or path.startswith(os.pardir)):
