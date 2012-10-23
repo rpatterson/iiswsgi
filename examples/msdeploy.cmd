@@ -1,1 +1,0 @@
-"C:\Program Files\IIS\Microsoft Web Deploy\msdeploy.exe" -verb:sync -source:package="sample.msdeploy\dist\IISWSGISampleApp-0.1.zip" -dest:auto -setParam:name=ApplicationPath,value="Default Web Site/IISWSGISampleApp" -debug -verbose > sample.msdeploy\dist\MsDeployOutput.txt 2>&1
