@@ -174,9 +174,16 @@ virtualenv.""")] + index_opts
     def get_script_path(self, script, sysconfig_vars=None):
         if sysconfig_vars is None:
             sysconfig_vars = self.sysconfig_vars
-        return os.path.join(
+        path = os.path.join(
             sysconfig.get_path('scripts', vars=sysconfig_vars.copy()),
             script + sysconfig.get_config_var('EXE'))
+        if not (os.path.isabs(path) or
+                path.startswith(os.curdir) or path.startswith(os.pardir)):
+            # Doing Scripts\easy_install.exe seemed to be getting
+            # C:\Python27\Scripts\easy_install.exe.  May be affected
+            # by PATH.
+            path = os.path.join(os.curdir, path)
+        return path
 
     def setup_virtualenv(self, directory=os.curdir, **opts):
         """
