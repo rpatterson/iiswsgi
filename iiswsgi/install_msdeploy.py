@@ -174,8 +174,9 @@ virtualenv.""")] + index_opts
     def get_script_path(self, script, sysconfig_vars=None):
         if sysconfig_vars is None:
             sysconfig_vars = self.sysconfig_vars
-        return os.path.join(sysconfig.get_path('scripts', vars=sysconfig_vars),
-                            script + sysconfig.get_config_var('EXE'))
+        return os.path.join(
+            sysconfig.get_path('scripts', vars=sysconfig_vars.copy()),
+            script + sysconfig.get_config_var('EXE'))
 
     def setup_virtualenv(self, directory=os.curdir, **opts):
         """
