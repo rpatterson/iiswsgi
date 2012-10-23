@@ -137,7 +137,6 @@ virtualenv.""")] + index_opts
             if os.path.exists(self.easy_install_filename):
                 self.easy_install_requirements(*requirements)
 
-        # TODO move to `setup.py install`?
         self.write_web_config(**substitutions)
 
         if not self.skip_fcgi_app_install:
