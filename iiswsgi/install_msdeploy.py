@@ -27,6 +27,7 @@ from xml.dom import minidom
 
 from distutils import cmd
 from distutils.command import install
+import distutils.sysconfig
 
 from iiswsgi import options
 from iiswsgi import fcgi
@@ -67,7 +68,7 @@ virtualenv.""")] + index_opts
         self.easy_install_filename = 'easy_install.txt'
         self.executable = sys.executable
         self.index_url = None
-        self.find_links = None
+        self.find_links = []
         self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
     def finalize_options(self):
@@ -86,6 +87,8 @@ virtualenv.""")] + index_opts
             self.count = 0
 
         self.ensure_string_list('find_links')
+        # grab eggs from real python if available
+        self.find_links.append(distutils.sysconfig.get_python_lib())
 
         self.sysconfig_vars = dict()
 
