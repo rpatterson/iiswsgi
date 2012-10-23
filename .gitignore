@@ -12,3 +12,4 @@ examples/*.msdeploy/web.config
 Include/
 Lib/
 Scripts/
+local/
