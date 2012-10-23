@@ -5,6 +5,7 @@ from distutils.command import sdist
 from distutils import archive_util
 from distutils import dir_util
 from distutils import log
+from distutils import errors
 
 from iiswsgi import build_msdeploy
 from iiswsgi import install_msdeploy
@@ -15,8 +16,8 @@ class bdist_msdeploy(sdist.sdist):
 
     user_options = sdist.sdist.user_options + install_msdeploy.index_opts
 
-    msdeploy_files = (build_msdeploy.manifest_filename,
-                      'Parameters.xml')
+    manifest_filename = build_msdeploy.manifest_filename
+    msdeploy_files = (manifest_filename, 'Parameters.xml')
 
     def initialize_options(self):
         sdist.sdist.initialize_options(self)
@@ -29,6 +30,10 @@ class bdist_msdeploy(sdist.sdist):
 
     def run(self):
         self.run_command('build_msdeploy')
+        if not os.path.exists(self.manifest_filename):
+            raise errors.DistutilsFileError(
+                'No Web Deploy manifest found at {0}'.format(
+                    self.manifest_filename))
 
         install = self.distribution.get_command_obj('install_msdeploy')
         install.ensure_finalized()
