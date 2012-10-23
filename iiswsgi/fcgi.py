@@ -26,6 +26,7 @@ def get_web_config_apps(web_config):
 def install_fcgi_app(appcmd_exe=None,
                      web_config=None,
                      app_attr_defaults=app_attr_defaults_init,
+                     command='set',
                      **application_attrs):
     """
     Install an IIS FastCGI application.
@@ -87,12 +88,12 @@ def install_fcgi_app(appcmd_exe=None,
             "{0}='{1}'".format(*item) for item in app_attrs.iteritems())
 
         appcmd_cmd = (
-            appcmd_exe, "set", "config", "-section:system.webServer/fastCgi",
+            appcmd_exe, command, "config", "-section:system.webServer/fastCgi",
             '/+[{0}]'.format(appcmd_args), '/commit:apphost')
         logger.info('Installing IIS FastCGI application: {0!r}'.format(
             ' '.join(appcmd_cmd)))
         if os.path.exists(appcmd_exe):
-            subprocess.check_call(appcmd_cmd)
+            return subprocess.check_call(appcmd_cmd, stderr=subprocess.PIPE)
         else:
             logger.info('IIS AppCmd.exe does not exist: {0}'.format(
                 appcmd_exe))
@@ -116,6 +117,11 @@ def install_fcgi_app_console(args=None):
 install_fcgi_app_parser = argparse.ArgumentParser(
     description=install_fcgi_app_console.__doc__,
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+install_fcgi_app_parser.add_argument(
+    "-c", "--command",
+    default=app_attr_defaults_init['monitorChangesTo'], help="""\
+The path to a file which IIS will monitor and restart the FastCGI \
+process when the file is modified.""")
 install_fcgi_app_parser.add_argument(
     "-m", "--monitor-changes", metavar="PATH",
     default=app_attr_defaults_init['monitorChangesTo'], help="""\
