@@ -140,10 +140,6 @@ virtualenv.""")] + index_opts
         self.write_web_config(**substitutions)
 
         if not self.skip_fcgi_app_install:
-            if fcgi.install_fcgi_app(command='list') == TODO:
-                logger.error(
-                    'Duplicate FCGI app TODO')
-                fcgi.install_fcgi_app(command='clear')
             fcgi.install_fcgi_app()
 
     def write_web_config(self, **kw):

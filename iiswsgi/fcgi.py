@@ -3,6 +3,7 @@ import logging
 import multiprocessing
 import subprocess
 import argparse
+import pprint
 
 from xml.dom import minidom
 
@@ -36,10 +37,28 @@ def get_appcmd_exe(appcmd_exe=None):
         logger.exception('Could not find: {0}'.format(appcmd_exe))
 
 
+def get_appcmd_apps(appcmd_exe=None):
+    appcmd_exe = get_appcmd_exe(appcmd_exe)
+    cmd = [appcmd_exe, 'list', 'config', '/section:fastCgi', '/xml']
+    logger.info(('Querying appcmd.exe for '
+                      'fastCgi/application/@fullPath,@arguments: {0}'
+                      ).format(' '.join(cmd)))
+    apps_output = subprocess.check_output(cmd)
+    apps_dom = minidom.parseString(apps_output)
+    for app in apps_dom.getElementsByTagName('application'):
+        yield dict((key, value) for key, value in app.attributes.items())
+
+
+def format_appcmd_attrs(**kw):
+    """format attributes for appcmd.exe"""
+    appcmd_args = ",".join(
+        "{0}='{1}'".format(*item) for item in kw.iteritems())
+    return '[{0}]'.format(appcmd_args)
+
+
 def install_fcgi_app(appcmd_exe=None,
                      web_config=None,
                      app_attr_defaults=app_attr_defaults_init,
-                     command='set',
                      **application_attrs):
     """
     Install an IIS FastCGI application.
@@ -79,20 +98,34 @@ def install_fcgi_app(appcmd_exe=None,
                 os.environ['APPL_PHYSICAL_PATH'], 'web.config')
 
     if web_config:
-        apps = get_web_config_apps(web_config)
+        apps = list(get_web_config_apps(web_config))
     else:
         apps = [app_attr_defaults.copy()]
+
+    scriptProcessors = dict(
+        ('{0}|{1}'.format(app['fullPath'], app['arguments']), app)
+        for app in apps)
+
+    # Check for duplicates
+    for app in get_appcmd_apps():
+        scriptProcessor = '{0}|{1}'.format(app['fullPath'], app['arguments'])
+        if scriptProcessor in scriptProcessors:
+            logger.error(
+                'Duplicate FCGI app: {0}'.format(pprint.pformat(app)))
+            cmd = [appcmd_exe, 'set', "config",
+                   "-section:system.webServer/fastCgi",
+                   '/-' + format_appcmd_attrs(**app),
+                   '/commit:apphost']
+            logger.warn(
+                'Clearing duplicate FCGI app: {0}'.format(' '.join(cmd)))
+            subprocess.check_call(cmd)
 
     for app_attrs in apps:
         # Override with kwargs
         app_attrs.update(application_attrs)
-        # format attributes for appcmd.exe
-        appcmd_args = ",".join(
-            "{0}='{1}'".format(*item) for item in app_attrs.iteritems())
-
         appcmd_cmd = (
-            appcmd_exe, command, "config", "-section:system.webServer/fastCgi",
-            '/+[{0}]'.format(appcmd_args), '/commit:apphost')
+            appcmd_exe, "set", "config", "-section:system.webServer/fastCgi",
+                    '/+' + format_appcmd_attrs(**app_attrs), '/commit:apphost')
         logger.info('Installing IIS FastCGI application: {0!r}'.format(
             ' '.join(appcmd_cmd)))
         if os.path.exists(appcmd_exe):
