@@ -344,7 +344,8 @@ class Installer(object):
                 'APPL_PHYSICAL_PATH environment variable not set')
 
         appcmd_exe = fcgi.get_appcmd_exe(appcmd_exe)
-        cmd = [appcmd_exe, 'list', 'config', '/section:sites', '/xml']
+        cmd = [appcmd_exe, 'list', 'config',
+               '/section:system.applicationHost/sites', '/xml']
         self.logger.info(
             ('Querying appcmd.exe for '
              'sites/site/application/virtualDirectory/@physicalPath: {0}'
