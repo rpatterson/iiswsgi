@@ -41,10 +41,6 @@ class develop_virtualenv(develop.develop):
             bootstrap = self.virtualenv_script
 
         if bootstrap:
-            if opts:
-                raise ValueError(
-                    'The virtualenv module must be available if no virtualenv '
-                    'bootstrap script is given: {0}'.format(bootstrap))
             argv = [bootstrap]
             for option, value in opts.iteritems():
                 argv.extend(['--' + option, value])
