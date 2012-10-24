@@ -135,7 +135,6 @@ class WebPIBuilder(object):
 
     def update_feed_entry(
         self, feed, app_name, dist, version, package_size, package_sha1):
-        from zope.pagetemplate import pagetemplatefile
         if feed is None:
             return
 
