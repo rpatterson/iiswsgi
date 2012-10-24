@@ -12,7 +12,7 @@ virtualenv_script = 'bootstrap-virtualenv.py'
 
 class virtualenv(develop.develop):
 
-    user_options = [
+    user_options = develop.develop.user_options + [
         ('virtualenv-script=', 'v',
          "Use a virtualenv bootstrap script if present. [default: {0}]"
          .format(virtualenv_script))]

@@ -45,10 +45,11 @@ class install_msdeploy(virtualenv.virtualenv):
     # From module docstring
     description = __doc__ = __doc__
 
-    user_options = [('skip-virtualenv', 'V',
-                     "Don't set up a virtualenv in the distribution."),
-                    ('skip-fcgi-app-install', 'S',
-                     "Do not install IIS FCGI apps.")]
+    user_options = virtualenv.virtualenv.user_options + [
+        ('skip-virtualenv', 'V',
+         "Don't set up a virtualenv in the distribution."),
+        ('skip-fcgi-app-install', 'S',
+         "Do not install IIS FCGI apps.")]
 
     logger = logger
 
