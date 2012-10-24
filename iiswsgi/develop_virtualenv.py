@@ -41,19 +41,21 @@ class develop_virtualenv(develop.develop):
             bootstrap = self.virtualenv_script
 
         if bootstrap:
+            virtualenv_globals = dict(__file__=bootstrap)
+            execfile(bootstrap, virtualenv_globals)
+
             argv = [bootstrap]
             for option, value in opts.iteritems():
                 argv.extend(['--' + option, value])
             argv.append(home_dir)
+
             self.logger.info(
                 'Setting up a isolated Python with bootstrap script: {0}'
                 .format(' '.join(argv)))
             orig_argv = sys.argv[:]
             try:
                 sys.argv[:] = argv
-                bootstrap_globals = dict(__file__=bootstrap)
-                execfile(bootstrap, bootstrap_globals)
-                bootstrap_globals['main']()
+                virtualenv_globals['main']()
             finally:
                 sys.argv[:] = orig_argv
         else:
