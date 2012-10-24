@@ -20,7 +20,6 @@ import subprocess
 import argparse
 import logging
 import re
-import sysconfig
 
 from xml.dom import minidom
 
@@ -76,8 +75,6 @@ class install_msdeploy(develop_virtualenv.develop_virtualenv):
             self.count = int(count)
         else:
             self.count = 0
-
-        self.sysconfig_vars = dict()
 
     def run(self):
         """
@@ -164,21 +161,6 @@ class install_msdeploy(develop_virtualenv.develop_virtualenv):
                         logger.exception(
                             'FCGI app scriptProcessor not found: {0}'
                             .format(cmd))
-
-    def get_path(self, script, path_name='scripts',
-                        config_name='EXE', **sysconfig_vars):
-        vars_ = self.sysconfig_vars.copy()
-        vars_.update(sysconfig_vars)
-        path = os.path.join(
-            sysconfig.get_path(path_name, vars=vars_),
-            script + (sysconfig.get_config_var(config_name) or ''))
-        if not (os.path.isabs(path) or
-                path.startswith(os.curdir) or path.startswith(os.pardir)):
-            # Doing Scripts\easy_install.exe seemed to be getting
-            # C:\Python27\Scripts\easy_install.exe.  May be affected
-            # by PATH.
-            path = os.path.join(os.curdir, path)
-        return path
 
 
 def has_msdeploy_manifest(self):

@@ -2,6 +2,7 @@
 
 import sys
 import os
+import sysconfig
 
 from distutils import errors
 
@@ -71,8 +72,9 @@ class develop_virtualenv(develop.develop):
                 '{0}, {1}'.format(virtualenv, opts))
             virtualenv.create_environment(home_dir, **opts)
 
-        self.sysconfig_vars['base'] = home_dir
-        activate_this = self.get_path('activate_this.py', config_name=None)
+        activate_this = os.path.join(
+            sysconfig.get_path('scripts', vars=dict(base=home_dir)),
+            'activate_this.py')
         execfile(activate_this, dict(__file__=activate_this))
 
 
