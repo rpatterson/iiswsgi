@@ -39,6 +39,8 @@ def get_appcmd_exe(appcmd_exe=None):
 
 def get_appcmd_apps(appcmd_exe=None):
     appcmd_exe = get_appcmd_exe(appcmd_exe)
+    if appcmd_exe is None:
+        return
     cmd = [appcmd_exe, 'list', 'config', '/section:fastCgi', '/xml']
     logger.info(('Querying appcmd.exe for '
                       'fastCgi/application/@fullPath,@arguments: {0}'
@@ -120,6 +122,8 @@ def install_fcgi_app(appcmd_exe=None,
                 'Clearing duplicate FCGI app: {0}'.format(' '.join(cmd)))
             subprocess.check_call(cmd)
 
+    if appcmd_exe is None:
+        return
     for app_attrs in apps:
         # Override with kwargs
         app_attrs.update(application_attrs)
