@@ -13,6 +13,9 @@ from iiswsgi import build_msdeploy
 class bdist_msdeploy(sdist.sdist):
     """Create an MSDeploy zip package for installation into IIS."""
 
+    user_options = [opt for opt in sdist.sdist.user_options
+                    if not opt[0].startswith('formats')]
+
     manifest_filename = build_msdeploy.manifest_filename
     msdeploy_files = (manifest_filename, 'Parameters.xml')
 
@@ -23,6 +26,7 @@ class bdist_msdeploy(sdist.sdist):
 
     def finalize_options(self):
         sdist.sdist.finalize_options(self)
+        self.formats = ['zip']
         self.build.ensure_finalized()
         self.install.ensure_finalized()
 
