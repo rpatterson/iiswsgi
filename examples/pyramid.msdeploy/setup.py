@@ -1,6 +1,7 @@
 import os
-import subprocess
 import logging
+
+from distutils import core
 
 from setuptools import setup
 
@@ -20,19 +21,18 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         if scaffold == '__' + 'pyramid_scaffold' + '__':
             # Testing outside of WebPI
             scaffold = "starter"
-        pcreate = self.get_script_path('pcreate')
-        args = [pcreate, '-s', scaffold, '__pyramid_project__']
-        logger.info('Creating Pyramid project: {0}'.format(' '.join(args)))
-        subprocess.check_call(args)
+
+        from pyramid.scripts import pcreate
+        argv = ['pcreate', '-s', scaffold, '__pyramid_project__']
+        logger.info('Creating Pyramid project: {0}'.format(' '.join(argv)))
+        pcreate.main(argv, quiet=(self.verbose == 0))
 
         cwd = os.getcwd()
-        args = [self.executable, 'setup.py', 'develop']
         logger.info(
-            'Installing __pyramid_project__ project for development: {0}'
-            .format(' '.join(args)))
+            'Installing __pyramid_project__ project for development')
         os.chdir('__pyramid_project__')
         try:
-            subprocess.check_call(args)
+            return core.run_setup('setup.py', script_args=['develop'])
         finally:
             os.chdir(cwd)
 
