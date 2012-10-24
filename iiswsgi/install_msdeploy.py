@@ -315,14 +315,9 @@ class Installer(object):
 
         cwd = os.getcwd()
         try:
-            self.logger.info('Changing to application directory {0}'.format(
-                appl_physical_path))
-            os.chdir(appl_physical_path)
-
-            cmd = [sys.executable, 'setup.py'] + setup_args
-            self.logger.info('Installing aplication: {0}'.format(
-                ' '.join(cmd)))
-            subprocess.check_call(cmd)
+            self.logger.info('Installing aplication: setup.py {1}'.format(
+                ' '.join(setup_args)))
+            return core.run_setup('setup.py', script_args=setup_args)
         finally:
             os.chdir(cwd)
 
