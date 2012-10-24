@@ -28,6 +28,8 @@ import errno
 
 from xml.dom import minidom
 
+from distutils import core
+
 from iiswsgi import options
 from iiswsgi import build_msdeploy
 from iiswsgi import install_msdeploy
@@ -75,12 +77,10 @@ class WebPIBuilder(object):
         feed = self.parse_feed()
 
         for package in self.packages:
-            dist, version, package_size, package_sha1 = self.build_package(
-                package, *args)
+            dist = self.build_package(package, *args)
             manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
             app_name = get_app_name(manifest)
-            self.update_feed_entry(
-                feed, app_name, dist, version, package_size, package_sha1)
+            self.update_feed_entry(feed, app_name, dist)
             self.delete_installer_cache(app_name)
             self.delete_stamp_files(app_name)
 
@@ -100,24 +100,23 @@ class WebPIBuilder(object):
     def build_package(self, package, *args):
         try:
             os.chdir(package)
-            environ = os.environ.copy()
-            environ.pop('DISTUTILS_DEBUG', None)
-            dist_name, version = subprocess.check_output(
-                [sys.executable, 'setup.py', '--name', '--version'],
-                env=environ).split()
 
+            logger.info('Building package: {0}'.format(' '.join(args)))
             cmd = [sys.executable, 'setup.py']
             cmd.extend(args)
             logger.info('Building package: {0}'.format(' '.join(cmd)))
             subprocess.check_call(cmd)
 
-            dist = os.path.abspath(os.path.join('dist', '{0}-{1}.zip'.format(
-                dist_name, version)))
-            package_size = os.path.getsize(dist)
-            cmd = ['fciv', '-sha1', dist]
-            package_sha1 = ''
+            dist = core.run_setup('setup.py', stop_after='commandline')
+            dist.msdeploy_package = os.path.abspath(os.path.join(
+                'dist', '{0}-{1}.zip'.format(
+                    dist.get_name(), dist.get_version())))
+
+            webpi_size = os.path.getsize(dist.msdeploy_package)
+            cmd = ['fciv', '-sha1', dist.msdeploy_package]
+            webpi_sha1 = ''
             try:
-                package_sha1_output = subprocess.check_output(cmd)
+                webpi_sha1_output = subprocess.check_output(cmd)
             except OSError, error:
                 if error.errno == errno.ENOENT:
                     logger.exception('Error getting SHA1: {0}'.format(
@@ -125,16 +124,16 @@ class WebPIBuilder(object):
                 else:
                     raise
             else:
-                package_sha1 = package_sha1_output.rsplit(
+                webpi_sha1 = webpi_sha1_output.rsplit(
                     '\r\n', 2)[-2].split(' ', 1)[0]
         finally:
             os.chdir(self.cwd)
 
-        package_size = int(round(package_size / 1024.0))
-        return dist, version, package_size, package_sha1
+        dist.webpi_size = int(round(webpi_size / 1024.0))
+        dist.webpi_sha1 = webpi_sha1
+        return dist
 
-    def update_feed_entry(
-        self, feed, app_name, dist, version, package_size, package_sha1):
+    def update_feed_entry(self, feed, app_name, dist):
         if feed is None:
             return
 
@@ -147,9 +146,9 @@ class WebPIBuilder(object):
                 'Could not find <entry> for {0}'.format(app_name))
 
         version_elem = entry.getElementsByTagName('version')[0]
-        version_elem.firstChild.data = u'{0}'.format(version)
+        version_elem.firstChild.data = u'{0}'.format(dist.get_version())
         logger.info('Set Web Platform Installer <version> to {0}'.format(
-            version))
+            dist.get_version()))
 
         installer_url = urlparse.urlunsplit((
             'file', '', dist.replace(os.sep, '/'), '', ''))
@@ -159,14 +158,14 @@ class WebPIBuilder(object):
             installer_url))
 
         size_elem = entry.getElementsByTagName('fileSize')[0]
-        size_elem.firstChild.data = u'{0}'.format(package_size)
+        size_elem.firstChild.data = u'{0}'.format(dist.webpi_size)
         logger.info('Set Web Platform Installer <fileSize> to {0}'.format(
-            package_size))
+            dist.webpi_size))
 
         sha1_elem = entry.getElementsByTagName('sha1')[0]
-        sha1_elem.firstChild.data = u'{0}'.format(package_sha1)
+        sha1_elem.firstChild.data = u'{0}'.format(dist.webpi_sha1)
         logger.info('Set Web Platform Installer <sha1> to {0}'.format(
-            package_sha1))
+            dist.webpi_sha1))
 
     def delete_installer_cache(self, app_name):
         if not self.webpi_installer_cache:
