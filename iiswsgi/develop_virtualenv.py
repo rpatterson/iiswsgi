@@ -77,7 +77,9 @@ class develop_virtualenv(cmd.Command):
                     'bootstrap script is given: {0}'.format(bootstrap))
             self.logger.info(
                 'Setting up a isolated Python with module: '
-                '{0}, {1}'.format(virtualenv, opts))
+                '{0}.create_environment({1} {2})'.format(
+                    virtualenv, repr(home_dir), ' '.join(
+                        '{0}={1}'.format(item) for item in opts.items())))
             virtualenv.logger = virtualenv.Logger([(
                 virtualenv.Logger.level_for_integer(2 - self.verbose),
                 sys.stdout)])
