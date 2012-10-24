@@ -1,6 +1,8 @@
 import os
 import zipfile
 
+import pkg_resources
+import distutils.sysconfig
 from distutils.command import sdist
 from distutils import archive_util
 from distutils import dir_util
@@ -48,20 +50,21 @@ class bdist_msdeploy(sdist.sdist):
         # Don't warn about missing meta-data here -- should be (and is!)
         # done elsewhere.
         base_dir = self.distribution.get_version()
+        pkg_dist = pkg_resources.Distribution(
+            None, None, self.distribution.get_name(),
+            self.distribution.get_version(),
+            distutils.sysconfig.get_python_version(),
+            pkg_resources.get_build_platform())
         base_name = os.path.join(
-            self.dist_dir, self.distribution.get_fullname())
+            self.dist_dir, pkg_dist.egg_name() + '.msdeploy')
 
         self.make_release_tree(base_dir, self.filelist.files)
         archive_files = []              # remember names of files we create
-        # tar archive must be created last to avoid overwrite and remove
-        if 'tar' in self.formats:
-            self.formats.append(self.formats.pop(self.formats.index('tar')))
 
-        for fmt in self.formats:
-            file = self.make_archive(base_name, fmt, base_dir=base_dir,
-                                     owner=self.owner, group=self.group)
-            archive_files.append(file)
-            self.distribution.dist_files.append(('sdist', '', file))
+        file = self.make_archive(base_name, 'zip', base_dir=base_dir,
+                                 owner=self.owner, group=self.group)
+        archive_files.append(file)
+        self.distribution.dist_files.append(('msdeploy', '', file))
 
         self.archive_files = archive_files
 
