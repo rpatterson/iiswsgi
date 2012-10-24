@@ -5,6 +5,7 @@ import os
 import logging
 import sysconfig
 
+import distutils.sysconfig
 from distutils import errors
 from distutils import cmd
 
@@ -87,6 +88,15 @@ class develop_virtualenv(cmd.Command):
             sysconfig.get_path('scripts', vars=dict(base=home_dir)),
             'activate_this.py')
         execfile(activate_this, dict(__file__=activate_this))
+
+        # Reinitialize much of distutils since many of the command
+        # objects have prefix related value stored locally
+        reload(distutils.sysconfig)
+        for command in self.distribution.command_obj.itervalues():
+            finalized = command.finalized
+            self.reinitialize_command(command)
+            if finalized:
+                command.ensure_finalized()
 
 
 def has_virtualenv_bootstrap(self):
