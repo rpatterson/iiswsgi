@@ -107,7 +107,7 @@ class install_msdeploy(cmd.Command):
             Install an IIS FastCGI application.
         """
         if not self.skip_virtualenv:
-            self.run_command('develop_virtualenv')
+            self.run_command('install_virtualenv')
         self.run_command('develop')
 
         self.write_web_config(**substitutions)

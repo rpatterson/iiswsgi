@@ -11,10 +11,10 @@ from distutils import cmd
 
 virtualenv_script = 'bootstrap-virtualenv.py'
 
-logger = logging.getLogger('develop_virtualenv')
+logger = logging.getLogger('install_virtualenv')
 
 
-class develop_virtualenv(cmd.Command):
+class install_virtualenv(cmd.Command):
 
     user_options = [
         ('virtualenv-script=', 'v',
