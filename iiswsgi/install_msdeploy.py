@@ -148,43 +148,6 @@ virtualenv.""")] + index_opts
         if not self.skip_fcgi_app_install:
             fcgi.install_fcgi_app()
 
-    def write_web_config(self, **kw):
-        """
-        Write `web.config.in` to `web.config` substituting variables.
-
-        Substitute environment variables overridden by the kwargs
-        using the Python Format String Syntax:
-
-        http://docs.python.org/library/string.html#formatstrings
-
-        This is probably most useful to substitute APPL_PHYSICAL_PATH
-        to make sure that each app gets unique IIS FastCGI application
-        handlers that can each have their own parameters.  If your
-        deployment requires that computed values be included in the
-        substituted variables, then use the `--delegate` option and
-        pass kwargs into `Installer.install()`.
-        """
-        environ = os.environ.copy()
-        environ.update(**kw)
-        web_config = open('web.config.in').read()
-        self.logger.info('Doing variable substitution in web.config')
-        open('web.config', 'w').write(web_config.format(**environ))
-        return environ
-
-    def get_script_path(self, script, **sysconfig_vars):
-        vars_ = self.sysconfig_vars.copy()
-        vars_.update(sysconfig_vars)
-        path = os.path.join(
-            sysconfig.get_path('scripts', vars=vars_),
-            script + sysconfig.get_config_var('EXE'))
-        if not (os.path.isabs(path) or
-                path.startswith(os.curdir) or path.startswith(os.pardir)):
-            # Doing Scripts\easy_install.exe seemed to be getting
-            # C:\Python27\Scripts\easy_install.exe.  May be affected
-            # by PATH.
-            path = os.path.join(os.curdir, path)
-        return path
-
     def setup_virtualenv(self, directory=os.curdir, **opts):
         """
         Set up a virtualenv in the `directory` with options.
@@ -239,19 +202,28 @@ virtualenv.""")] + index_opts
             .format(' '.join(cmd)))
         subprocess.check_call(cmd, env=os.environ)
 
-    def _add_indexes(self, cmd, index_url=None, find_links=None):
-        if index_url is None:
-            index_url = self.index_url
-        if index_url is not None:
-            cmd.append('--index-url=' + index_url)
-        if find_links is None:
-            find_links = ()
-            if self.find_links:
-                find_links = self.find_links
-        if isinstance(find_links, str):
-            find_links = (find_links, )
-        cmd.append('--find-links=' + ' '.join(find_links))
-        return cmd
+    def write_web_config(self, **kw):
+        """
+        Write `web.config.in` to `web.config` substituting variables.
+
+        Substitute environment variables overridden by the kwargs
+        using the Python Format String Syntax:
+
+        http://docs.python.org/library/string.html#formatstrings
+
+        This is probably most useful to substitute APPL_PHYSICAL_PATH
+        to make sure that each app gets unique IIS FastCGI application
+        handlers that can each have their own parameters.  If your
+        deployment requires that computed values be included in the
+        substituted variables, then use the `--delegate` option and
+        pass kwargs into `Installer.install()`.
+        """
+        environ = os.environ.copy()
+        environ.update(**kw)
+        web_config = open('web.config.in').read()
+        self.logger.info('Doing variable substitution in web.config')
+        open('web.config', 'w').write(web_config.format(**environ))
+        return environ
 
     def test(self):
         """Test the WSGI application and FCGI server."""
@@ -269,6 +241,34 @@ virtualenv.""")] + index_opts
                         logger.exception(
                             'FCGI app scriptProcessor not found: {0}'
                             .format(cmd))
+
+    def get_script_path(self, script, **sysconfig_vars):
+        vars_ = self.sysconfig_vars.copy()
+        vars_.update(sysconfig_vars)
+        path = os.path.join(
+            sysconfig.get_path('scripts', vars=vars_),
+            script + sysconfig.get_config_var('EXE'))
+        if not (os.path.isabs(path) or
+                path.startswith(os.curdir) or path.startswith(os.pardir)):
+            # Doing Scripts\easy_install.exe seemed to be getting
+            # C:\Python27\Scripts\easy_install.exe.  May be affected
+            # by PATH.
+            path = os.path.join(os.curdir, path)
+        return path
+
+    def _add_indexes(self, cmd, index_url=None, find_links=None):
+        if index_url is None:
+            index_url = self.index_url
+        if index_url is not None:
+            cmd.append('--index-url=' + index_url)
+        if find_links is None:
+            find_links = ()
+            if self.find_links:
+                find_links = self.find_links
+        if isinstance(find_links, str):
+            find_links = (find_links, )
+        cmd.append('--find-links=' + ' '.join(find_links))
+        return cmd
 
 
 def has_msdeploy_manifest(self):
