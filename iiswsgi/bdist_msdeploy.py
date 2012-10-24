@@ -18,13 +18,16 @@ class bdist_msdeploy(sdist.sdist):
 
     def initialize_options(self):
         sdist.sdist.initialize_options(self)
+        self.build = self.distribution.get_command_obj('build_msdeploy')
+        self.install = self.distribution.get_command_obj('install_msdeploy')
 
     def finalize_options(self):
         sdist.sdist.finalize_options(self)
+        self.build.ensure_finalized()
         self.install.ensure_finalized()
 
     def run(self):
-        self.run_command('build_msdeploy')
+        self.build.run()
         if not os.path.exists(self.manifest_filename):
             raise errors.DistutilsFileError(
                 'No Web Deploy manifest found at {0}'.format(
