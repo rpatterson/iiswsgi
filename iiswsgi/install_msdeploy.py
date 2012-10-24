@@ -242,12 +242,13 @@ virtualenv.""")] + index_opts
                             'FCGI app scriptProcessor not found: {0}'
                             .format(cmd))
 
-    def get_script_path(self, script, **sysconfig_vars):
+    def get_path(self, script, path_name='scripts',
+                        config_name='EXE', **sysconfig_vars):
         vars_ = self.sysconfig_vars.copy()
         vars_.update(sysconfig_vars)
         path = os.path.join(
-            sysconfig.get_path('scripts', vars=vars_),
-            script + sysconfig.get_config_var('EXE'))
+            sysconfig.get_path(path_name, vars=vars_),
+            script + (sysconfig.get_config_var(config_name) or ''))
         if not (os.path.isabs(path) or
                 path.startswith(os.curdir) or path.startswith(os.pardir)):
             # Doing Scripts\easy_install.exe seemed to be getting
