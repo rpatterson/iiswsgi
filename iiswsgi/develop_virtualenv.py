@@ -10,7 +10,7 @@ from setuptools.command import develop
 virtualenv_script = 'bootstrap-virtualenv.py'
 
 
-class virtualenv(develop.develop):
+class develop_virtualenv(develop.develop):
 
     user_options = develop.develop.user_options + [
         ('virtualenv-script=', 'v',

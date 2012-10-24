@@ -31,7 +31,7 @@ from setuptools.command import develop
 from iiswsgi import options
 from iiswsgi import fcgi
 from iiswsgi import build_msdeploy
-from iiswsgi import virtualenv
+from iiswsgi import develop_virtualenv
 
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.install')
@@ -41,11 +41,11 @@ command = __name__.rsplit('.', 1)[1]
 setup_args = [command]
 
 
-class install_msdeploy(virtualenv.virtualenv):
+class install_msdeploy(develop_virtualenv.develop_virtualenv):
     # From module docstring
     description = __doc__ = __doc__
 
-    user_options = virtualenv.virtualenv.user_options + [
+    user_options = develop_virtualenv.develop_virtualenv.user_options + [
         ('skip-virtualenv', 'V',
          "Don't set up a virtualenv in the distribution."),
         ('skip-fcgi-app-install', 'S',
@@ -54,13 +54,15 @@ class install_msdeploy(virtualenv.virtualenv):
     logger = logger
 
     def initialize_options(self):
-        virtualenv.virtualenv.initialize_options(self)
+        develop_virtualenv.develop_virtualenv.initialize_options(self)
         self.skip_virtualenv = False
         self.skip_fcgi_app_install = False
 
         self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
     def finalize_options(self):
+        develop_virtualenv.develop_virtualenv.finalize_options(self)
+
         # Configure logging
         build = self.distribution.get_command_obj('build_msdeploy')
         build.ensure_finalized()
