@@ -2,30 +2,35 @@
 
 import sys
 import os
+import logging
 import sysconfig
 
 from distutils import errors
-
-from setuptools.command import develop
+from distutils import cmd
 
 virtualenv_script = 'bootstrap-virtualenv.py'
 
+logger = logging.getLogger('develop_virtualenv')
 
-class develop_virtualenv(develop.develop):
 
-    user_options = develop.develop.user_options + [
+class develop_virtualenv(cmd.Command):
+
+    user_options = [
         ('virtualenv-script=', 'v',
          "Use a virtualenv bootstrap script if present. [default: {0}]"
          .format(virtualenv_script))]
 
     def initialize_options(self):
-        develop.develop.initialize_options(self)
-        self.virtualenv_script = virtualenv_script
+        self.virtualenv_script = None
+        self.logger = logger
+
+    def finalize_options(self):
+        if self.virtualenv_script is None:
+            self.virtualenv_script = virtualenv_script
 
     def run(self):
         """Set up the virtualenv before installing dependencies."""
         self.setup_virtualenv()
-        develop.develop.run(self)
 
     def setup_virtualenv(
         self, home_dir=os.curdir, bootstrap=None, **opts):

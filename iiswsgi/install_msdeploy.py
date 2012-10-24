@@ -24,13 +24,11 @@ import re
 from xml.dom import minidom
 
 from distutils import core
-
-from setuptools.command import develop
+from distutils import cmd
 
 from iiswsgi import options
 from iiswsgi import fcgi
 from iiswsgi import build_msdeploy
-from iiswsgi import develop_virtualenv
 
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.install')
@@ -40,28 +38,23 @@ command = __name__.rsplit('.', 1)[1]
 setup_args = [command]
 
 
-class install_msdeploy(develop_virtualenv.develop_virtualenv):
+class install_msdeploy(cmd.Command):
     # From module docstring
     description = __doc__ = __doc__
 
-    user_options = develop_virtualenv.develop_virtualenv.user_options + [
-        ('skip-virtualenv', 'V',
-         "Don't set up a virtualenv in the distribution."),
-        ('skip-fcgi-app-install', 'S',
-         "Do not install IIS FCGI apps.")]
+    user_options = [('skip-virtualenv', 'V',
+                     "Don't set up a virtualenv in the distribution."),
+                    ('skip-fcgi-app-install', 'S',
+                     "Do not install IIS FCGI apps.")]
 
     logger = logger
 
     def initialize_options(self):
-        develop_virtualenv.develop_virtualenv.initialize_options(self)
         self.skip_virtualenv = False
         self.skip_fcgi_app_install = False
-
         self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
     def finalize_options(self):
-        develop_virtualenv.develop_virtualenv.finalize_options(self)
-
         # Configure logging
         build = self.distribution.get_command_obj('build_msdeploy')
         build.ensure_finalized()
@@ -114,8 +107,8 @@ class install_msdeploy(develop_virtualenv.develop_virtualenv):
             Install an IIS FastCGI application.
         """
         if not self.skip_virtualenv:
-            self.setup_virtualenv()
-        develop.develop.run(self)
+            self.run_command('develop_virtualenv')
+        self.run_command('develop')
 
         self.write_web_config(**substitutions)
 
