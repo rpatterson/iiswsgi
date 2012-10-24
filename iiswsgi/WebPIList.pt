@@ -1,30 +1,34 @@
 <?xml version="1.0" ?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-  <webpiFile version="4.0.1.0"/>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:define="view options/view">
+  <webpiFile version="4.0.1.0"
+             tal:attributes="version view/webpi_version"/>
 
-  <title>IIS WSGI Sample APP for WebPI Feed</title>
-  <link href="https://raw.github.com/rpatterson/iiswsgi/web-pi.xml"/>
-  <updated>2012-03-25T13:22:48.440870</updated>
+  <title tal:content="view/title">WebPI Feed Title</title>
+  <link href="https://raw.github.com/rpatterson/iiswsgi/iiswsgi/WebPIList.pt"
+        tal:attributes="href view/href"/>
+  <updated tal:content="view/now/isoformat">2012-03-25T13:22:48.440870</updated>
   <author>
-    <name>Ross Patterson</name>
-    <uri>http://rpatterson.net</uri>
+    <name tal:content="view/author_fullname">Ross Patterson</name>
+    <uri  tal:content="view/author_uri">http://rpatterson.net</uri>
   </author>
-  <id>https://raw.github.com/rpatterson/iiswsgi/web-pi.xml</id>
+  <id tal:content="view/id|view/href"
+      >https://raw.github.com/rpatterson/iiswsgi/web-pi.xml</id>
 
-  <!-- Resources -->
   <resourcesList>
     <resources>
       <culture>en</culture>
       <!-- included in file -->
     </resources>
-    <!-- TODO add other languages
+    <tal:comment replace="nothing">
+      TODO add other languages
     <resources>
       <culture>de</culture>
       <url>http://www.microsoft.com/web/webpi/3.0/resources/WebApplicationList_de.xml</url>
     </resources>
-    -->
+    </tal:comment>
   </resourcesList>
-
   <!-- if loaded through a parent XML file then our languages list
        must be a subset of theirs -->
   <languages>
@@ -34,262 +38,8 @@
     </language>
   </languages>
 
-
-  <!-- IISWSGI installed into system python -->
-  <entry type="application">
-    <productId>IISWSGI</productId>
-    <id>https://raw.github.com/rpatterson/iiswsgi</id>
-    <version>0.1</version>
-    
-    <updated>2012-03-25T13:22:48.440870</updated>
-    <published>2012-03-25T13:22:48.440870</published>
-    <title resourceName="Entry_IISWSGI_Title">IIS WSGI Support</title>
-    <link href="https://raw.github.com/rpatterson/iiswsgi"/>
-    <summary resourceName="Entry_IISWSGI_Summary">
-      Support for installing and running Python WSGI applications on
-      IIS through FastCGI.
-    </summary>
-    <author>
-      <name>Ross Patterson</name>
-      <uri>http://rpatterson.net</uri>
-    </author>
-    <frameworkFamily resourceName="Python">Python</frameworkFamily>
-    <keywords>
-      <keywordId>Python</keywordId>
-      <keywordId>Server</keywordId>
-      <keywordId>FrameworkRuntime</keywordId>
-    </keywords>
-    <images>
-      <icon>http://www.python.org/community/logos/python-powered-h-100x130.png</icon>
-    </images>
-    <discoveryHint>
-      <file>
-        <filePath>%SystemDrive%\Python27\Scripts\iiswsgi.exe</filePath>
-      </file>
-    </discoveryHint>
-    <!-- Minimum set of requirements/dependencies in order to
-         successfully install -->
-    <dependency>
-      <and>
-        <dependency>
-          <productId>Python27</productId>
-        </dependency>
-        <dependency>
-          <productId>PyDistributeModule</productId>
-        </dependency>
-      </and>
-    </dependency>
-    <!-- Bring along Visual Studio Python support, if it is not
-         installed as a related/nice-to-have product, not a dependency -->
-    <related>
-      <relatedProduct>
-        <productId>PythonToolsForVS</productId>
-      </relatedProduct>
-    </related>
-    <installers>
-      <installer>
-        <id>1</id>
-        <languageId>en</languageId>     
-        <eulaURL>http://www.gnu.org/licenses/gpl.txt</eulaURL>
-        <installCommands>
-          <cmdLine>
-            <exe>%TMP%\pip_installhelper_27_x86.bat</exe>
-            <commandLineArguments>--log %TMP%\iiswsgi.log install iiswsgi</commandLineArguments>
-            <ignoreExitCode>false</ignoreExitCode>
-          </cmdLine>
-        </installCommands>
-        <logFiles>
-          <location>%TMP%\iiswsgi.log</location>
-        </logFiles>
-        <helpLink>http://github.com/rpatterson/iiswsgi</helpLink>
-      </installer>
-    </installers>
-    <addToFeedDate>8-07-2012</addToFeedDate>
-    <pageName>IISWSGI</pageName>
-    <productFamily resourceName="Applications">Applications</productFamily>
-    <longSummary resourceName="Entry_IISWSGI_LongSummary">
-      The `iiswsgi` module implements a FastCGI to WSGI gateway that
-      is compatible with IIS's variation of the FastCGI protocol.  In
-      particular, it supports using STDIN_FILENO opened twice, once
-      each approximating the recv and send end of a socket as is
-      specified in FastCGI.
-    </longSummary>
-  </entry>
-
-
-  <!-- IISWSGI Sample App with dependencies -->
-  <entry type="application">
-    <productId>IISWSGISampleApp</productId>
-    <!-- TODO what should the id be to get auto-upgrades on minor
-         versions, but not major versions -->
-    <id>https://raw.github.com/rpatterson/iiswsgi/examples/sample.msdeploy</id>
-    <version>0.1</version>
-    
-    <updated>2012-03-25T13:22:48.440870</updated>
-    <published>2012-03-25T13:22:48.440870</published>
-    <title resourceName="Entry_IISWSGISampleApp_Title">IIS WSGI Sample App</title>
-    <link href="https://raw.github.com/rpatterson/iiswsgi/examples/sample.msdeploy"/>
-    <summary resourceName="Entry_IISWSGISampleApp_Summary">
-      Sample app demonstrating the use of IISWSGI.
-    </summary>
-    <author>
-      <name>Ross Patterson</name>
-      <uri>http://rpatterson.net</uri>
-    </author>
-    <frameworkFamily resourceName="Python">Python</frameworkFamily>
-    <keywords>
-      <keywordId>Python</keywordId>
-      <keywordId>Server</keywordId>
-      <keywordId>FrameworkRuntime</keywordId>
-    </keywords>
-    <images>
-      <icon>http://www.python.org/community/logos/python-powered-h-100x130.png</icon>
-    </images>
-    <discoveryHint>
-      <file>
-        <filePath>%APPL_PHYSICAL_PATH%</filePath>
-      </file>
-    </discoveryHint>
-    <!-- Minimum set of requirements/dependencies in order to
-         successfully install -->
-    <dependency>
-      <and>
-        <dependency>
-          <productId>Python27</productId>
-        </dependency>
-        <dependency>
-          <productId>IISWSGI</productId>
-        </dependency>
-        <dependency>
-          <productId>WDeploy</productId>
-        </dependency>
-      </and>
-    </dependency>
-    <related>
-      <relatedProduct>
-          <!--  workaround for "retrieving the com class factory for
-          remote component CLSID 2b72133b-3f5b-4602-8952-803546CE3344
-          error 80040154" when using full IIS -->
-          <productId>IISManagementConsole</productId>
-      </relatedProduct>
-    </related>
-    <installers>
-      <installer>
-        <id>1</id>
-        <!-- List of languages this package is localized in -->
-        <languageId>en</languageId>
-        <installerFile>
-          <!-- size of the package in KBs -->
-          <fileSize>__size__</fileSize>
-          <installerURL>file:///C:/Users/Administrator/Documents/GitHub/iiswsgi/examples/sample.msdeploy/dist/IISWSGISampleApp-0.1.zip</installerURL>
-          <displayURL>http://github.com/rpatterson/iiswsgi/examples/sample.msdeploy</displayURL>
-          <!-- SHA of the package file for signature verification -->
-          <sha1>__sha1__</sha1>
-        </installerFile>
-        <msDeploy/>
-        <helpLink>http://github.com/rpatterson/iiswsgi</helpLink>
-      </installer>
-    </installers>
-    <addToFeedDate>8-07-2012</addToFeedDate>
-    <pageName>IISWSGISampleApp</pageName>
-    <productFamily resourceName="Applications">Applications</productFamily>
-    <longSummary resourceName="Entry_IISWSGISampleApp_LongSummary">
-      A sample MS Web Deploy (MSDeploy) package that uses IISWSGI to
-      install, deploy, and run a Python WSGI application on IIS
-      through FastCGI.
-    </longSummary>
-  </entry>
-
-
-  <!-- Pyramid App with dependencies -->
-  <entry type="application">
-    <productId>PyramidApp</productId>
-    <!-- TODO what should the id be to get auto-upgrades on minor
-         versions, but not major versions -->
-    <id>https://raw.github.com/rpatterson/iiswsgi/examples/pyramid.msdeploy</id>
-    <version>0.1</version>
-    
-    <updated>2012-03-25T13:22:48.440870</updated>
-    <published>2012-03-25T13:22:48.440870</published>
-    <title resourceName="Entry_PyramidApp_Title">Pyramid Application</title>
-    <link href="https://raw.github.com/rpatterson/iiswsgi/examples/pyramid.msdeploy"/>
-    <summary resourceName="Entry_PyramidApp_Summary">
-      Pyramid application project.
-    </summary>
-    <author>
-      <name>Pyramid Community</name>
-      <uri>http://www.pylonsproject.org/projects/pyramid/about</uri>
-    </author>
-    <frameworkFamily resourceName="Python">Python</frameworkFamily>
-    <keywords>
-      <keywordId>Pyramid</keywordId>
-      <keywordId>Python</keywordId>
-      <keywordId>Server</keywordId>
-      <keywordId>FrameworkRuntime</keywordId>
-    </keywords>
-    <images>
-      <icon>http://www.pylonsproject.org/static/images/pyramid.png</icon>
-    </images>
-    <discoveryHint>
-      <file>
-        <filePath>%APPL_PHYSICAL_PATH%</filePath>
-      </file>
-    </discoveryHint>
-    <!-- Minimum set of requirements/dependencies in order to
-         successfully install -->
-    <dependency>
-      <and>
-        <dependency>
-          <productId>Python27</productId>
-        </dependency>
-        <dependency>
-          <productId>IISWSGI</productId>
-        </dependency>
-        <dependency>
-          <productId>WDeploy</productId>
-        </dependency>
-      </and>
-    </dependency>
-    <related>
-      <relatedProduct>
-          <!--  workaround for "retrieving the com class factory for
-          remote component CLSID 2b72133b-3f5b-4602-8952-803546CE3344
-          error 80040154" when using full IIS -->
-          <productId>IISManagementConsole</productId>
-      </relatedProduct>
-      <!-- TODO SQLAlchemy support -->
-    </related>
-    <installers>
-      <installer>
-        <id>1</id>
-        <!-- List of languages this package is localized in -->
-        <languageId>en</languageId>
-        <installerFile>
-          <!-- size of the package in KBs -->
-          <fileSize>__size__</fileSize>
-          <installerURL>file:///C:/Users/Administrator/Documents/GitHub/iiswsgi/examples/pyramid.msdeploy/dist/PyramidApp-0.1.zip</installerURL>
-          <displayURL>http://github.com/rpatterson/iiswsgi/examples/pyramid.msdeploy</displayURL>
-          <!-- SHA of the package file for signature verification -->
-          <sha1>__sha1__</sha1>
-        </installerFile>
-        <msDeploy/>
-        <helpLink>http://github.com/rpatterson/iiswsgi</helpLink>
-      </installer>
-    </installers>
-    <addToFeedDate>8-07-2012</addToFeedDate>
-    <pageName>PyramidApp</pageName>
-    <productFamily resourceName="Applications">Applications</productFamily>
-    <longSummary resourceName="Entry_PyramidApp_LongSummary">
-      Pyramid is a very general open source Python web framework. As a
-      framework, its primary job is to make it easier for a developer
-      to create an arbitrary web application. The type of application
-      being created isn't really important; it could be a spreadsheet,
-      a corporate intranet, or a social networking platform. Pyramid
-      is general enough that it can be used in a wide variety of
-      circumstances.
-    </longSummary>
-  </entry>
-
+<tal:entries tal:repeat="entry view/entries"
+             tal:replace="structure entry" />
 
   <keywords>
     <keyword id="Python" resourceName="Keyword_Python">Python</keyword>
