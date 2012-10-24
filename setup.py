@@ -34,6 +34,8 @@ setup(name='iiswsgi',
            'iiswsgi_webpi = iiswsgi.webpi:webpi_console'],
           'paste.app_factory': ['test_app = iiswsgi.server:make_test_app'],
           "distutils.commands": [
+            "develop_virtualenv = "
+              "iiswsgi.develop_virtualenv:develop_virtualenv",
             "build_msdeploy = iiswsgi.build_msdeploy:build_msdeploy",
             "install_msdeploy = iiswsgi.install_msdeploy:install_msdeploy",
             "bdist_msdeploy = iiswsgi.bdist_msdeploy:bdist_msdeploy"]})
