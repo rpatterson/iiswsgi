@@ -45,6 +45,10 @@ class develop_virtualenv(develop.develop):
             execfile(bootstrap, virtualenv_globals)
 
             argv = [bootstrap]
+            if self.verbose == 0:
+                argv.append('--quiet')
+            elif self.verbose == 2:
+                argv.append('--verbose')
             for option, value in opts.iteritems():
                 argv.extend(['--' + option, value])
             argv.append(home_dir)
@@ -68,6 +72,10 @@ class develop_virtualenv(develop.develop):
             self.logger.info(
                 'Setting up a isolated Python with module: '
                 '{0}, {1}'.format(virtualenv, opts))
+            virtualenv.logger = virtualenv.Logger([(
+                virtualenv.Logger.level_for_integer(2 - self.verbose),
+                sys.stdout)])
+
             virtualenv.create_environment(home_dir, **opts)
 
         activate_this = os.path.join(
