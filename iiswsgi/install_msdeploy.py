@@ -277,9 +277,6 @@ def has_msdeploy_manifest(self):
     cmd.ensure_finalized()
     return os.path.exists(cmd.manifest_filename)
 
-install.install.sub_commands.append(
-    ('install_msdeploy', has_msdeploy_manifest))
-
 
 class Installer(object):
     """
