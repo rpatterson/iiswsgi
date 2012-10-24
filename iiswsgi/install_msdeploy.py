@@ -1,22 +1,21 @@
 """
 Run post-install tasks for a MS Web Deploy package:
 
-2. write variable substitutions into `web.config`
+1. set up a `virtualenv` isolated Python environment
 
-3. install an IIS FastCGI application
+2. easy_install dist requirements
 
-4. set up a `virtualenv` isolated Python environment
+3. write variable substitutions into `web.config`
 
-5. install requirements with `pip` or `easy_install`
+4. install an IIS FastCGI application
 
-7. test the IIS WSGI app
+5. test the IIS WSGI app
 
 Where possible, automatic detection is used when deciding whether to
 run a given task.
 """
 
 import os
-import sys
 import subprocess
 import argparse
 import logging
@@ -25,13 +24,14 @@ import sysconfig
 
 from xml.dom import minidom
 
-from distutils import cmd
-from distutils.command import install
-import distutils.sysconfig
+from distutils import core
+
+from setuptools.command import develop
 
 from iiswsgi import options
 from iiswsgi import fcgi
 from iiswsgi import build_msdeploy
+from iiswsgi import virtualenv
 
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.install')
@@ -39,36 +39,24 @@ logger = logging.getLogger('iiswsgi.install')
 # Default to running this command: ['install_msdeploy']
 command = __name__.rsplit('.', 1)[1]
 setup_args = [command]
-index_opts = [('index=', None,
-               "Use an alternate index for easy_install and pip"),
-              ('find-links=', None,
-               "Additional find-links for easy_install and pip")]
 
 
-class install_msdeploy(cmd.Command):
+class install_msdeploy(virtualenv.virtualenv):
     # From module docstring
     description = __doc__ = __doc__
 
-    user_options = [
-        ('skip-fcgi-app-install', 's', """\
-Run the install process even if the `iis_install.stamp` file is not present.  \
-This can be usefule to manually re-run the deployment after an error that \
-stopped a previous run has been addressed."""),
-        ('requirements-filename=', 'r',
-         "Path to a pip requirements file to install into a virtualenv."),
-        ('easy-install-filename=', 'e', """\
-Path to file with one easy_install requirement per line install into a \
-virtualenv.""")] + index_opts
+    user_options = [('skip-virtualenv', 'V',
+                     "Don't set up a virtualenv in the distribution."),
+                    ('skip-fcgi-app-install', 'S',
+                     "Do not install IIS FCGI apps.")]
 
     logger = logger
 
     def initialize_options(self):
+        virtualenv.virtualenv.initialize_options(self)
+        self.skip_virtualenv = False
         self.skip_fcgi_app_install = False
-        self.requirements_filename = 'requirements.txt'
-        self.easy_install_filename = 'easy_install.txt'
-        self.executable = sys.executable
-        self.index_url = None
-        self.find_links = []
+
         self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
     def finalize_options(self):
@@ -85,10 +73,6 @@ virtualenv.""")] + index_opts
             self.count = int(count)
         else:
             self.count = 0
-
-        self.ensure_string_list('find_links')
-        # grab eggs from real python if available
-        self.find_links.append(distutils.sysconfig.get_python_lib())
 
         self.sysconfig_vars = dict()
 
@@ -113,6 +97,14 @@ virtualenv.""")] + index_opts
         """
         Perform all of the deployment tasks as appropriate.
 
+        `self.setup_virtualenv()`:
+
+            Set up a virtualenv in the distribution.
+
+        `setyp.py develop`:
+
+            Install any requirements using easy_install.
+
         `self.write_web_config()`:
 
             Write variable substitutions into `web.config`.
@@ -120,87 +112,15 @@ virtualenv.""")] + index_opts
         `iiswsgi.fcgi.install_fcgi_app()`:
 
             Install an IIS FastCGI application.
-
-        `self.setup_virtualenv()`:
-
-            If `APPL_PHYSICAL_PATH` has a `requirements.txt` and/or
-            `easy_install.txt` file then a `virtualenv` will be setup
-            to provide an isolated Python environment.
-
-        `self.pip_install_requirements()`, `self.easy_install_requirements()`:
-
-            Use `pip` or `easy_install` to install requirements into
-            the `virtualenv`.
         """
-        # vritualenv and requirements
-        if (os.path.exists(self.requirements_filename) or
-            os.path.exists(self.easy_install_filename)):
+        if not self.skip_virtualenv:
             self.setup_virtualenv()
-
-            if os.path.exists(self.requirements_filename):
-                self.pip_install_requirements()
-
-            if os.path.exists(self.easy_install_filename):
-                self.easy_install_requirements(*requirements)
+        develop.develop.run(self)
 
         self.write_web_config(**substitutions)
 
         if not self.skip_fcgi_app_install:
             fcgi.install_fcgi_app()
-
-    def setup_virtualenv(self, directory=os.curdir, **opts):
-        """
-        Set up a virtualenv in the `directory` with options.
-        """
-        cmd = [self.get_script_path('virtualenv')]
-        for option, value in opts.iteritems():
-            cmd.extend(['--' + option, value])
-        cmd.extend([directory])
-        self.logger.info(
-            'Setting up a isolated Python with: {0}'.format(
-                ' '.join(cmd)))
-        subprocess.check_call(cmd, env=os.environ)
-        self.sysconfig_vars['base'] = directory
-        self.executable = os.path.abspath(self.get_script_path('python'))
-        return self.executable
-
-    def pip_install_requirements(
-        self, filename=None, requirements=(),
-        index_url=None, find_links=None):
-        """Use pip to install requirements from the given file."""
-        if not filename and not requirements:
-            filename = self.requirements_filename
-        cmd = [self.get_script_path('pip'), 'install']
-        self._add_indexes(cmd, find_links)
-        if filename:
-            cmd.extend(['-r', filename])
-        if requirements:
-            cmd.extend(requirements)
-        self.logger.info(
-            'Installing dependencies with pip: {0}'.format(
-                ' '.join(cmd)))
-        subprocess.check_call(cmd, env=os.environ)
-
-    def easy_install_requirements(
-        self, filename=None, requirements=(), index_url=None, find_links=None):
-        """
-        Use easy_install to install requirements.
-
-        The requiremensts can be given as arguments or one per-line in
-        the `filename`.
-        """
-        if not filename and not requirements:
-            filename = self.easy_install_filename
-        cmd = [self.get_script_path('easy_install')]
-        self._add_indexes(cmd, find_links)
-        if filename:
-            cmd.extend([line.strip() for line in open(filename)])
-        if requirements:
-            cmd.extend(requirements)
-        self.logger.info(
-            'Installing dependencies with easy_install: {0}'
-            .format(' '.join(cmd)))
-        subprocess.check_call(cmd, env=os.environ)
 
     def write_web_config(self, **kw):
         """
@@ -257,20 +177,6 @@ virtualenv.""")] + index_opts
             path = os.path.join(os.curdir, path)
         return path
 
-    def _add_indexes(self, cmd, index_url=None, find_links=None):
-        if index_url is None:
-            index_url = self.index_url
-        if index_url is not None:
-            cmd.append('--index-url=' + index_url)
-        if find_links is None:
-            find_links = ()
-            if self.find_links:
-                find_links = self.find_links
-        if isinstance(find_links, str):
-            find_links = (find_links, )
-        cmd.append('--find-links=' + ' '.join(find_links))
-        return cmd
-
 
 def has_msdeploy_manifest(self):
     cmd = self.distribution.get_command_obj('build_msdeploy')
@@ -297,8 +203,6 @@ class Installer(object):
             self.app_name_pattern = re.compile(
                 self.app_name_pattern.format(app_name))
         self.require_stamp = require_stamp
-
-        self.executable = sys.executable
 
     def __call__(self, setup_args=setup_args):
         appl_physical_path = self.get_appl_physical_path()

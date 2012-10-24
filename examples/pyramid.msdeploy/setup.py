@@ -54,6 +54,7 @@ setup(name='PyramidApp',
       author_email='me@rpatterson.net',
       url='http://www.pylonsproject.org/projects/pyramid/about',
       license='GPL version 3',
+      install_requires=['iiswsgi', 'pyramid'],
       # TODO get the custom commands to work without iiswsgi installed
       # in the python
       setup_requires=['setuptools-git',

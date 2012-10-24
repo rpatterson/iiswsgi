@@ -1,5 +1,4 @@
 include *.py
 
 include web.config.in
-include requirements.txt
 include iis_install.stamp
