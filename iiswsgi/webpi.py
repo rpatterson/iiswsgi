@@ -23,8 +23,9 @@ import subprocess
 import shutil
 import logging
 import argparse
-import urlparse
 import errno
+import datetime
+import sysconfig
 
 from xml.dom import minidom
 
@@ -52,7 +53,11 @@ def get_app_name(manifest):
 class WebPIBuilder(object):
     __doc__ = __doc__
 
-    feed_name = 'web-pi.xml'
+    feed_template = os.path.join(os.path.dirname(__file__), 'WebPIList.pt')
+    msdeploy_url_template = ('http://pypi.python.org/packages/{VERSION}/'
+                             '{letter}/{name}/{msdeploy_file}')
+    license_urls = {'GPL': 'http://www.gnu.org/licenses/gpl.txt'}
+
     webpi_installer_cache = None
     if 'LOCALAPPDATA' in os.environ:
         webpi_installer_cache = os.path.join(
@@ -112,6 +117,13 @@ class WebPIBuilder(object):
                     letter=msdeploy_file[0], name=dist.get_name(),
                     msdeploy_file=msdeploy_file)
 
+            dist.msdeploy_package = os.path.abspath(
+                os.path.join('dist', msdeploy_file))
+
+            lic = dist.get_license()
+            if lic in self.license_urls:
+                dist.liscense_url = self.license_urls[lic]
+
             webpi_size = os.path.getsize(dist.msdeploy_package)
             cmd = ['fciv', '-sha1', dist.msdeploy_package]
             webpi_sha1 = ''
@@ -160,7 +172,13 @@ class WebPIBuilder(object):
         template = pagetemplatefile.PageTemplateFile(self.feed_template)
         logger.info('Writing Web Platform Installer feed to {0}'.format(
             self.feed))
-        open(self.feed, 'w').write(template(view=self, **kw))
+
+        view = core.run_setup('setup.py', stop_after='commandline')
+        view.context = self
+        view.dists = self.dists
+        view.now = datetime.datetime.now()
+
+        open(self.feed, 'w').write(template(view=view, **kw))
         return template
 
     def delete_feed_cache(self, feed):

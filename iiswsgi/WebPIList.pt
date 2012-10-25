@@ -1,20 +1,20 @@
 <?xml version="1.0" ?>
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
-      tal:define="view options/view">
+      tal:define="view nocall:options/view">
   <webpiFile version="4.0.1.0"
-             tal:attributes="version view/webpi_version"/>
+             tal:attributes="version view/get_version;"/>
 
-  <title tal:content="view/title">WebPI Feed Title</title>
-  <link href="https://raw.github.com/rpatterson/iiswsgi/iiswsgi/WebPIList.pt"
-        tal:attributes="href view/href"/>
+  <title tal:content="view/get_name">WebPI Feed Title</title>
+  <link href="https://raw.github.com/authorname/dist/dist/WebPIList.pt"
+        tal:attributes="href view/get_url;"/>
   <updated tal:content="view/now/isoformat">2012-03-25T13:22:48.440870</updated>
   <author>
-    <name tal:content="view/author_fullname">Ross Patterson</name>
-    <uri  tal:content="view/author_uri">http://rpatterson.net</uri>
+    <name tal:content="view/get_author">Author Name</name>
+    <uri  tal:content="view/get_author_email">http://authorname.net</uri>
   </author>
-  <id tal:content="view/id|view/href"
-      >https://raw.github.com/rpatterson/iiswsgi/web-pi.xml</id>
+  <id tal:content="view/id|view/get_url"
+      >https://raw.github.com/authorname/dist/WebPIList.xml</id>
 
   <resourcesList>
     <resources>
