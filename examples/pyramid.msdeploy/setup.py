@@ -27,7 +27,10 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         from pyramid.scripts import pcreate
         argv = ['pcreate', '-s', scaffold, '__pyramid_project__']
         logger.info('Creating Pyramid project: {0}'.format(' '.join(argv)))
-        pcreate.main(argv, quiet=(self.verbose == 0))
+        returncode = pcreate.main(argv, quiet=(self.verbose == 0))
+        if returncode:
+            raise errors.DistutilsError(
+                "Pyramid's pcreate returned an error: {0}".format(returncode))
 
         cwd = os.getcwd()
         logger.info(
