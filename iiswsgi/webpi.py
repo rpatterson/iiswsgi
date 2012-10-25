@@ -112,12 +112,6 @@ class build_webpi(cmd.Command):
             dist.bdist_msdeploy = dist.build.get_finalized_command(
                 'bdist_msdeploy')
             msdeploy_file = dist.bdist_msdeploy.get_msdeploy_name() + '.zip'
-            if dist.has_msdeploy_manifest:
-                dist.msdeploy_url = self.msdeploy_url_template.format(
-                    VERSION=sysconfig.get_config_var('VERSION'),
-                    letter=msdeploy_file[0], name=dist.get_name(),
-                    msdeploy_file=msdeploy_file)
-
             dist.msdeploy_package = os.path.abspath(
                 os.path.join('dist', msdeploy_file))
 
@@ -136,7 +130,18 @@ class build_webpi(cmd.Command):
                 webpi_sha1 = webpi_sha1_output.rsplit(
                     '\r\n', 2)[-2].split(' ', 1)[0]
         finally:
-            os.chdir(self.cwd)
+            os.chdir(cwd)
+
+        if dist.has_msdeploy_manifest:
+            msdeploy_url_template = getattr(
+                dist, 'msdeploy_url_template', None)
+            if not msdeploy_url_template:
+                msdeploy_url_template = self.msdeploy_url_template
+            kwargs = sysconfig.get_config_vars()
+            kwargs.update(dist.metadata.__dict__)
+            dist.msdeploy_url = msdeploy_url_template.format(
+                letter=msdeploy_file[0].lower(),
+                msdeploy_file=msdeploy_file, **kwargs)
 
         dist.webpi_size = int(round(webpi_size / 1024.0))
         dist.webpi_sha1 = webpi_sha1
