@@ -26,6 +26,9 @@ from iiswsgi import clean_webpi
 
 logger = logging.getLogger('iiswsgi.webpi')
 
+msdeploy_url_template = (
+    'http://pypi.python.org/packages/{VERSION}/{letter}/{name}/{msdeploy_file}'
+    )
 
 
 class bdist_webpi(cmd.Command):
@@ -36,20 +39,24 @@ class bdist_webpi(cmd.Command):
          "The zope.pagetemplate file used to render the feed."),
         ('dist-dir=', 'd',
          "directory to put the source distribution archive(s) in "
-         "[default: dist]")]
+         "[default: dist]"),
+        ('msdeploy-url-template=', 'u', """\
+Python string.format() template expanded into the MSDeploy package download \
+URL.  If setup() has a msdeploy_url_template kwargs, it overrides the \
+default, but passing this option overrides both.  Use \
+'{{msdeploy_package_url}}' to use a local file:/// URL for testing.  \
+[default: {0}]""".format(
+             msdeploy_url_template))]
 
     pkg_info_attrs = {'summary': 'description',
                       'description': 'long_description',
                       'home-page': 'url',
                       'author-email': 'author_email'}
 
-    msdeploy_url_template = (
-        'http://pypi.python.org/packages/{VERSION}/'
-        '{letter}/{name}/{msdeploy_file}')
-
     def initialize_options(self):
         self.template = None
         self.dist_dir = None
+        self.msdeploy_url_template = None
 
     def finalize_options(self):
         self.distributions = []
@@ -60,6 +67,8 @@ class bdist_webpi(cmd.Command):
         self.template = pagetemplatefile.PageTemplateFile(self.template)
         if self.dist_dir is None:
             self.dist_dir = "dist"
+        if self.msdeploy_url_template is None:
+            self.msdeploy_url_template = msdeploy_url_template
         options.ensure_verbosity(self)
 
     def run(self):
