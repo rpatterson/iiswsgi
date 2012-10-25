@@ -16,7 +16,6 @@ from distutils import errors
 from iiswsgi import options
 
 manifest_filename = 'Manifest.xml'
-stamp_filename = 'iis_install.stamp'
 msdeploy_exe = None
 if 'PROGRAMFILES' in os.environ:
     msdeploy_exe = os.path.join(
@@ -49,7 +48,7 @@ class build_msdeploy(cmd.Command):
 
     def initialize_options(self):
         self.manifest_filename = manifest_filename
-        self.stamp_filename = stamp_filename
+        self.stamp_filename = options.stamp_filename
         self.msdeploy_exe = msdeploy_exe
 
     def finalize_options(self):

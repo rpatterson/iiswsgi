@@ -4,8 +4,11 @@ import multiprocessing
 import subprocess
 import argparse
 import pprint
+import re
 
 from xml.dom import minidom
+
+from iiswsgi import options
 
 logger = logging.getLogger('iiswsgi.fcgi')
 
@@ -49,6 +52,34 @@ def get_appcmd_apps(appcmd_exe=None):
     apps_dom = minidom.parseString(apps_output)
     for app in apps_dom.getElementsByTagName('application'):
         yield dict((key, value) for key, value in app.attributes.items())
+
+
+def list_stamp_paths(app_name=None, stamp_filename=options.stamp_filename,
+                     appcmd_exe=None):
+    appcmd_exe = get_appcmd_exe(appcmd_exe)
+    if appcmd_exe is None:
+        return
+    if app_name:
+        app_name_pattern = re.compile('^{0}[0-9]*$'.format(app_name))
+    cmd = [appcmd_exe, 'list', 'config',
+           '/section:system.applicationHost/sites', '/xml']
+    logger.info(
+        ('Querying appcmd.exe for '
+         'sites/site/application/virtualDirectory/@physicalPath: {0}'
+         ).format(' '.join(cmd)))
+    sites_output = subprocess.check_output(cmd)
+    sites_dom = minidom.parseString(sites_output)
+    for site in reversed(sites_dom.getElementsByTagName('site')):
+        site_name = site.getAttribute('name')
+        if app_name and app_name_pattern.match(site_name) is None:
+            # Not an instance of this app
+            continue
+
+        for app in site.getElementsByTagName('application'):
+            for vdir in app.getElementsByTagName('virtualDirectory'):
+                path = vdir.getAttribute('physicalPath')
+                if os.path.exists(os.path.join(path, stamp_filename)):
+                    yield path
 
 
 def format_appcmd_attrs(**kw):

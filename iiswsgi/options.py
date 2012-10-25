@@ -3,6 +3,8 @@ import os
 import argparse
 import logging
 
+stamp_filename = 'iis_install.stamp'
+
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi')
 

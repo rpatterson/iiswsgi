@@ -31,6 +31,7 @@ from xml.dom import minidom
 from distutils import core
 
 from iiswsgi import options
+from iiswsgi import fcgi
 from iiswsgi import build_msdeploy
 from iiswsgi import install_msdeploy
 from iiswsgi import bdist_msdeploy
@@ -57,10 +58,7 @@ class WebPIBuilder(object):
         webpi_installer_cache = os.path.join(
             os.environ['LOCALAPPDATA'],
             'Microsoft', 'Web Platform Installer', 'installers')
-    iis_sites_home = None
-    if 'USERPROFILE' in os.environ:
-        iis_sites_home = os.path.join(
-            os.environ['USERPROFILE'], 'Documents', 'My Web Sites')
+    stamp_filename = options.stamp_filename
     feed_dir = None
     if 'LOCALAPPDATA' in os.environ:
         feed_dir = os.path.join(
@@ -148,15 +146,10 @@ class WebPIBuilder(object):
 
     def delete_stamp_files(self, dist):
         """Clean up likely stale stamp files."""
-        if not self.iis_sites_home:
-            logger.error('No IIS sites directory')
-            return
-        for name in os.listdir(self.iis_sites_home):
-            if not (os.path.isdir(os.path.join(self.iis_sites_home, name)) and
-                    name.startswith(dist.msdeploy_app_name)):
-                continue
+        for appl_physical_path in fcgi.list_stamp_paths(
+            dist.msdeploy_app_name, self.stamp_filename):
             stamp_file = os.path.join(
-                self.iis_sites_home, name, 'iis_install.stamp')
+                appl_physical_path, self.stamp_filename)
             if os.path.exists(stamp_file):
                 logger.info('Removing stale install stamp file: {0}'.format(
                     stamp_file))

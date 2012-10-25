@@ -171,15 +171,11 @@ class Installer(object):
     """.format(' '.join(setup_args))
 
     logger = logger
-    app_name_pattern = '^{0}[0-9]*$'
-    stamp_filename = build_msdeploy.stamp_filename
+    stamp_filename = options.stamp_filename
 
     def __init__(self, app_name=None, require_stamp=True,
                  install_fcgi_app=True):
         self.app_name = app_name
-        if app_name:
-            self.app_name_pattern = re.compile(
-                self.app_name_pattern.format(app_name))
         self.require_stamp = require_stamp
 
     def __call__(self, setup_args=setup_args):
@@ -235,29 +231,8 @@ class Installer(object):
             self.logger.info(
                 'APPL_PHYSICAL_PATH environment variable not set')
 
-        appcmd_exe = fcgi.get_appcmd_exe(appcmd_exe)
-        cmd = [appcmd_exe, 'list', 'config',
-               '/section:system.applicationHost/sites', '/xml']
-        self.logger.info(
-            ('Querying appcmd.exe for '
-             'sites/site/application/virtualDirectory/@physicalPath: {0}'
-             ).format(' '.join(cmd)))
-        sites_output = subprocess.check_output(cmd)
-        sites_dom = minidom.parseString(sites_output)
-        appl_physical_paths = []
-        for site in reversed(sites_dom.getElementsByTagName('site')):
-            site_name = site.getAttribute('name')
-            if self.app_name and self.app_name_pattern.match(
-                site_name) is None:
-                # Not an instance of this app
-                continue
-
-            for app in site.getElementsByTagName('application'):
-                for vdir in app.getElementsByTagName('virtualDirectory'):
-                    path = vdir.getAttribute('physicalPath')
-                    if os.path.exists(os.path.join(path, self.stamp_filename)):
-                        appl_physical_paths.append(path)
-
+        appl_physical_paths = list(fcgi.list_appl_physical_paths(
+            self.app_name, self.stamp_filename, appcmd_exe))
         if not appl_physical_paths:
             raise ValueError(
                 ('Found no {0} stamp file in any of the virtual directories '
