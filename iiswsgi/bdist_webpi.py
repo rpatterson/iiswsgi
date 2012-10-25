@@ -24,11 +24,16 @@ import logging
 import errno
 import datetime
 import sysconfig
+import rfc822
+import StringIO
 
 from xml.dom import minidom
 
+import pkg_resources
 from distutils import core
+from distutils import dist
 from distutils import cmd
+from distutils import errors
 
 from iiswsgi import options
 from iiswsgi import fcgi
@@ -53,12 +58,16 @@ class bdist_webpi(cmd.Command):
     __doc__ = __doc__
 
     user_options = [
-        ('dists=', 's', "The distributions to include in the feed."),
         ('template=', 't',
          "The zope.pagetemplate file used to render the feed."),
         ('dist-dir=', 'd',
          "directory to put the source distribution archive(s) in "
          "[default: dist]")]
+
+    pkg_info_attrs = {'summary': 'description',
+                      'description': 'long_description',
+                      'home-page': 'url',
+                      'author-email': 'author_email'}
 
     msdeploy_url_template = (
         'http://pypi.python.org/packages/{VERSION}/'
@@ -75,12 +84,10 @@ class bdist_webpi(cmd.Command):
             os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
 
     def initialize_options(self):
-        self.dists = None
         self.template = None
         self.dist_dir = None
 
     def finalize_options(self):
-        self.ensure_string_list('dists')
         self.distributions = []
         self.ensure_filename('template')
         if self.template is None:
@@ -91,15 +98,19 @@ class bdist_webpi(cmd.Command):
             self.dist_dir = "dist"
 
     def run(self):
-        for path in self.dists:
-            dist = self.build_package(path)
-            self.distributions.append(dist)
-            if not dist.has_msdeploy_manifest:
+        for path in self.distribution.bdist_msdeploy:
+            distribution = self.add_msdeploy(path)
+            self.distributions.append(distribution)
+            if not distribution.has_msdeploy_manifest:
                 continue
             manifest = minidom.parse(os.path.join(path, 'Manifest.xml'))
-            dist.msdeploy_app_name = get_app_name(manifest)
-            self.delete_installer_cache(dist)
-            self.delete_stamp_files(dist)
+            distribution.msdeploy_app_name = get_app_name(manifest)
+            self.delete_installer_cache(distribution)
+            self.delete_stamp_files(distribution)
+
+        for name in self.distribution.extras_require['bdist_webpi']:
+            distribution = self.add_dist(name)
+            self.distributions.append(distribution)
 
         dist_feed = os.path.join(
             self.dist_dir,
@@ -108,26 +119,28 @@ class bdist_webpi(cmd.Command):
         self.distribution.dist_files.append(('webpi', '', dist_feed))
         self.delete_feed_cache()
 
-    def build_package(self, path, *args):
+    def add_msdeploy(self, path, *args):
         cwd = os.getcwd()
         try:
             os.chdir(path)
             # TODO get dist without location?  From path?
-            dist = core.run_setup('setup.py', stop_after='commandline')
+            distribution = core.run_setup('setup.py', stop_after='commandline')
 
-            dist.build = dist.get_command_obj('build')
-            dist.build.ensure_finalized()
-            dist.has_msdeploy_manifest = (
-                'build_msdeploy' in dist.build.get_sub_commands())
-            if not dist.has_msdeploy_manifest:
-                return dist
+            distribution.build = distribution.get_command_obj('build')
+            distribution.build.ensure_finalized()
+            distribution.has_msdeploy_manifest = (
+                'build_msdeploy' in distribution.build.get_sub_commands())
+            if not distribution.has_msdeploy_manifest:
+                raise errors.DistutilsFileError(
+                    'No Web Deploy manifest found for {0}'.format(path))
 
-            dist.msdeploy_file = options.get_egg_name(dist) + '.msdeploy.zip'
-            dist.msdeploy_package = os.path.abspath(
-                os.path.join('dist', dist.msdeploy_file))
+            distribution.msdeploy_file = options.get_egg_name(
+                distribution) + '.msdeploy.zip'
+            distribution.msdeploy_package = os.path.abspath(
+                os.path.join('dist', distribution.msdeploy_file))
 
-            webpi_size = os.path.getsize(dist.msdeploy_package)
-            cmd = ['fciv', '-sha1', dist.msdeploy_package]
+            webpi_size = os.path.getsize(distribution.msdeploy_package)
+            cmd = ['fciv', '-sha1', distribution.msdeploy_package]
             webpi_sha1 = ''
             try:
                 webpi_sha1_output = subprocess.check_output(cmd)
@@ -144,34 +157,43 @@ class bdist_webpi(cmd.Command):
             os.chdir(cwd)
 
         msdeploy_url_template = getattr(
-            dist, 'msdeploy_url_template', None)
+            distribution, 'msdeploy_url_template', None)
         if not msdeploy_url_template:
             msdeploy_url_template = self.msdeploy_url_template
         kwargs = sysconfig.get_config_vars()
-        kwargs.update(dist.metadata.__dict__)
-        dist.msdeploy_url = msdeploy_url_template.format(
-            letter=dist.msdeploy_file[0].lower(),
-            msdeploy_file=dist.msdeploy_file, **kwargs)
+        kwargs.update(distribution.metadata.__dict__)
+        distribution.msdeploy_url = msdeploy_url_template.format(
+            letter=distribution.msdeploy_file[0].lower(),
+            msdeploy_file=distribution.msdeploy_file, **kwargs)
 
-        dist.webpi_size = int(round(webpi_size / 1024.0))
-        dist.webpi_sha1 = webpi_sha1
-        return dist
+        distribution.webpi_size = int(round(webpi_size / 1024.0))
+        distribution.webpi_sha1 = webpi_sha1
+        return distribution
 
-    def delete_installer_cache(self, dist):
+    def add_dist(self, name):
+        pkg_dist = pkg_resources.get_distribution(name)
+        pkg_info = pkg_dist.get_metadata('PKG-INFO')
+        msg = rfc822.Message(StringIO.StringIO(pkg_info))
+        attrs = dict((self.pkg_info_attrs.get(key, key), value)
+                     for key, value in msg.items() if value != 'UNKNOWN')
+        distribution = dist.Distribution(attrs)
+        return distribution
+
+    def delete_installer_cache(self, distribution):
         if not self.webpi_installer_cache:
             logger.error('No WebPI installer cache')
             return
         installer_dir = os.path.join(self.webpi_installer_cache,
-                                     dist.msdeploy_app_name)
+                                     distribution.msdeploy_app_name)
         if os.path.exists(installer_dir):
             logger.info('Removing the cached MSDeploy package: {0}'.format(
                 installer_dir))
             shutil.rmtree(installer_dir)
 
-    def delete_stamp_files(self, dist):
+    def delete_stamp_files(self, distribution):
         """Clean up likely stale stamp files."""
         for appl_physical_path in fcgi.list_stamp_paths(
-            dist.msdeploy_app_name, self.stamp_filename):
+            distribution.msdeploy_app_name, self.stamp_filename):
             stamp_file = os.path.join(
                 appl_physical_path, self.stamp_filename)
             if os.path.exists(stamp_file):
@@ -206,7 +228,7 @@ class bdist_webpi(cmd.Command):
             cached_ids = [node for node in cached_feed.childNodes
                           if node.nodeName == 'id']
             if cached_ids and (
-                cached_ids[0].firstChild.data == self.dist.get_url()):
+                cached_ids[0].firstChild.data == self.distribution.get_url()):
                 logger.info(
                     'Removing the Web Platform Installer cached feed at {0}'
                     .format(cached_feed_path))

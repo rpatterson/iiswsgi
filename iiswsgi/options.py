@@ -19,6 +19,19 @@ def assert_string(dist, attr, value):
             'The {0} option must be a string: {1}'.format(attr, value))
 
 
+def assert_editable_dists(dist, attr, value):
+    for path in value:
+        if os.path.isdir(path):
+            if not os.path.isfile(os.path.join(path, 'setup.py')):
+                raise errors.DistutilsOptionError(
+                    'The {0} option must be a directory containing setup.py: '
+                    '{1}'.format(attr, path))
+        elif not os.path.exists(path):
+            raise errors.DistutilsOptionError(
+                'The {0} option must be an existing directory containing '
+                'setup.py or a setup script istself: {1}' .format(attr, path))
+
+
 def increase_verbosity():
     root.setLevel(root.level - 10)
     if root.level == logging.DEBUG:
