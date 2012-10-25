@@ -9,8 +9,6 @@ import sysconfig
 import rfc822
 import StringIO
 
-from xml.dom import minidom
-
 import pkg_resources
 from distutils import core
 from distutils import dist
@@ -26,15 +24,6 @@ from iiswsgi import clean_webpi
 
 logger = logging.getLogger('iiswsgi.webpi')
 
-
-def get_app_name(manifest):
-    """Return the <iisApp> name from a Manifest.xml DOM."""
-    iisapps = manifest.getElementsByTagName('iisApp')
-    if not iisapps:
-        raise ValueError('No <iisApp> elements found in Manifest.xml')
-    elif len(iisapps) > 1:
-        raise ValueError('Multiple <iisApp> elements found in Manifest.xml')
-    return iisapps[0].getAttribute('path')
 
 
 class bdist_webpi(cmd.Command):
@@ -94,8 +83,7 @@ class bdist_webpi(cmd.Command):
             self.distributions.append(distribution)
             if not distribution.has_msdeploy_manifest:
                 continue
-            manifest = minidom.parse(os.path.join(path, 'Manifest.xml'))
-            distribution.msdeploy_app_name = get_app_name(manifest)
+            distribution.msdeploy_app_name = clean_webpi.get_app_name(path)
 
         for name in self.distribution.extras_require['bdist_webpi']:
             distribution = self.add_dist(name)

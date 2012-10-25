@@ -18,6 +18,17 @@ webpi_cache = os.path.join(
 logger = logging.getLogger('iiswsgi.webpi')
 
 
+def get_app_name(path):
+    """Return the <iisApp> name from a Manifest.xml DOM."""
+    manifest = minidom.parse(os.path.join(path, 'Manifest.xml'))
+    iisapps = manifest.getElementsByTagName('iisApp')
+    if not iisapps:
+        raise ValueError('No <iisApp> elements found in Manifest.xml')
+    elif len(iisapps) > 1:
+        raise ValueError('Multiple <iisApp> elements found in Manifest.xml')
+    return iisapps[0].getAttribute('path')
+
+
 class clean_webpi(cmd.Command):
     description = __doc__ = __doc__
 
@@ -41,6 +52,7 @@ class clean_webpi(cmd.Command):
     def run(self):
         for path in self.distribution.bdist_msdeploy:
             distribution = core.run_setup('setup.py', stop_after='commandline')
+            distribution.msdeploy_app_name = get_app_name(path)
             self.delete_installer_cache(distribution)
             self.delete_stamp_files(distribution)
         self.delete_feed_cache()
