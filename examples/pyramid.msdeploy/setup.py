@@ -35,8 +35,8 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         cwd = os.getcwd()
         logger.info(
             'Installing __pyramid_project__ project for development')
-        os.chdir('__pyramid_project__')
         try:
+            os.chdir('__pyramid_project__')
             return core.run_setup('setup.py', script_args=['develop'])
         finally:
             os.chdir(cwd)
