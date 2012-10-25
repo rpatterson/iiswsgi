@@ -7,7 +7,7 @@ distributions inclued are taken from setup.py keywords:
 
 bdist_msdeploy
 
-    A setup() kwargs containing a list of paths to distributions each
+    A setup() kwarg containing a list of paths to distributions each
     containing built MSDeploy packages to include in the feed.
 
 extras_require['bdist_webpi']
