@@ -66,8 +66,8 @@
     </summary>
     <author>
       <name tal:content="dist/get_author">Author Name</name>
-      <uri  tal:condition="view/author_url|nothing"
-            tal:content="view/author_url"
+      <uri  tal:condition="dist/author_url|nothing"
+            tal:content="dist/author_url"
             >http://author.net</uri>
     </author>
     <frameworkFamily resourceName="Python"
