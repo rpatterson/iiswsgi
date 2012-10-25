@@ -32,7 +32,7 @@ msdeploy_url_template = (
 
 
 class bdist_webpi(cmd.Command):
-    __doc__ = __doc__
+    description = __doc__ = __doc__
 
     user_options = [
         ('template=', 't',
