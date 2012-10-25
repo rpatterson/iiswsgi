@@ -94,6 +94,8 @@ class bdist_webpi(cmd.Command):
         for path in self.dists:
             dist = self.build_package(path)
             self.distributions.append(dist)
+            if not dist.has_msdeploy_manifest:
+                continue
             manifest = minidom.parse(os.path.join(path, 'Manifest.xml'))
             dist.msdeploy_app_name = get_app_name(manifest)
             self.delete_installer_cache(dist)
@@ -117,6 +119,8 @@ class bdist_webpi(cmd.Command):
             dist.build.ensure_finalized()
             dist.has_msdeploy_manifest = (
                 'build_msdeploy' in dist.build.get_sub_commands())
+            if not dist.has_msdeploy_manifest:
+                return dist
 
             dist.msdeploy_file = options.get_egg_name(dist) + '.msdeploy.zip'
             dist.msdeploy_package = os.path.abspath(
@@ -139,16 +143,15 @@ class bdist_webpi(cmd.Command):
         finally:
             os.chdir(cwd)
 
-        if dist.has_msdeploy_manifest:
-            msdeploy_url_template = getattr(
-                dist, 'msdeploy_url_template', None)
-            if not msdeploy_url_template:
-                msdeploy_url_template = self.msdeploy_url_template
-            kwargs = sysconfig.get_config_vars()
-            kwargs.update(dist.metadata.__dict__)
-            dist.msdeploy_url = msdeploy_url_template.format(
-                letter=msdeploy_file[0].lower(),
-                msdeploy_file=msdeploy_file, **kwargs)
+        msdeploy_url_template = getattr(
+            dist, 'msdeploy_url_template', None)
+        if not msdeploy_url_template:
+            msdeploy_url_template = self.msdeploy_url_template
+        kwargs = sysconfig.get_config_vars()
+        kwargs.update(dist.metadata.__dict__)
+        dist.msdeploy_url = msdeploy_url_template.format(
+            letter=dist.msdeploy_file[0].lower(),
+            msdeploy_file=dist.msdeploy_file, **kwargs)
 
         dist.webpi_size = int(round(webpi_size / 1024.0))
         dist.webpi_sha1 = webpi_sha1
