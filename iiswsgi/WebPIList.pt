@@ -127,8 +127,8 @@
           <cmdLine>
             <exe>%TMP%\pip_installhelper_27_x86.bat</exe>
             <commandLineArguments
-               tal:content="string:--log %TMP%\${dist/get_name}.log install ${dist/get_name}"
-               >--log %TMP%\dist.log install dist</commandLineArguments>
+               tal:content="string:--log %TMP%\${dist/get_name}.log install ${dist/get_name}==${dist/get_version}"
+               >--log %TMP%\dist.log install dist==version</commandLineArguments>
             <ignoreExitCode>false</ignoreExitCode>
           </cmdLine>
         </installCommands>
