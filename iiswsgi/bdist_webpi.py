@@ -8,6 +8,8 @@ import datetime
 import sysconfig
 import rfc822
 import StringIO
+import urllib
+import urlparse
 
 import pkg_resources
 from distutils import core
@@ -113,6 +115,9 @@ class bdist_webpi(cmd.Command):
                 distribution) + '.msdeploy.zip'
             distribution.msdeploy_package = os.path.abspath(
                 os.path.join('dist', distribution.msdeploy_file))
+            distribution.msdeploy_package_url = urlparse.urlunsplit((
+                'file', '', urllib.pathname2url(distribution.msdeploy_package),
+                '', ''))
 
             webpi_size = os.path.getsize(distribution.msdeploy_package)
             cmd = ['fciv', '-sha1', distribution.msdeploy_package]
@@ -139,7 +144,10 @@ class bdist_webpi(cmd.Command):
         kwargs.update(distribution.metadata.__dict__)
         distribution.msdeploy_url = msdeploy_url_template.format(
             letter=distribution.msdeploy_file[0].lower(),
-            msdeploy_file=distribution.msdeploy_file, **kwargs)
+            msdeploy_file=distribution.msdeploy_file,
+            msdeploy_package=distribution.msdeploy_package,
+            msdeploy_package_url=distribution.msdeploy_package_url,
+            **kwargs)
 
         distribution.webpi_size = int(round(webpi_size / 1024.0))
         distribution.webpi_sha1 = webpi_sha1
