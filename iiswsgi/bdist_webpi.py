@@ -76,12 +76,15 @@ class bdist_webpi(cmd.Command):
 
     def initialize_options(self):
         self.dists = None
-        self.feed_template = None
+        self.template = None
         self.dist_dir = None
 
     def finalize_options(self):
         self.ensure_string_list('dists')
         self.distributions = []
+        self.ensure_filename('template')
+        if self.template is None:
+            self.template = 'WebPIList.pt'
         from zope.pagetemplate import pagetemplatefile
         self.template = pagetemplatefile.PageTemplateFile(self.template)
         if self.dist_dir is None:
@@ -174,8 +177,6 @@ class bdist_webpi(cmd.Command):
                 os.remove(stamp_file)
 
     def write_feed(self, dist_file, **kw):
-        from zope.pagetemplate import pagetemplatefile
-        template = pagetemplatefile.PageTemplateFile(self.feed_template)
         logger.info('Writing Web Platform Installer feed to {0}'.format(
             dist_file))
 
