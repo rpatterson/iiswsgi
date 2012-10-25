@@ -34,8 +34,7 @@ setup(name='iiswsgi',
           'console_scripts':
           ['iiswsgi = iiswsgi.server:run',
            'iiswsgi_install = iiswsgi.install_msdeploy:install_console',
-           'iiswsgi_install_fcgi_app = iiswsgi.fcgi:install_fcgi_app_console',
-           'iiswsgi_webpi = iiswsgi.webpi:webpi_console'],
+           'iiswsgi_install_fcgi_app = iiswsgi.fcgi:install_fcgi_app_console'],
           'paste.app_factory': ['test_app = iiswsgi.server:make_test_app'],
           "distutils.commands": [
             "install_virtualenv = "
