@@ -28,7 +28,7 @@ setup(name='iiswsgi',
       setup_requires=['setuptools-git'],
       install_requires=['flup>=1.0.3.dev_20110405'],
       extras_require=dict(config=['PasteDeploy'],
-                          webpi=['zope.pagetemplate']),
+                          bdist_webpi=['zope.pagetemplate']),
       scripts=['test.ini'],
       entry_points={
           'console_scripts':

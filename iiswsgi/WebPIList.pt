@@ -92,15 +92,15 @@
            >%APPL_PHYSICAL_PATH%</filePath>
       </file>
     </discoveryHint>
-    <dependency tal:condition="exists:dist/install_requires">
+    <dependency tal:condition="exists:dist/extras_require/install_msdeploy">
       <and>
-        <dependency tal:repeat="req dist/install_requires">
+        <dependency tal:repeat="req dist/extras_require/install_msdeploy">
           <productId tal:content="req">Python27</productId>
         </dependency>
       </and>
     </dependency>
-    <related tal:condition="exists:dist/extras_requires/webpi">
-      <relatedProduct tal:repeat="req dist/extras_requires/webpi">
+    <related tal:condition="exists:dist/extras_require/install_webpi">
+      <relatedProduct tal:repeat="req dist/extras_require/install_webpi">
         <productId tal:content="req">PythonToolsForVS</productId>
       </relatedProduct>
     </related>
