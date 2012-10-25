@@ -4,7 +4,6 @@ bin/
 develop-eggs/
 dist/
 build/
-examples/WebPIList.xml
 examples/*.msdeploy/MANIFEST
 examples/*.msdeploy/Manifest.xml
 examples/*.msdeploy/iis_install.stamp

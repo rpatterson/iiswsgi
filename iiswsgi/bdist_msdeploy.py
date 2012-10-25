@@ -1,8 +1,6 @@
 import os
 import zipfile
 
-import pkg_resources
-import distutils.sysconfig
 from distutils.command import sdist
 from distutils import archive_util
 from distutils import dir_util
@@ -10,6 +8,7 @@ from distutils import log
 from distutils import errors
 
 from iiswsgi import build_msdeploy
+from iiswsgi import options
 
 
 class bdist_msdeploy(sdist.sdist):
@@ -43,14 +42,6 @@ class bdist_msdeploy(sdist.sdist):
 
         sdist.sdist.run(self)
 
-    def get_msdeploy_name(self):
-        pkg_dist = pkg_resources.Distribution(
-            None, None, self.distribution.get_name(),
-            self.distribution.get_version(),
-            distutils.sysconfig.get_python_version(),
-            pkg_resources.get_build_platform())
-        return pkg_dist.egg_name() + '.msdeploy'
-
     def make_distribution(self):
         """Minimize path lenght to avoid windows issues."""
         # Copied from distutils.command.sdist.sdist.make_distribution
@@ -58,7 +49,9 @@ class bdist_msdeploy(sdist.sdist):
         # Don't warn about missing meta-data here -- should be (and is!)
         # done elsewhere.
         base_dir = self.distribution.get_version()
-        base_name = os.path.join(self.dist_dir, self.get_msdeploy_name())
+        base_name = os.path.join(
+            self.dist_dir,
+            options.get_egg_name(self.distribution) + '.msdeploy')
 
         self.make_release_tree(base_dir, self.filelist.files)
         archive_files = []              # remember names of files we create

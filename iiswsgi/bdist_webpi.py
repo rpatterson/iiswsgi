@@ -53,10 +53,12 @@ class bdist_webpi(cmd.Command):
     __doc__ = __doc__
 
     user_options = [
-        ('dists=', 'd', "The distributions to include in the feed."),
-        ('feed=', 'f', "Write a WebPI feed to the file."),
+        ('dists=', 's', "The distributions to include in the feed."),
         ('template=', 't',
-         "The zope.pagetemplate file used to render the feed.")]
+         "The zope.pagetemplate file used to render the feed."),
+        ('dist-dir=', 'd',
+         "directory to put the source distribution archive(s) in "
+         "[default: dist]")]
 
     msdeploy_url_template = (
         'http://pypi.python.org/packages/{VERSION}/'
@@ -74,15 +76,16 @@ class bdist_webpi(cmd.Command):
 
     def initialize_options(self):
         self.dists = None
-        self.feed = None
         self.feed_template = None
+        self.dist_dir = None
 
     def finalize_options(self):
         self.ensure_string_list('dists')
         self.distributions = []
-        self.ensure_filename('feed_template')
-        if self.feed_template is None:
-            self.feed_template = 'WebPIList.pt'
+        from zope.pagetemplate import pagetemplatefile
+        self.template = pagetemplatefile.PageTemplateFile(self.template)
+        if self.dist_dir is None:
+            self.dist_dir = "dist"
 
     def run(self):
         for path in self.dists:
@@ -93,11 +96,12 @@ class bdist_webpi(cmd.Command):
             self.delete_installer_cache(dist)
             self.delete_stamp_files(dist)
 
-        if self.feed is not None:
-            dist_feed = self.write_feed()
-            self.distribution.dist_files.append(('webpi', '', dist_feed))
-            feed = minidom.parse(self.feed).firstChild
-            self.delete_feed_cache(feed)
+        dist_feed = os.path.join(
+            self.dist_dir,
+            options.get_egg_name(self.distribution) + '.webpi.xml')
+        self.write_feed(dist_feed)
+        self.distribution.dist_files.append(('webpi', '', dist_feed))
+        self.delete_feed_cache()
 
     def build_package(self, path, *args):
         cwd = os.getcwd()
@@ -111,11 +115,9 @@ class bdist_webpi(cmd.Command):
             dist.has_msdeploy_manifest = (
                 'build_msdeploy' in dist.build.get_sub_commands())
 
-            dist.bdist_msdeploy = dist.build.get_finalized_command(
-                'bdist_msdeploy')
-            msdeploy_file = dist.bdist_msdeploy.get_msdeploy_name() + '.zip'
+            dist.msdeploy_file = options.get_egg_name(dist) + '.msdeploy.zip'
             dist.msdeploy_package = os.path.abspath(
-                os.path.join('dist', msdeploy_file))
+                os.path.join('dist', dist.msdeploy_file))
 
             webpi_size = os.path.getsize(dist.msdeploy_package)
             cmd = ['fciv', '-sha1', dist.msdeploy_package]
@@ -171,24 +173,21 @@ class bdist_webpi(cmd.Command):
                     stamp_file))
                 os.remove(stamp_file)
 
-    def write_feed(self, **kw):
+    def write_feed(self, dist_file, **kw):
         from zope.pagetemplate import pagetemplatefile
         template = pagetemplatefile.PageTemplateFile(self.feed_template)
         logger.info('Writing Web Platform Installer feed to {0}'.format(
-            self.feed))
+            dist_file))
 
         view = core.run_setup('setup.py', stop_after='commandline')
         view.context = self
         view.dists = self.distributions
         view.now = datetime.datetime.now()
 
-        open(self.feed, 'w').write(template(view=view, **kw))
-        return self.feed
+        open(dist_file, 'w').write(self.template(view=view, **kw))
+        return dist_file
 
-    def delete_feed_cache(self, feed):
-        if feed is None:
-            return
-
+    def delete_feed_cache(self):
         if not self.feed_dir:
             logger.error('No WebPI feed directory')
             return
@@ -200,11 +199,10 @@ class bdist_webpi(cmd.Command):
             # Compare feed/id elements
             cached_feed_path = os.path.join(self.feed_dir, cached_feed_name)
             cached_feed = minidom.parse(cached_feed_path).firstChild
-            ids = [node for node in feed.childNodes if node.nodeName == 'id']
             cached_ids = [node for node in cached_feed.childNodes
                           if node.nodeName == 'id']
             if cached_ids and (
-                cached_ids[0].firstChild.data == ids[0].firstChild.data):
+                cached_ids[0].firstChild.data == self.dist.get_url()):
                 logger.info(
                     'Removing the Web Platform Installer cached feed at {0}'
                     .format(cached_feed_path))

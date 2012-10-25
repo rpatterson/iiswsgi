@@ -3,6 +3,8 @@ import os
 import argparse
 import logging
 
+import pkg_resources
+import distutils.sysconfig
 from distutils import errors
 
 stamp_filename = 'iis_install.stamp'
@@ -41,3 +43,11 @@ verbose = parent_parser.add_argument(
           "Can be given multiple times.  "
           "Pass before other options to ensure that logging includes "
           "information about processing options."))
+
+
+def get_egg_name(dist):
+    pkg_dist = pkg_resources.Distribution(
+        None, None, dist.get_name(), dist.get_version(),
+        distutils.sysconfig.get_python_version(),
+        pkg_resources.get_build_platform())
+    return pkg_dist.egg_name()
