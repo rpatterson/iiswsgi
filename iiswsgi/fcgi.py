@@ -29,11 +29,11 @@ def get_web_config_apps(web_config):
 
 def get_appcmd_exe(appcmd_exe=None):
     if appcmd_exe is None:
-        appcmd_exe = '{WINDIR}\\System32\\inetsrv\\appcmd.exe'
+        appcmd_exe = '%WINDIR%\\System32\\inetsrv\\appcmd.exe'
         if 'IIS_BIN' in os.environ:
             # IIS Express
             # under WebPI at least, this is only set when using IIS Express
-            appcmd_exe = '{PROGRAMFILES}\\IIS Express\\appcmd.exe'
+            appcmd_exe = '%PROGRAMFILES%\\IIS Express\\appcmd.exe'
     appcmd_exe_path = os.path.expandvars(appcmd_exe)
     if os.path.exists(appcmd_exe_path):
         return appcmd_exe_path

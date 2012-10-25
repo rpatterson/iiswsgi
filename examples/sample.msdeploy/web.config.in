@@ -9,8 +9,8 @@
            *-script.py`. -->
       <!-- Can't use environment variables in monitorChangesTo -->
       <application
-          fullPath="%SystemDrive%\Python27\python.exe"
-          arguments="-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -r -vv -c &quot;{APPL_PHYSICAL_PATH}\iis_fcgi.ini&quot;"
+          fullPath="%%SystemDrive%%\Python27\python.exe"
+          arguments="-u %%SystemDrive%%\Python27\Scripts\iiswsgi-script.py -r -vv -c &quot;%APPL_PHYSICAL_PATH%\iis_fcgi.ini&quot;"
           monitorChangesTo="C:\Python27\Scripts\iiswsgi-script.py"
           maxInstances="1" />
     </fastCgi>
@@ -21,7 +21,7 @@
     </security>
     <handlers>
       <add name="iiswsgi.test_app"
-	   scriptProcessor="%SystemDrive%\Python27\python.exe|-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -r -vv -c &quot;{APPL_PHYSICAL_PATH}\iis_fcgi.ini&quot;"
+	   scriptProcessor="%%SystemDrive%%\Python27\python.exe|-u %%SystemDrive%%\Python27\Scripts\iiswsgi-script.py -r -vv -c &quot;%APPL_PHYSICAL_PATH%\iis_fcgi.ini&quot;"
 	   path="*" verb="*"
 	   modules="FastCgiModule"/>
     </handlers>
