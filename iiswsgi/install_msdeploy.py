@@ -208,7 +208,7 @@ class Installer(object):
             self.logger.info(
                 'APPL_PHYSICAL_PATH environment variable not set')
 
-        appl_physical_paths = list(fcgi.list_appl_physical_paths(
+        appl_physical_paths = list(fcgi.list_stamp_paths(
             self.app_name, self.stamp_filename, appcmd_exe))
         if not appl_physical_paths:
             raise ValueError(
