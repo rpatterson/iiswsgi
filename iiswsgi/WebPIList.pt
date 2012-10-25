@@ -141,7 +141,8 @@
       <installer>
         <id>1</id>
         <languageId>en</languageId>
-        <eulaURL tal:content="dist/license_url|dist/get_license"
+        <eulaURL tal:condition="dist/license_url|nothing"
+                 tal:content="dist/license_url"
                  >http://foo.org/license.txt</eulaURL>
         <installerFile tal:condition="dist/msdeploy_url|nothing">
           <fileSize tal:content="dist/webpi_size">0</fileSize>
