@@ -110,7 +110,6 @@ class bdist_webpi(cmd.Command):
         cwd = os.getcwd()
         try:
             os.chdir(path)
-            # TODO get dist without location?  From path?
             distribution = core.run_setup('setup.py', stop_after='commandline')
 
             distribution.build = distribution.get_command_obj('build')
