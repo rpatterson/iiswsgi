@@ -168,9 +168,10 @@ class Installer(object):
                 'No IIS install stamp file found at {0}'.format(stamp_path))
 
         cwd = os.getcwd()
+        self.logger.info('Installing aplication: setup.py {0}'.format(
+            ' '.join(setup_args)))
         try:
-            self.logger.info('Installing aplication: setup.py {1}'.format(
-                ' '.join(setup_args)))
+            os.chdir(appl_physical_path)
             return core.run_setup('setup.py', script_args=setup_args)
         finally:
             os.chdir(cwd)
