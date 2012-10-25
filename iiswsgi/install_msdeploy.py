@@ -252,7 +252,6 @@ class Installer(object):
 
         return appl_physical_path
 
-
 install_parser = argparse.ArgumentParser(add_help=False)
 install_parser.add_argument(
     '-a', '--app-name', help="""\
