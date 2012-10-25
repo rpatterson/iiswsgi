@@ -147,9 +147,11 @@
                    >8-07-2012</addToFeedDate>
     <pageName tal:content="dist/get_name">dist-name</pageName>
     <productFamily resourceName="Applications">Applications</productFamily>
-    <longSummary resourceName="Entry_dist-name_LongSummary"
-                 tal:attributes="resourceName string:Entry_${dist/get_name}_LongSummary;"
-                 tal:content="dist/get_long_description">
+    <longSummary
+       resourceName="Entry_dist-name_LongSummary"
+       tal:condition="python:dist.get_long_description() != 'UNKNOWN'"
+       tal:attributes="resourceName string:Entry_${dist/get_name}_LongSummary;"
+       tal:content="dist/get_long_description">
       A longer description of the package.
     </longSummary>
   </entry>
