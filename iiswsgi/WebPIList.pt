@@ -175,11 +175,6 @@
                   >http://github.com/authorname/dist</helpLink>
       </installer>
     </installers>
-    <addToFeedDate tal:define="dt dist/added|nothing"
-                   tal:condition="dt"
-                   tal:content="string:${dt/month}-${dt/day}-${dt/year}"
-                   >8-07-2012</addToFeedDate>
-    <pageName tal:content="dist/get_name">dist-name</pageName>
     <productFamily tal:condition="dist/msdeploy_url|nothing"
                    resourceName="Applications">Applications</productFamily>
     <productFamily tal:condition="not:dist/msdeploy_url|nothing"
