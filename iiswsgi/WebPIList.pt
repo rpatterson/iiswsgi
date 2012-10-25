@@ -13,7 +13,7 @@
     <name tal:content="view/get_author">Author Name</name>
     <uri  tal:content="view/get_author_email">http://authorname.net</uri>
   </author>
-  <id tal:content="view/id|view/get_url"
+  <id tal:content="view/get_url"
       >https://raw.github.com/authorname/dist/WebPIList.xml</id>
 
   <resourcesList>
