@@ -37,6 +37,7 @@ from iiswsgi import options
 from iiswsgi import build_msdeploy
 from iiswsgi import install_msdeploy
 from iiswsgi import bdist_msdeploy
+from iiswsgi import build_webpi
 from iiswsgi import clean_webpi
 
 logger = logging.getLogger('iiswsgi.webpi')
@@ -181,5 +182,6 @@ class bdist_webpi(cmd.Command):
 cmdclass = dict(build_msdeploy=build_msdeploy.build_msdeploy,
                 install_msdeploy=install_msdeploy.install_msdeploy,
                 bdist_msdeploy=bdist_msdeploy.bdist_msdeploy,
+                build_webpi=build_webpi.build_webpi,
                 bdist_webpi=bdist_webpi,
                 clean_webpi=clean_webpi.clean_webpi)

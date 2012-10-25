@@ -45,6 +45,7 @@ setup(name='iiswsgi',
             "build_msdeploy = iiswsgi.build_msdeploy:build_msdeploy",
             "install_msdeploy = iiswsgi.install_msdeploy:install_msdeploy",
             "bdist_msdeploy = iiswsgi.bdist_msdeploy:bdist_msdeploy",
+            "build_webpi = iiswsgi.build_webpi:build_webpi",
             "bdist_webpi = iiswsgi.bdist_webpi:bdist_webpi",
             "clean_webpi = iiswsgi.clean_webpi:clean_webpi"],
           "distutils.setup_keywords": [
