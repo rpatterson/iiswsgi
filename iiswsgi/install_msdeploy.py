@@ -134,7 +134,7 @@ class install_msdeploy(cmd.Command):
         """
         web_config = open('web.config.in').read()
         self.logger.info('Doing variable substitution in web.config')
-        open('web.config', 'w').write(os.path.expandvars(web_config)
+        open('web.config', 'w').write(os.path.expandvars(web_config))
         return web_config
 
     def test(self):
