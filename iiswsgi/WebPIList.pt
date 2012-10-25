@@ -38,8 +38,117 @@
     </language>
   </languages>
 
-<tal:entries tal:repeat="entry view/entries"
-             tal:replace="structure entry" />
+
+  <entry type="application"
+         tal:repeat="dist view/dists">
+    <productId tal:content="dist/get_name">dist-name</productId>
+    <id tal:content="dist/get_url">https://raw.github.com/authorname/dist</id>
+    <version tal:content="dist/get_version">0.1</version>
+    <updated tal:content="view/now/isoformat"
+             >2012-03-25T13:22:48.440870</updated>
+    <published tal:content="dist/published/isoformat|view/now/isoformat"
+               >2012-03-25T13:22:48.440870</published>
+    <title resourceName="Entry_dist-name_Title"
+           tal:attributes="resourceName string:Entry_${dist/get_name}_Title;"
+           tal:content="dist/title|dist/get_name">Distribution Title</title>
+    <link href="https://raw.github.com/authorname/dist"
+          tal:attributes="href dist/get_url;"/>
+    <summary resourceName="Entry_dist-name_Summary"
+             tal:attributes="resourceName string:Entry_${dist/get_name}_Summary;"
+             tal:content="dist/get_description">
+      A short, summary description of the package.
+    </summary>
+    <author>
+      <name tal:content="dist/get_author">Author Name</name>
+      <uri  tal:content="dist/get_author_email">http://author.net</uri>
+    </author>
+    <frameworkFamily resourceName="Python"
+                     tal:attributes="resourceName dist/framework/name|string:Python;"
+                     tal:content="dist/framework/contents|string:Python"
+                     >Python</frameworkFamily>
+    <keywords tal:condition="dist/get_keywords">
+      <keywordId tal:repeat="keyword dist/get_keywords"
+                 tal:content="keyword">Python</keywordId>
+    </keywords>
+    <images
+       tal:define="icons dist/icons|nothing;
+                   screenshots dist/screenshots|nothing;"
+       tal:condition="python:icons or screenshots">
+      <icon
+         tal:repeat="icon icons"
+         tal:content="icon"
+         >http://www.python.org/community/logos/python-powered-h-100x130.png</icon>
+      <screenshot
+         tal:repeat="screenshot screenshots"
+         tal:content="screenshot"
+         >http://www.python.org/community/logos/python-powered-h-100x130.png</screenshot>
+    </images>
+    <discoveryHint>
+      <file>
+        <filePath
+           tal:content="dist/discovery_file|string:%APPL_PHYSICAL_PATH%"
+           >%APPL_PHYSICAL_PATH%</filePath>
+      </file>
+    </discoveryHint>
+    <dependency tal:condition="exists:dist/install_requires">
+      <and>
+        <dependency tal:repeat="req dist/install_requires">
+          <productId tal:content="req">Python27</productId>
+        </dependency>
+      </and>
+    </dependency>
+    <related tal:condition="exists:dist/extras_requires/webpi">
+      <relatedProduct tal:repeat="req dist/extras_requires/webpi">
+        <productId tal:content="req">PythonToolsForVS</productId>
+      </relatedProduct>
+    </related>
+    <installers>
+      <installer>
+        <id>1</id>
+        <languageId>en</languageId>
+        <eulaURL tal:content="dist/license_url|dist/get_license"
+                 >http://foo.org/license.txt</eulaURL>
+        <installerFile tal:condition="dist/msdeploy_url|nothing">
+          <fileSize tal:content="dist/webpi_size">0</fileSize>
+          <installerURL
+             tal:content="dist/msdeploy_url"
+             >file:///C:/Users/Administrator/Documents/GitHub/dist/dist/dist-0.1-msdeploy.zip</installerURL>
+          <displayURL
+             tal:content="dist/display_url|dist/get_url"
+             >http://github.com/authorname/dist/examples/sample.msdeploy</displayURL>
+          <sha1 tal:content="dist/webpi_sha1">########################################</sha1>
+        </installerFile>
+        <installCommands tal:condition="not:dist/msdeploy_url|nothing">
+          <cmdLine>
+            <exe>%TMP%\pip_installhelper_27_x86.bat</exe>
+            <commandLineArguments
+               tal:content="string:--log %TMP%\${dist/get_name}.log install ${dist/get_name}"
+               >--log %TMP%\dist.log install dist</commandLineArguments>
+            <ignoreExitCode>false</ignoreExitCode>
+          </cmdLine>
+        </installCommands>
+        <logFiles>
+          <location tal:content="string:%TMP%\${dist/get_name}.log"
+                    >%TMP%\dist.log</location>
+        </logFiles>
+        <msDeploy/>
+        <helpLink tal:content="dist/help_url|dist/get_url"
+                  >http://github.com/authorname/dist</helpLink>
+      </installer>
+    </installers>
+    <addToFeedDate tal:define="dt dist/added|nothing"
+                   tal:condition="dt"
+                   tal:content="string:${dt/month}-${dt/day}-${dt/year}"
+                   >8-07-2012</addToFeedDate>
+    <pageName tal:content="dist/get_name">dist-name</pageName>
+    <productFamily resourceName="Applications">Applications</productFamily>
+    <longSummary resourceName="Entry_dist-name_LongSummary"
+                 tal:attributes="resourceName string:Entry_${dist/get_name}_LongSummary;"
+                 tal:content="dist/get_long_description">
+      A longer description of the package.
+    </longSummary>
+  </entry>
+
 
   <keywords>
     <keyword id="Python" resourceName="Keyword_Python">Python</keyword>

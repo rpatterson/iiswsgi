@@ -72,30 +72,21 @@ class WebPIBuilder(object):
         self.packages = packages
         self.feed = feed
         self.cwd = os.getcwd()
+        self.dists = []
 
     def __call__(self, *args):
-        feed = self.parse_feed()
-
         for package in self.packages:
             dist = self.build_package(package, *args)
+            self.dists.append(dist)
             manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
-            app_name = get_app_name(manifest)
-            self.update_feed_entry(feed, app_name, dist)
-            self.delete_installer_cache(app_name)
-            self.delete_stamp_files(app_name)
+            dist.msdeploy_app_name = get_app_name(manifest)
+            self.delete_installer_cache(dist)
+            self.delete_stamp_files(dist)
 
-        self.write_feed(feed)
-        self.delete_feed_cache(feed)
-
-    def parse_feed(self):
-        if self.feed is None:
-            return
-
-        feed = self.feed
-        if os.path.exists(feed + '.in'):
-            # We have a template
-            feed = feed + '.in'
-        return minidom.parse(feed).firstChild
+        if self.feed is not None:
+            self.write_feed()
+            feed = minidom.parse(self.feed).firstChild
+            self.delete_feed_cache(feed)
 
     def build_package(self, package, *args):
         try:
@@ -133,73 +124,40 @@ class WebPIBuilder(object):
         dist.webpi_sha1 = webpi_sha1
         return dist
 
-    def update_feed_entry(self, feed, app_name, dist):
-        if feed is None:
-            return
-
-        for entry in feed.getElementsByTagName('entry'):
-            productIds = entry.getElementsByTagName("productId")
-            if productIds and productIds[0].firstChild.data == app_name:
-                break
-        else:
-            raise ValueError(
-                'Could not find <entry> for {0}'.format(app_name))
-
-        version_elem = entry.getElementsByTagName('version')[0]
-        version_elem.firstChild.data = u'{0}'.format(dist.get_version())
-        logger.info('Set Web Platform Installer <version> to {0}'.format(
-            dist.get_version()))
-
-        installer_url = urlparse.urlunsplit((
-            'file', '', dist.replace(os.sep, '/'), '', ''))
-        installer_elem = entry.getElementsByTagName('installerURL')[0]
-        installer_elem.firstChild.data = u'{0}'.format(installer_url)
-        logger.info('Set Web Platform Installer <installerURL> to {0}'.format(
-            installer_url))
-
-        size_elem = entry.getElementsByTagName('fileSize')[0]
-        size_elem.firstChild.data = u'{0}'.format(dist.webpi_size)
-        logger.info('Set Web Platform Installer <fileSize> to {0}'.format(
-            dist.webpi_size))
-
-        sha1_elem = entry.getElementsByTagName('sha1')[0]
-        sha1_elem.firstChild.data = u'{0}'.format(dist.webpi_sha1)
-        logger.info('Set Web Platform Installer <sha1> to {0}'.format(
-            dist.webpi_sha1))
-
-    def delete_installer_cache(self, app_name):
+    def delete_installer_cache(self, dist):
         if not self.webpi_installer_cache:
             logger.error('No WebPI installer cache')
             return
-        installer_dir = os.path.join(self.webpi_installer_cache, app_name)
+        installer_dir = os.path.join(self.webpi_installer_cache,
+                                     dist.msdeploy_app_name)
         if os.path.exists(installer_dir):
             logger.info('Removing the cached MSDeploy package: {0}'.format(
                 installer_dir))
             shutil.rmtree(installer_dir)
 
-    def delete_stamp_files(self, app_name):
+    def delete_stamp_files(self, dist):
         """Clean up likely stale stamp files."""
         if not self.iis_sites_home:
             logger.error('No IIS sites directory')
             return
         for name in os.listdir(self.iis_sites_home):
             if not (os.path.isdir(os.path.join(self.iis_sites_home, name)) and
-                    name.startswith(app_name)):
+                    name.startswith(dist.msdeploy_app_name)):
                 continue
             stamp_file = os.path.join(
                 self.iis_sites_home, name, 'iis_install.stamp')
             if os.path.exists(stamp_file):
-                logger.info(
-                    'Removing stale install stamp file: {0}'.format(stamp_file))
+                logger.info('Removing stale install stamp file: {0}'.format(
+                    stamp_file))
                 os.remove(stamp_file)
 
-    def write_feed(self, feed):
-        if feed is None:
-            return
-
+    def write_feed(self, **kw):
+        from zope.pagetemplate import pagetemplatefile
+        template = pagetemplatefile.PageTemplateFile(self.feed_template)
         logger.info('Writing Web Platform Installer feed to {0}'.format(
             self.feed))
-        feed.writexml(open(self.feed, 'w'))
+        open(self.feed, 'w').write(template(view=self, **kw))
+        return template
 
     def delete_feed_cache(self, feed):
         if feed is None:
