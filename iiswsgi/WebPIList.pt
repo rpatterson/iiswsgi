@@ -11,7 +11,8 @@
   <updated tal:content="view/now/isoformat">2012-03-25T13:22:48.440870</updated>
   <author>
     <name tal:content="view/get_author">Author Name</name>
-    <uri tal:content="view/author_url|view/get_author_email"
+    <uri tal:condition="view/author_url|nothing"
+         tal:content="view/author_url"
          >http://authorname.net</uri>
   </author>
   <id tal:content="view/get_url"
@@ -61,7 +62,8 @@
     </summary>
     <author>
       <name tal:content="dist/get_author">Author Name</name>
-      <uri  tal:content="dist/get_author_url|dist/get_author_email"
+      <uri  tal:condition="view/author_url|nothing"
+            tal:content="view/author_url"
             >http://author.net</uri>
     </author>
     <frameworkFamily resourceName="Python"
