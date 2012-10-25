@@ -3,10 +3,18 @@ import os
 import argparse
 import logging
 
+from distutils import errors
+
 stamp_filename = 'iis_install.stamp'
 
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi')
+
+
+def assert_string(dist, attr, value):
+    if not isinstance(value, str):
+        raise errors.DistutilsOptionError(
+            'The {0} option must be a string: {1}'.format(attr, value))
 
 
 def increase_verbosity():

@@ -121,10 +121,6 @@ class build_webpi(cmd.Command):
             dist.msdeploy_package = os.path.abspath(
                 os.path.join('dist', msdeploy_file))
 
-            lic = dist.get_license()
-            if lic in self.license_urls:
-                dist.liscense_url = self.license_urls[lic]
-
             webpi_size = os.path.getsize(dist.msdeploy_package)
             cmd = ['fciv', '-sha1', dist.msdeploy_package]
             webpi_sha1 = ''

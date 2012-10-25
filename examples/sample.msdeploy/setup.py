@@ -4,6 +4,7 @@ version = '0.1'
 
 setup(name='IISWSGISampleApp',
       version=version,
+      title='IIS WSGI Sample App',
       description="""Sample app demonstrating the use of IISWSGI \
 with Microsoft Web Deploy.""",
       classifiers=[
@@ -16,8 +17,11 @@ with Microsoft Web Deploy.""",
       keywords='python IIS FastCGI WSGI',
       author='Ross Patterson',
       author_email='me@rpatterson.net',
-      url='http://github.com/rpatterson/iiswsgi',
+      author_url='http://rpatterson.net',
+      url='https://github.com/rpatterson/iiswsgi/tree/master/examples/sample.msdeploy',
       license='GPL version 3',
+      license_url='http://www.gnu.org/licenses/gpl.txt',
+      icon_url='http://www.python.org/community/logos/python-powered-h-100x130.png',
       # TODO get the custom commands to work without iiswsgi installed
       # in the python
       setup_requires=['setuptools-git',

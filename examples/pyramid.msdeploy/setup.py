@@ -41,6 +41,7 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
 
 setup(name='PyramidApp',
       version=version,
+      title="Pyramid Application",
       description="""Pyramid application project.""",
       classifiers=[
         "Environment :: Web Environment",
@@ -52,8 +53,11 @@ setup(name='PyramidApp',
       keywords='python Pyramid IIS FastCGI WSGI',
       author='Ross Patterson',
       author_email='me@rpatterson.net',
+      author_url='http://rpatterson.net',
       url='http://www.pylonsproject.org/projects/pyramid/about',
       license='GPL version 3',
+      license_url='http://www.gnu.org/licenses/gpl.txt',
+      icon_url='http://www.pylonsproject.org/static/images/pyramid.png',
       install_requires=['iiswsgi', 'pyramid'],
       # TODO get the custom commands to work without iiswsgi installed
       # in the python

@@ -5,13 +5,14 @@
   <webpiFile version="4.0.1.0"
              tal:attributes="version view/get_version;"/>
 
-  <title tal:content="view/get_name">WebPI Feed Title</title>
+  <title tal:content="view/title|view/get_name">WebPI Feed Title</title>
   <link href="https://raw.github.com/authorname/dist/dist/WebPIList.pt"
         tal:attributes="href view/get_url;"/>
   <updated tal:content="view/now/isoformat">2012-03-25T13:22:48.440870</updated>
   <author>
     <name tal:content="view/get_author">Author Name</name>
-    <uri  tal:content="view/get_author_email">http://authorname.net</uri>
+    <uri tal:content="view/author_url|view/get_author_email"
+         >http://authorname.net</uri>
   </author>
   <id tal:content="view/get_url"
       >https://raw.github.com/authorname/dist/WebPIList.xml</id>
@@ -46,7 +47,7 @@
     <version tal:content="dist/get_version">0.1</version>
     <updated tal:content="view/now/isoformat"
              >2012-03-25T13:22:48.440870</updated>
-    <published tal:content="dist/published/isoformat|view/now/isoformat"
+    <published tal:content="dist/published|view/now/isoformat"
                >2012-03-25T13:22:48.440870</published>
     <title resourceName="Entry_dist-name_Title"
            tal:attributes="resourceName string:Entry_${dist/get_name}_Title;"
@@ -60,7 +61,8 @@
     </summary>
     <author>
       <name tal:content="dist/get_author">Author Name</name>
-      <uri  tal:content="dist/get_author_email">http://author.net</uri>
+      <uri  tal:content="dist/get_author_url|dist/get_author_email"
+            >http://author.net</uri>
     </author>
     <frameworkFamily resourceName="Python"
                      tal:attributes="resourceName dist/framework/name|string:Python;"
@@ -71,16 +73,16 @@
                  tal:content="keyword">Python</keywordId>
     </keywords>
     <images
-       tal:define="icons dist/icons|nothing;
-                   screenshots dist/screenshots|nothing;"
-       tal:condition="python:icons or screenshots">
+       tal:define="icon_url dist/icon_url|nothing;
+                   screenshot_url dist/screenshot_url|nothing;"
+       tal:condition="python:icon_url or screenshot_url">
       <icon
-         tal:repeat="icon icons"
-         tal:content="icon"
+         tal:condition="icon_url"
+         tal:content="icon_url"
          >http://www.python.org/community/logos/python-powered-h-100x130.png</icon>
       <screenshot
-         tal:repeat="screenshot screenshots"
-         tal:content="screenshot"
+         tal:condition="screenshot_url"
+         tal:content="screenshot_url"
          >http://www.python.org/community/logos/python-powered-h-100x130.png</screenshot>
     </images>
     <discoveryHint>
