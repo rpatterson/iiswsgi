@@ -49,7 +49,7 @@ def get_app_name(manifest):
     return iisapps[0].getAttribute('path')
 
 
-class build_webpi(cmd.Command):
+class bdist_webpi(cmd.Command):
     __doc__ = __doc__
 
     user_options = [
@@ -102,6 +102,7 @@ class build_webpi(cmd.Command):
         cwd = os.getcwd()
         try:
             os.chdir(path)
+            # TODO get dist without location?  From path?
             dist = core.run_setup('setup.py', stop_after='commandline')
 
             dist.build = dist.get_command_obj('build')
@@ -213,4 +214,4 @@ class build_webpi(cmd.Command):
 cmdclass = dict(build_msdeploy=build_msdeploy.build_msdeploy,
                 install_msdeploy=install_msdeploy.install_msdeploy,
                 bdist_msdeploy=bdist_msdeploy.bdist_msdeploy,
-                build_webpi=build_webpi)
+                bdist_webpi=bdist_webpi)
