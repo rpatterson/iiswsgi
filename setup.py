@@ -52,4 +52,5 @@ setup(name='iiswsgi',
             "icon_url = iiswsgi.options:assert_string",
             "screenshot_url = iiswsgi.options:assert_string",
             "discovery_file = iiswsgi.options:assert_string",
-            "msdeploy_url_template = iiswsgi.options:assert_string"]})
+            "msdeploy_url_template = iiswsgi.options:assert_string"]},
+      )
