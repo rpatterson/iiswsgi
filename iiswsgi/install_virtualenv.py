@@ -1,4 +1,4 @@
-"""Distutils command for installing dependencies into a virtualenv."""
+"""Set up the virtualenv before installing dependencies."""
 
 import sys
 import os
@@ -33,7 +33,6 @@ class install_virtualenv(cmd.Command):
         options.ensure_verbosity(self)
 
     def run(self):
-        """Set up the virtualenv before installing dependencies."""
         self.setup_virtualenv()
 
     def setup_virtualenv(
@@ -45,6 +44,9 @@ class install_virtualenv(cmd.Command):
         exists, it is run as a script with positional `args` inserted
         into `sys.argv`.  Otherwise, `virtualenv` is imported and
         `create_environment()` is called with any kwargs.
+
+        Following the run of this command, dependencies can
+        automatically be installed with the develop command.
         """
         if bootstrap is None and os.path.exists(self.virtualenv_script):
             bootstrap = self.virtualenv_script

@@ -41,15 +41,12 @@ class install_msdeploy(cmd.Command):
     # From module docstring
     description = __doc__ = __doc__
 
-    user_options = [('skip-virtualenv', 'V',
-                     "Don't set up a virtualenv in the distribution."),
-                    ('skip-fcgi-app-install', 'S',
+    user_options = [('skip-fcgi-app-install', 'S',
                      "Do not install IIS FCGI apps.")]
 
     logger = logger
 
     def initialize_options(self):
-        self.skip_virtualenv = False
         self.skip_fcgi_app_install = False
         self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
@@ -89,11 +86,7 @@ class install_msdeploy(cmd.Command):
 
     def install(self, *requirements):
         """
-        Perform all of the deployment tasks as appropriate.
-
-        `self.setup_virtualenv()`:
-
-            Set up a virtualenv in the distribution.
+        Set up the app to a point where it can be tested:
 
         `setyp.py develop`:
 
@@ -107,8 +100,6 @@ class install_msdeploy(cmd.Command):
 
             Install an IIS FastCGI application.
         """
-        if not self.skip_virtualenv:
-            self.run_command('install_virtualenv')
         self.run_command('develop')
 
         self.write_web_config()
