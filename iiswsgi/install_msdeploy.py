@@ -68,6 +68,8 @@ class install_msdeploy(cmd.Command):
         else:
             self.count = 0
 
+        options.ensure_verbosity(self)
+
     def run(self):
         """
         Run all deployment tasks and a custom script as appropriate.

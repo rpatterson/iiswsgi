@@ -52,10 +52,7 @@ class build_msdeploy(cmd.Command):
         self.msdeploy_exe = msdeploy_exe
 
     def finalize_options(self):
-        # Ensure that logging is configured per the verbosity setting
-        logging.basicConfig()
-        for idx in range(self.verbose):
-            options.increase_verbosity()
+        options.ensure_verbosity(self)
 
     def run(self):
         self.write_manifest()

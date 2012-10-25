@@ -10,6 +10,7 @@ from distutils import errors
 stamp_filename = 'iis_install.stamp'
 
 root = logging.getLogger()
+default_level = root.level
 logger = logging.getLogger('iiswsgi')
 
 
@@ -32,15 +33,31 @@ def assert_editable_dists(dist, attr, value):
                 'setup.py or a setup script istself: {1}' .format(attr, path))
 
 
+def debug_environ():
+    """Log useful debug information."""
+    # Some useful startup debugging info
+    logger.debug('os.getcwd(): {0}'.format(os.getcwd()))
+    logger.debug('sys.argv: {0}'.format(sys.argv))
+    logger.debug('os.environ:\n{0}'.format(
+        '\n'.join('{0}={1}'.format(key, value)
+                  for key, value in os.environ.iteritems())))
+
+
+def ensure_verbosity(self, level=default_level):
+    """Ensure that logging is configured per the verbosity setting."""
+    if self.verbose == 0:
+        level += 10
+    elif self.verbose == 2:
+        level -= 10
+    logging.basicConfig(level=level)
+    if level == logging.DEBUG:
+        debug_environ()
+
+
 def increase_verbosity():
     root.setLevel(root.level - 10)
     if root.level == logging.DEBUG:
-        # Some useful startup debugging info
-        logger.debug('os.getcwd(): {0}'.format(os.getcwd()))
-        logger.debug('sys.argv: {0}'.format(sys.argv))
-        logger.debug('os.environ:\n{0}'.format(
-            '\n'.join('{0}={1}'.format(key, value)
-                      for key, value in os.environ.iteritems())))
+        debug_environ()
     return root.level
 
 

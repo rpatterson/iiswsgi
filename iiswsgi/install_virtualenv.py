@@ -9,6 +9,8 @@ import distutils.sysconfig
 from distutils import errors
 from distutils import cmd
 
+from iiswsgi import options
+
 virtualenv_script = 'bootstrap-virtualenv.py'
 
 logger = logging.getLogger('install_virtualenv')
@@ -28,6 +30,7 @@ class install_virtualenv(cmd.Command):
     def finalize_options(self):
         if self.virtualenv_script is None:
             self.virtualenv_script = virtualenv_script
+        options.ensure_verbosity(self)
 
     def run(self):
         """Set up the virtualenv before installing dependencies."""

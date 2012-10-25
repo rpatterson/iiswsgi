@@ -84,6 +84,7 @@ class bdist_webpi(cmd.Command):
         self.template = pagetemplatefile.PageTemplateFile(self.template)
         if self.dist_dir is None:
             self.dist_dir = "dist"
+        options.ensure_verbosity(self)
 
     def run(self):
         for path in self.distribution.bdist_msdeploy:

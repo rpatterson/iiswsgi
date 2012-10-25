@@ -45,6 +45,7 @@ class clean_webpi(cmd.Command):
             self.webpi_cache = webpi_cache
         self.webpi_cache = os.path.expandvars(self.webpi_cache)
         self.ensure_dirname('webpi_cache')
+        options.ensure_verbosity(self)
 
     def run(self):
         for path in self.distribution.bdist_msdeploy:

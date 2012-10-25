@@ -30,6 +30,7 @@ class bdist_msdeploy(sdist.sdist):
         self.formats = ['zip']
         self.build.ensure_finalized()
         self.install.ensure_finalized()
+        options.ensure_verbosity(self)
 
     def run(self):
         self.build.run()
