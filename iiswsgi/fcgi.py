@@ -35,7 +35,7 @@ def get_appcmd_exe(appcmd_exe=None):
             # under WebPI at least, this is only set when using IIS Express
             appcmd_exe = '{PROGRAMFILES}\\IIS Express\\appcmd.exe'
     try:
-        return appcmd_exe.format(**os.environ)
+        return os.path.expandvars(appcmd_exe)
     except KeyError:
         logger.exception('Could not find: {0}'.format(appcmd_exe))
 

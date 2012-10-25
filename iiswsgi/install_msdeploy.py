@@ -87,7 +87,7 @@ class install_msdeploy(cmd.Command):
         self.install()
         self.test()
 
-    def install(self, *requirements, **substitutions):
+    def install(self, *requirements):
         """
         Perform all of the deployment tasks as appropriate.
 
@@ -111,12 +111,12 @@ class install_msdeploy(cmd.Command):
             self.run_command('install_virtualenv')
         self.run_command('develop')
 
-        self.write_web_config(**substitutions)
+        self.write_web_config()
 
         if not self.skip_fcgi_app_install:
             fcgi.install_fcgi_app()
 
-    def write_web_config(self, **kw):
+    def write_web_config(self):
         """
         Write `web.config.in` to `web.config` substituting variables.
 
@@ -132,12 +132,10 @@ class install_msdeploy(cmd.Command):
         substituted variables, then use the `--delegate` option and
         pass kwargs into `Installer.install()`.
         """
-        environ = os.environ.copy()
-        environ.update(**kw)
         web_config = open('web.config.in').read()
         self.logger.info('Doing variable substitution in web.config')
-        open('web.config', 'w').write(web_config.format(**environ))
-        return environ
+        open('web.config', 'w').write(os.path.expandvars(web_config)
+        return web_config
 
     def test(self):
         """Test the WSGI application and FCGI server."""
