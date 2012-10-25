@@ -4,7 +4,7 @@ bin/
 develop-eggs/
 dist/
 build/
-examples/web-pi.xml
+examples/WebPIList.xml
 examples/*.msdeploy/MANIFEST
 examples/*.msdeploy/Manifest.xml
 examples/*.msdeploy/iis_install.stamp
