@@ -45,6 +45,8 @@
   <entry type="application"
          tal:repeat="dist view/dists"
          tal:attributes="type python:getattr(dist, 'msdeploy_url', None) and 'application';">
+    <tal:dist
+       define="dependencies dist/extras_require/install_msdeploy|python:();">
     <productId tal:content="dist/get_name">dist-name</productId>
     <id tal:content="dist/get_url">https://raw.github.com/authorname/dist</id>
     <version tal:content="dist/get_version">0.1</version>
@@ -188,6 +190,7 @@
        tal:content="dist/get_long_description">
       A longer description of the package.
     </longSummary>
+    </tal:dist>
   </entry>
 
 
