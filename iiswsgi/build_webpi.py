@@ -37,6 +37,10 @@ class build_webpi(cmd.Command):
         self.ensure_string_list('setup_args')
         if self.setup_args is None:
             self.setup_args = setup_args
+            if self.verbose == 0:
+                self.setup_args = ['-q'] + setup_args
+            elif self.verbose == 2:
+                self.setup_args = ['-v'] + setup_args
         options.ensure_verbosity(self)
 
     def run(self):
