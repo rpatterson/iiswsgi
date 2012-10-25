@@ -157,7 +157,7 @@ class Installer(object):
     def __call__(self, setup_args=setup_args):
         appl_physical_path = self.get_appl_physical_path()
         if 'APPL_PHYSICAL_PATH' not in os.environ:
-            os.environ['APPL_PHYSICAL_PATH'] = appl_physical_path
+            os.environ['APPL_PHYSICAL_PATH'] = str(appl_physical_path)
 
         stamp_path = os.path.join(appl_physical_path, self.stamp_filename)
         if os.path.exists(stamp_path):
