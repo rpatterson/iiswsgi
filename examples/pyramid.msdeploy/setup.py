@@ -64,7 +64,7 @@ setup(name='PyramidApp',
       license_url='http://www.gnu.org/licenses/gpl.txt',
       icon_url='http://www.pylonsproject.org/static/images/pyramid.png',
       install_requires=['iiswsgi', 'pyramid'],
-      extras_require=dict(install_msdeploy=['virtualenv', 'iiswsgi']),
+      extras_require=dict(install_msdeploy=['virtualenv']),
       # TODO get the custom commands to work without iiswsgi installed
       # in the python
       setup_requires=['setuptools-git',

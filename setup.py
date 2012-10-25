@@ -1,7 +1,9 @@
 from setuptools import setup, find_packages
 import os
 
-setup(name='iiswsgi',
+name = 'iiswsgi'
+
+setup(name=name,
       version='0.2',
       title="WSGI on IIS",
       description="Serve WSGI apps using IIS's modified FastCGI support.",
@@ -29,7 +31,7 @@ setup(name='iiswsgi',
       install_requires=['flup>=1.0.3.dev_20110405'],
       extras_require=dict(config=['PasteDeploy'],
                           webpi=['zope.pagetemplate'],
-                          bdist_webpi=['virtualenv']),
+                          bdist_webpi=['virtualenv', name]),
       bdist_msdeploy=['examples/sample.msdeploy',
                       'examples/pyramid.msdeploy'],
       scripts=['test.ini'],

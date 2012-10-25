@@ -94,7 +94,20 @@
            >%APPL_PHYSICAL_PATH%</filePath>
       </file>
     </discoveryHint>
-    <dependency tal:condition="exists:dist/extras_require/install_msdeploy">
+    <dependency tal:condition="dist/msdeploy_url|nothing">
+      <and>
+        <dependency>
+          <productId>Python27</productId>
+        </dependency>
+        <dependency>
+          <productId>iiswsgi</productId>
+        </dependency>
+        <dependency tal:repeat="req dependencies">
+          <productId tal:content="req">dist</productId>
+        </dependency>
+      </and>
+    </dependency>
+    <dependency tal:condition="not:dist/msdeploy_url|nothing">
       <and>
         <dependency tal:repeat="req dist/extras_require/install_msdeploy">
           <productId tal:content="req">Python27</productId>
