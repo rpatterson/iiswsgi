@@ -118,7 +118,10 @@
           <displayURL
              tal:content="dist/display_url|dist/get_url"
              >http://github.com/authorname/dist/examples/sample.msdeploy</displayURL>
-          <sha1 tal:content="dist/webpi_sha1">########################################</sha1>
+          <sha1
+             tal:condition="dist/webpi_sha1|nothing"
+             tal:content="dist/webpi_sha1"
+             >########################################</sha1>
         </installerFile>
         <installCommands tal:condition="not:dist/msdeploy_url|nothing">
           <cmdLine>
