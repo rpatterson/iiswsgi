@@ -43,6 +43,14 @@ class bdist_msdeploy(sdist.sdist):
 
         sdist.sdist.run(self)
 
+    def get_msdeploy_name(self):
+        pkg_dist = pkg_resources.Distribution(
+            None, None, self.distribution.get_name(),
+            self.distribution.get_version(),
+            distutils.sysconfig.get_python_version(),
+            pkg_resources.get_build_platform())
+        return pkg_dist.egg_name() + '.msdeploy'
+
     def make_distribution(self):
         """Minimize path lenght to avoid windows issues."""
         # Copied from distutils.command.sdist.sdist.make_distribution
@@ -50,13 +58,7 @@ class bdist_msdeploy(sdist.sdist):
         # Don't warn about missing meta-data here -- should be (and is!)
         # done elsewhere.
         base_dir = self.distribution.get_version()
-        pkg_dist = pkg_resources.Distribution(
-            None, None, self.distribution.get_name(),
-            self.distribution.get_version(),
-            distutils.sysconfig.get_python_version(),
-            pkg_resources.get_build_platform())
-        base_name = os.path.join(
-            self.dist_dir, pkg_dist.egg_name() + '.msdeploy')
+        base_name = os.path.join(self.dist_dir, self.get_msdeploy_name())
 
         self.make_release_tree(base_dir, self.filelist.files)
         archive_files = []              # remember names of files we create

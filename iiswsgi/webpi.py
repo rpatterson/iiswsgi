@@ -99,9 +99,20 @@ class WebPIBuilder(object):
             subprocess.check_call(cmd)
 
             dist = core.run_setup('setup.py', stop_after='commandline')
-            dist.msdeploy_package = os.path.abspath(os.path.join(
-                'dist', '{0}-{1}.zip'.format(
-                    dist.get_name(), dist.get_version())))
+
+            dist.build = dist.get_command_obj('build')
+            dist.build.ensure_finalized()
+            dist.has_msdeploy_manifest = (
+                'build_msdeploy' in dist.build.get_sub_commands())
+
+            dist.bdist_msdeploy = dist.build.get_finalized_command(
+                'bdist_msdeploy')
+            msdeploy_file = dist.bdist_msdeploy.get_msdeploy_name() + '.zip'
+            if dist.has_msdeploy_manifest:
+                dist.msdeploy_url = self.msdeploy_url_template.format(
+                    VERSION=sysconfig.get_config_var('VERSION'),
+                    letter=msdeploy_file[0], name=dist.get_name(),
+                    msdeploy_file=msdeploy_file)
 
             webpi_size = os.path.getsize(dist.msdeploy_package)
             cmd = ['fciv', '-sha1', dist.msdeploy_package]
