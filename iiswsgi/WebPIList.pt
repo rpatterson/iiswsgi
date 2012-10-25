@@ -5,7 +5,8 @@
   <webpiFile version="4.0.1.0"
              tal:attributes="version view/get_version;"/>
 
-  <title tal:content="view/title|view/get_name">WebPI Feed Title</title>
+  <title tal:content="python:getattr(view, 'title', None) or view.get_name()"
+         >WebPI Feed Title</title>
   <link href="https://raw.github.com/authorname/dist/dist/WebPIList.pt"
         tal:attributes="href view/get_url;"/>
   <updated tal:content="view/now/isoformat">2012-03-25T13:22:48.440870</updated>
@@ -48,11 +49,11 @@
     <version tal:content="dist/get_version">0.1</version>
     <updated tal:content="view/now/isoformat"
              >2012-03-25T13:22:48.440870</updated>
-    <published tal:content="dist/published|view/now/isoformat"
+    <published tal:content="python:getattr(dist, 'published', None) or view.now.isoformat()"
                >2012-03-25T13:22:48.440870</published>
     <title resourceName="Entry_dist-name_Title"
            tal:attributes="resourceName string:Entry_${dist/get_name}_Title;"
-           tal:content="dist/title|dist/get_name">Distribution Title</title>
+           tal:content="python:getattr(dist, 'title', None) or dist.get_name()">Distribution Title</title>
     <link href="https://raw.github.com/authorname/dist"
           tal:attributes="href dist/get_url;"/>
     <summary resourceName="Entry_dist-name_Summary"
@@ -90,7 +91,7 @@
     <discoveryHint>
       <file>
         <filePath
-           tal:content="dist/discovery_file|string:%APPL_PHYSICAL_PATH%"
+           tal:content="python:getattr(dist, 'discovery_file', None) or '%APPL_PHYSICAL_PATH%'"
            >%APPL_PHYSICAL_PATH%</filePath>
       </file>
     </discoveryHint>
@@ -131,7 +132,7 @@
              tal:content="dist/msdeploy_url"
              >file:///C:/Users/Administrator/Documents/GitHub/dist/dist/dist-0.1-msdeploy.zip</installerURL>
           <displayURL
-             tal:content="dist/display_url|dist/get_url"
+             tal:content="python:getattr(dist, 'display_url', None) or dist.get_url()"
              >http://github.com/authorname/dist/examples/sample.msdeploy</displayURL>
           <sha1
              tal:condition="dist/webpi_sha1|nothing"
@@ -152,7 +153,7 @@
                     >%TMP%\dist.log</location>
         </logFiles>
         <msDeploy/>
-        <helpLink tal:content="dist/help_url|dist/get_url"
+        <helpLink tal:content="python:getattr(dist, 'help_url', None) or dist.get_url()"
                   >http://github.com/authorname/dist</helpLink>
       </installer>
     </installers>
