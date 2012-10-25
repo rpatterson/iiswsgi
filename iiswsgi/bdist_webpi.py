@@ -1,25 +1,23 @@
 """
-Build IIS WSGI Web Deploy packages performing the following tasks:
+Build IIS WSGI Web Platform Installer feed.
 
-1. build the Web Deploy Package
+Calculates package sizes and sha1 hashes and renders a Web Platform
+Installer feed from that data and distribution metadata.  The
+distributions inclued are taken from setup.py keywords:
 
-2. calculate the package size and sha1
+bdist_msdeploy
 
-3. update the size and sha1 in the Web Platform Installer feed
+    A setup() kwargs containing a list of paths to distributions each
+    containing built MSDeploy packages to include in the feed.
 
-4. delete old Web Deploy packages from the Web Platform Installer cache
+extras_require['bdist_webpi']
 
-5. delete `iis_install.stamp` files from all installations of any of the
-   given packages in `%USERPROFILE%\Documents\My Web Sites`
-
-6. write the Web Platform Installer feed to `web-pi.xml`
-
-7. delete copies of the feed from the Web Platform Installer cache
+    A list of depdendencies to retrieve from the environment and for
+    which to include entries in the feed.
 """
 
 import os
 import subprocess
-import shutil
 import logging
 import errno
 import datetime
@@ -36,10 +34,10 @@ from distutils import cmd
 from distutils import errors
 
 from iiswsgi import options
-from iiswsgi import fcgi
 from iiswsgi import build_msdeploy
 from iiswsgi import install_msdeploy
 from iiswsgi import bdist_msdeploy
+from iiswsgi import clean_webpi
 
 logger = logging.getLogger('iiswsgi.webpi')
 
@@ -72,16 +70,6 @@ class bdist_webpi(cmd.Command):
     msdeploy_url_template = (
         'http://pypi.python.org/packages/{VERSION}/'
         '{letter}/{name}/{msdeploy_file}')
-    webpi_installer_cache = None
-    if 'LOCALAPPDATA' in os.environ:
-        webpi_installer_cache = os.path.join(
-            os.environ['LOCALAPPDATA'],
-            'Microsoft', 'Web Platform Installer', 'installers')
-    stamp_filename = options.stamp_filename
-    feed_dir = None
-    if 'LOCALAPPDATA' in os.environ:
-        feed_dir = os.path.join(
-            os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
 
     def initialize_options(self):
         self.template = None
@@ -105,8 +93,6 @@ class bdist_webpi(cmd.Command):
                 continue
             manifest = minidom.parse(os.path.join(path, 'Manifest.xml'))
             distribution.msdeploy_app_name = get_app_name(manifest)
-            self.delete_installer_cache(distribution)
-            self.delete_stamp_files(distribution)
 
         for name in self.distribution.extras_require['bdist_webpi']:
             distribution = self.add_dist(name)
@@ -117,7 +103,6 @@ class bdist_webpi(cmd.Command):
             options.get_egg_name(self.distribution) + '.webpi.xml')
         self.write_feed(dist_feed)
         self.distribution.dist_files.append(('webpi', '', dist_feed))
-        self.delete_feed_cache()
 
     def add_msdeploy(self, path, *args):
         cwd = os.getcwd()
@@ -179,28 +164,6 @@ class bdist_webpi(cmd.Command):
         distribution = dist.Distribution(attrs)
         return distribution
 
-    def delete_installer_cache(self, distribution):
-        if not self.webpi_installer_cache:
-            logger.error('No WebPI installer cache')
-            return
-        installer_dir = os.path.join(self.webpi_installer_cache,
-                                     distribution.msdeploy_app_name)
-        if os.path.exists(installer_dir):
-            logger.info('Removing the cached MSDeploy package: {0}'.format(
-                installer_dir))
-            shutil.rmtree(installer_dir)
-
-    def delete_stamp_files(self, distribution):
-        """Clean up likely stale stamp files."""
-        for appl_physical_path in fcgi.list_stamp_paths(
-            distribution.msdeploy_app_name, self.stamp_filename):
-            stamp_file = os.path.join(
-                appl_physical_path, self.stamp_filename)
-            if os.path.exists(stamp_file):
-                logger.info('Removing stale install stamp file: {0}'.format(
-                    stamp_file))
-                os.remove(stamp_file)
-
     def write_feed(self, dist_file, **kw):
         logger.info('Writing Web Platform Installer feed to {0}'.format(
             dist_file))
@@ -213,30 +176,9 @@ class bdist_webpi(cmd.Command):
         open(dist_file, 'w').write(self.template(view=view, **kw))
         return dist_file
 
-    def delete_feed_cache(self):
-        if not self.feed_dir:
-            logger.error('No WebPI feed directory')
-            return
-        for cached_feed_name in os.listdir(self.feed_dir):
-            if not os.path.splitext(cached_feed_name)[1] == '.xml':
-                # not a cached feed file
-                continue
-
-            # Compare feed/id elements
-            cached_feed_path = os.path.join(self.feed_dir, cached_feed_name)
-            cached_feed = minidom.parse(cached_feed_path).firstChild
-            cached_ids = [node for node in cached_feed.childNodes
-                          if node.nodeName == 'id']
-            if cached_ids and (
-                cached_ids[0].firstChild.data == self.distribution.get_url()):
-                logger.info(
-                    'Removing the Web Platform Installer cached feed at {0}'
-                    .format(cached_feed_path))
-                os.remove(cached_feed_path)
-                break
-
 
 cmdclass = dict(build_msdeploy=build_msdeploy.build_msdeploy,
                 install_msdeploy=install_msdeploy.install_msdeploy,
                 bdist_msdeploy=bdist_msdeploy.bdist_msdeploy,
-                bdist_webpi=bdist_webpi)
+                bdist_webpi=bdist_webpi,
+                clean_webpi=clean_webpi.clean_webpi)
