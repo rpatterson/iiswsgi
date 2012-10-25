@@ -94,7 +94,8 @@ class bdist_webpi(cmd.Command):
             self.delete_stamp_files(dist)
 
         if self.feed is not None:
-            self.write_feed()
+            dist_feed = self.write_feed()
+            self.distribution.dist_files.append(('webpi', '', dist_feed))
             feed = minidom.parse(self.feed).firstChild
             self.delete_feed_cache(feed)
 
@@ -182,7 +183,7 @@ class bdist_webpi(cmd.Command):
         view.now = datetime.datetime.now()
 
         open(self.feed, 'w').write(template(view=view, **kw))
-        return template
+        return self.feed
 
     def delete_feed_cache(self, feed):
         if feed is None:
