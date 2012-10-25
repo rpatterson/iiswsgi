@@ -28,7 +28,6 @@ from distutils import cmd
 
 from iiswsgi import options
 from iiswsgi import fcgi
-from iiswsgi import build_msdeploy
 
 root = logging.getLogger()
 logger = logging.getLogger('iiswsgi.install')
