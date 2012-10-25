@@ -17,12 +17,10 @@ Build IIS WSGI Web Deploy packages performing the following tasks:
 7. delete copies of the feed from the Web Platform Installer cache
 """
 
-import sys
 import os
 import subprocess
 import shutil
 import logging
-import argparse
 import errno
 import datetime
 import sysconfig
@@ -30,6 +28,7 @@ import sysconfig
 from xml.dom import minidom
 
 from distutils import core
+from distutils import cmd
 
 from iiswsgi import options
 from iiswsgi import fcgi
@@ -50,14 +49,18 @@ def get_app_name(manifest):
     return iisapps[0].getAttribute('path')
 
 
-class WebPIBuilder(object):
+class build_webpi(cmd.Command):
     __doc__ = __doc__
 
-    feed_template = os.path.join(os.path.dirname(__file__), 'WebPIList.pt')
-    msdeploy_url_template = ('http://pypi.python.org/packages/{VERSION}/'
-                             '{letter}/{name}/{msdeploy_file}')
-    license_urls = {'GPL': 'http://www.gnu.org/licenses/gpl.txt'}
+    user_options = [
+        ('dists=', 'd', "The distributions to include in the feed."),
+        ('feed=', 'f', "Write a WebPI feed to the file."),
+        ('template=', 't',
+         "The zope.pagetemplate file used to render the feed.")]
 
+    msdeploy_url_template = (
+        'http://pypi.python.org/packages/{VERSION}/'
+        '{letter}/{name}/{msdeploy_file}')
     webpi_installer_cache = None
     if 'LOCALAPPDATA' in os.environ:
         webpi_installer_cache = os.path.join(
@@ -69,19 +72,23 @@ class WebPIBuilder(object):
         feed_dir = os.path.join(
             os.environ['LOCALAPPDATA'], 'Microsoft', 'Web Platform Installer')
 
-    def __init__(self, packages, feed=None):
-        if not packages:
-            raise ValueError('At least one MSDeploy package must be given')
-        self.packages = packages
-        self.feed = feed
-        self.cwd = os.getcwd()
-        self.dists = []
+    def initialize_options(self):
+        self.dists = None
+        self.feed = None
+        self.feed_template = None
 
-    def __call__(self, *args):
-        for package in self.packages:
-            dist = self.build_package(package, *args)
-            self.dists.append(dist)
-            manifest = minidom.parse(os.path.join(package, 'Manifest.xml'))
+    def finalize_options(self):
+        self.ensure_string_list('dists')
+        self.distributions = []
+        self.ensure_filename('feed_template')
+        if self.feed_template is None:
+            self.feed_template = 'WebPIList.pt'
+
+    def run(self):
+        for path in self.dists:
+            dist = self.build_package(path)
+            self.distributions.append(dist)
+            manifest = minidom.parse(os.path.join(path, 'Manifest.xml'))
             dist.msdeploy_app_name = get_app_name(manifest)
             self.delete_installer_cache(dist)
             self.delete_stamp_files(dist)
@@ -91,16 +98,10 @@ class WebPIBuilder(object):
             feed = minidom.parse(self.feed).firstChild
             self.delete_feed_cache(feed)
 
-    def build_package(self, package, *args):
+    def build_package(self, path, *args):
+        cwd = os.getcwd()
         try:
-            os.chdir(package)
-
-            logger.info('Building package: {0}'.format(' '.join(args)))
-            cmd = [sys.executable, 'setup.py']
-            cmd.extend(args)
-            logger.info('Building package: {0}'.format(' '.join(cmd)))
-            subprocess.check_call(cmd)
-
+            os.chdir(path)
             dist = core.run_setup('setup.py', stop_after='commandline')
 
             dist.build = dist.get_command_obj('build')
@@ -175,7 +176,7 @@ class WebPIBuilder(object):
 
         view = core.run_setup('setup.py', stop_after='commandline')
         view.context = self
-        view.dists = self.dists
+        view.dists = self.distributions
         view.now = datetime.datetime.now()
 
         open(self.feed, 'w').write(template(view=view, **kw))
@@ -208,30 +209,7 @@ class WebPIBuilder(object):
                 break
 
 
-webpi_parser = argparse.ArgumentParser(
-    description=WebPIBuilder.__doc__,
-    formatter_class=argparse.RawDescriptionHelpFormatter,
-    parents=[options.parent_parser])
-webpi_parser.add_argument('-f', '--feed', help="""\
-Web Platform Installer atom feed to update.  If a file of the same name but \
-with a `*.in` extension exists it will be used as a template.  \
-Useful to avoid versioning irrellevant feed changes.""")
-webpi_parser.add_argument(
-    '-p', '--package', dest='packages', action='append', help="""\
-A Web Deploy package directory.  Must contain a `setup.py` file which uses \
-the `iiswsgi` `distutils` commands to generate a package.  May be
-given multiple times.""")
-
-
-def webpi_console(args=None):
-    logging.basicConfig()
-    args, unknown = webpi_parser.parse_known_args(args=args)
-    if not unknown:
-        unknown = ['-q', 'bdist_msdeploy']
-    builder = WebPIBuilder(args.packages, feed=args.feed)
-    builder(*unknown)
-
-
 cmdclass = dict(build_msdeploy=build_msdeploy.build_msdeploy,
                 install_msdeploy=install_msdeploy.install_msdeploy,
-                bdist_msdeploy=bdist_msdeploy.bdist_msdeploy)
+                bdist_msdeploy=bdist_msdeploy.bdist_msdeploy,
+                build_webpi=build_webpi)
