@@ -1,20 +1,4 @@
-"""
-Build IIS WSGI Web Platform Installer feed.
-
-Calculates package sizes and sha1 hashes and renders a Web Platform
-Installer feed from that data and distribution metadata.  The
-distributions inclued are taken from setup.py keywords:
-
-bdist_msdeploy
-
-    A setup() kwarg containing a list of paths to distributions each
-    containing built MSDeploy packages to include in the feed.
-
-extras_require['bdist_webpi']
-
-    A list of depdendencies to retrieve from the environment and for
-    which to include entries in the feed.
-"""
+"""Build IIS WSGI Web Platform Installer feed."""
 
 import os
 import subprocess
@@ -88,6 +72,23 @@ class bdist_webpi(cmd.Command):
         options.ensure_verbosity(self)
 
     def run(self):
+        """
+        Build IIS WSGI Web Platform Installer feed.
+
+        Calculates package sizes and sha1 hashes and renders a Web Platform
+        Installer feed from that data and distribution metadata.  The
+        distributions inclued are taken from setup.py keywords:
+
+        bdist_msdeploy
+
+            A setup() kwarg containing a list of paths to distributions each
+            containing built MSDeploy packages to include in the feed.
+
+        extras_require['bdist_webpi']
+
+            A list of depdendencies to retrieve from the environment and for
+            which to include entries in the feed.
+        """
         for path in self.distribution.bdist_msdeploy:
             distribution = self.add_msdeploy(path)
             self.distributions.append(distribution)

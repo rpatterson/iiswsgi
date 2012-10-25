@@ -17,6 +17,7 @@ logger = logging.getLogger('install_virtualenv')
 
 
 class install_virtualenv(cmd.Command):
+    description = __doc__ = __doc__
 
     user_options = [
         ('virtualenv-script=', 'v',

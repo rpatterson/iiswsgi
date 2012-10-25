@@ -1,10 +1,4 @@
-"""
-Build all MSDeploy packages to be included in a WebPI feed.
-
-The packages are defined in the bdist_msdeploy setup() kwarg
-containing a list of paths to distributions each containing built
-MSDeploy packages to include in the feed.
-"""
+"""Build all MSDeploy packages listed in bdist_msdeploy."""
 
 import sys
 import os
@@ -21,7 +15,7 @@ logger = logging.getLogger('iiswsgi.webpi')
 
 
 class build_webpi(cmd.Command):
-    __doc__ = __doc__
+    description = __doc__ = __doc__
 
     user_options = [
         ('setup-args=', 'a',
@@ -44,6 +38,14 @@ class build_webpi(cmd.Command):
         options.ensure_verbosity(self)
 
     def run(self):
+        """
+        Build all MSDeploy packages to be included in a WebPI feed.
+
+        The packages are defined in the bdist_msdeploy setup() kwarg
+        containing a list of paths to distributions each containing built
+        MSDeploy packages to include in the feed.
+        """
+
         cwd = os.getcwd()
         for path in self.distribution.bdist_msdeploy:
             cmd = [sys.executable, 'setup.py'] + self.setup_args

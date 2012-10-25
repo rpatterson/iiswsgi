@@ -1,3 +1,5 @@
+"""Create an MSDeploy zip package for installation into IIS."""
+
 import os
 import zipfile
 
@@ -12,7 +14,7 @@ from iiswsgi import options
 
 
 class bdist_msdeploy(sdist.sdist):
-    """Create an MSDeploy zip package for installation into IIS."""
+    description = __doc__ = __doc__
 
     user_options = [opt for opt in sdist.sdist.user_options
                     if not opt[0].startswith('formats')]

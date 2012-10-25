@@ -1,19 +1,5 @@
-"""
-Run post-install tasks for a MS Web Deploy package:
+"""Run post-install tasks for a MS Web Deploy package."""
 
-1. set up a `virtualenv` isolated Python environment
-
-2. easy_install dist requirements
-
-3. write variable substitutions into `web.config`
-
-4. install an IIS FastCGI application
-
-5. test the IIS WSGI app
-
-Where possible, automatic detection is used when deciding whether to
-run a given task.
-"""
 
 import os
 import subprocess
@@ -69,7 +55,7 @@ class install_msdeploy(cmd.Command):
 
     def run(self):
         """
-        Run all deployment tasks and a custom script as appropriate.
+        Run all post-install deployment tasks as appropriate.
 
         * `self.install()`: perform tasks as appropriate
 
@@ -86,7 +72,7 @@ class install_msdeploy(cmd.Command):
 
     def install(self, *requirements):
         """
-        Set up the app to a point where it can be tested:
+        Set up the app to a point whee it can be tested:
 
         `setyp.py develop`:
 

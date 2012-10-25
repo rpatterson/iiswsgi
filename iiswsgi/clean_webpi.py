@@ -1,13 +1,4 @@
-"""
-Clean IIS WSGI Web Platform Installer caches:
-
-1. delete old Web Deploy packages from the Web Platform Installer cache
-
-2. delete `iis_install.stamp` files from all installations of any of the
-   given packages in `%USERPROFILE%\Documents\My Web Sites`
-
-3. delete copies of the feed from the Web Platform Installer cache
-"""
+"""Clean WebPI caches for the bdist_webpi msdeploy dists."""
 
 import os
 import shutil
@@ -28,7 +19,7 @@ logger = logging.getLogger('iiswsgi.webpi')
 
 
 class clean_webpi(cmd.Command):
-    __doc__ = __doc__
+    description = __doc__ = __doc__
 
     user_options = [
         ('webpi-cache=', 'c',
@@ -55,6 +46,7 @@ class clean_webpi(cmd.Command):
         self.delete_feed_cache()
 
     def delete_installer_cache(self, distribution):
+        """Delete old Web Deploy packages from the WebPI cache."""
         installer_dir = os.path.join(
             self.webpi_cache, 'installers', distribution.msdeploy_app_name)
         if os.path.exists(installer_dir):
@@ -63,7 +55,9 @@ class clean_webpi(cmd.Command):
             shutil.rmtree(installer_dir)
 
     def delete_stamp_files(self, distribution):
-        """Clean up likely stale stamp files."""
+        """
+        Clean up likely stale iis_install.stamp files for bdist_webpi packages.
+        """
         for appl_physical_path in fcgi.list_stamp_paths(
             distribution.msdeploy_app_name, self.stamp_filename):
             stamp_file = os.path.join(
@@ -74,6 +68,7 @@ class clean_webpi(cmd.Command):
                 os.remove(stamp_file)
 
     def delete_feed_cache(self):
+        """Delete copies of the feed from the Web Platform Installer cach."""
         for cached_feed_name in os.listdir(self.webpi_cache):
             if not os.path.splitext(cached_feed_name)[1] == '.xml':
                 # not a cached feed file
