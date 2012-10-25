@@ -43,7 +43,8 @@
 
 
   <entry type="application"
-         tal:repeat="dist view/dists">
+         tal:repeat="dist view/dists"
+         tal:attributes="type python:getattr(dist, 'msdeploy_url', None) and 'application';">
     <productId tal:content="dist/get_name">dist-name</productId>
     <id tal:content="dist/get_url">https://raw.github.com/authorname/dist</id>
     <version tal:content="dist/get_version">0.1</version>
@@ -91,8 +92,13 @@
     <discoveryHint>
       <file>
         <filePath
+           tal:condition="dist/msdeploy_url|nothing"
            tal:content="python:getattr(dist, 'discovery_file', None) or '%APPL_PHYSICAL_PATH%'"
            >%APPL_PHYSICAL_PATH%</filePath>
+        <filePath
+           tal:condition="not:dist/msdeploy_url|nothing"
+           tal:content="string:%SystemDrive%\Python27\Lib\site-packages\${dist/get_name}-${dist/get_version}-py2.7.egg-info\PKG-INFO"
+           >%SystemDrive%\Python27\Lib\site-packages\name-version-pyver.egg-info\PKG-INFO</filePath>
       </file>
     </discoveryHint>
     <dependency tal:condition="dist/msdeploy_url|nothing">
@@ -110,8 +116,17 @@
     </dependency>
     <dependency tal:condition="not:dist/msdeploy_url|nothing">
       <and>
-        <dependency tal:repeat="req dist/extras_require/install_msdeploy">
-          <productId tal:content="req">Python27</productId>
+        <dependency>
+          <productId>Python27</productId>
+        </dependency>
+        <dependency>
+          <productId>PythonDetectInstalls</productId>
+        </dependency>
+        <dependency>
+          <productId>PyPI</productId>
+        </dependency>
+        <dependency tal:repeat="req dependencies">
+          <productId tal:content="req">dist</productId>
         </dependency>
       </and>
     </dependency>
@@ -162,7 +177,10 @@
                    tal:content="string:${dt/month}-${dt/day}-${dt/year}"
                    >8-07-2012</addToFeedDate>
     <pageName tal:content="dist/get_name">dist-name</pageName>
-    <productFamily resourceName="Applications">Applications</productFamily>
+    <productFamily tal:condition="dist/msdeploy_url|nothing"
+                   resourceName="Applications">Applications</productFamily>
+    <productFamily tal:condition="not:dist/msdeploy_url|nothing"
+                   resourceName="Python">Python</productFamily>
     <longSummary
        resourceName="Entry_dist-name_LongSummary"
        tal:condition="python:dist.get_long_description() != 'UNKNOWN'"
