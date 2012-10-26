@@ -4,7 +4,7 @@ iiswsgi
 Serving Python WSGI applications natively from IIS
 ==================================================
 
-The ``iiswsgi`` module implements a FastCGI to WSGI gateway that is
+The `iiswsgi`_ module implements a FastCGI to WSGI gateway that is
 compatible with IIS's variation of the FastCGI protocol.  It also
 provides distutils commands for building, distributing and installing
 `Microsoft Web Deploy`_ (MSDeploy) packages through the `Web Platform
@@ -14,18 +14,76 @@ Installer`_ (WebPI).
 Quick Start
 ===========
 
-#. Copy the ``examples\pyramid.msdeploy`` package
+Assuming an existing Python distribution with a ``setup.py`` file and
+a WSGI ``*.ini`` config file, roughly the following steps could be
+used to released to WebPI:
 
-#. Add dependencies to ``requirements.txt``
+#. Install `iiswsgi`_ into the Python environment used to build releases::
 
-#. Add a WSGI PasteConfig in ``development.ini``
+   >C:\Python27\Scripts\easy_install.exe -U iiswsgi
 
-#. Search and replace IISWSGISampleApp in:
+#. Copy the following to the dist root and adjust as appropriate:
 
-   * ``setup.py``
-   * ``MANIFEST.in``
-   * ``Manifest.xml.in``
-   * ``Parameters.xml``
+   * ``examples/pyramid.msdeploy/Manifest.xml.in``
+   * ``examples/pyramid.msdeploy/Parameters.xml``
+   * ``examples/pyramid.msdeploy/iis_install.stamp.in``
+   * ``examples/pyramid.msdeploy/web.config.in``
+
+#. Add custom setup to ``setup.py``::
+
+   ...
+   from iiswsgi import install_msdeploy
+   ...
+   class install_custom_msdeploy(install_msdeploy.install_msdeploy):
+       def run(self):
+           """Perform custom tasks."""
+           self.install()
+           CUSTOM_SETUP
+           self.test()
+   ...
+   setup(
+   ...
+         cmdclass=dict(install_msdeploy=install_custom_msdeploy),
+   ...
+
+#. Build a MSDeploy package::
+
+   >C:\Python27\python.exe setup.py bdist_msdeploy
+
+#. Add WebPI dependencies to ``setup.py``::
+
+   ...
+   setup(
+   ...
+         extras_require=dict(install_msdeploy=['virtualenv'],
+                             webpi_eggs=['virtualenv', 'iiswsgi']),
+   ...
+
+#. Add WebPI feed metadata to ``setup.py``:
+
+   See ``examples/pyramid.msdeploy/setup.py`` for an example.  
+
+#. Build a local WebPI feed::
+
+   >C:\Python27\python.exe setup.py bdist_webpi -u "{msdeploy_package_url}" -m .
+
+#. Test locally:
+
+   #. Install and launch the Web Platform Installer
+   #. Click on the `options` link to the bottom right,
+   #. Enter the feed URL below and click `Add Feed`:
+      ``file:///C:/Users/%USERNAME%/Documents/GitHub/%DIST_NAME%/dist/%DIST_NAME%-%VERSION%-py2.7-win32.webpi.xml``
+   #. Click `OK` and wait for WebPI to parse the feed
+   #. Search for your dist and install
+   #. Watch WebPI launch Web Matrix and open the site in a browser
+
+#. Upload/Release
+
+   >C:\Python27\python.exe setup.py bdist_msdeploy bdist_webpi -m . upload
+
+If everything is working correctly, both a MSDeploy zip package and
+the WebPI feed should be uploaded to PyPI.  Then you can instruct
+users to add the feed to WebPI and they can install your package.
 
 
 Web Deploy Package Contents
