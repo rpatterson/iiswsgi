@@ -34,6 +34,7 @@ class bdist_webpi(cmd.Command):
     description = __doc__ = __doc__
 
     user_options = [
+        clean_webpi.bdist_msdeploy_opt,
         ('template=', 't',
          "The zope.pagetemplate file used to render the feed."),
         ('dist-dir=', 'd',
@@ -53,11 +54,16 @@ default, but passing this option overrides both.  Use \
                       'author-email': 'author_email'}
 
     def initialize_options(self):
+        self.msdeploy_bdists = None
         self.template = None
         self.dist_dir = None
         self.msdeploy_url_template = None
 
     def finalize_options(self):
+        self.ensure_string_list('msdeploy_bdists')
+        if not self.msdeploy_bdists:
+            raise errors.DistutilsOptionError(
+                'The msdeploy_bdists option is required')
         self.distributions = []
         self.ensure_filename('template')
         if self.template is None:
@@ -75,20 +81,21 @@ default, but passing this option overrides both.  Use \
         Build IIS WSGI Web Platform Installer feed.
 
         Calculates package sizes and sha1 hashes and renders a Web Platform
-        Installer feed from that data and distribution metadata.  The
-        distributions inclued are taken from setup.py keywords:
+        Installer feed from that data and distribution metadata.
 
-        bdist_msdeploy
+        msdeploy_bdists
 
-            A setup() kwarg containing a list of paths to distributions each
-            containing built MSDeploy packages to include in the feed.
+            A command-line option containing a list of paths to
+            distributions each containing built MSDeploy packages to
+            include in the feed.
 
         extras_require['bdist_webpi']
 
-            A list of depdendencies to retrieve from the environment and for
-            which to include entries in the feed.
+            A setup() kwarg containing a list of depdendencies to
+            retrieve from the environment and for which to include
+            entries in the feed.
         """
-        for path in self.distribution.bdist_msdeploy:
+        for path in self.msdeploy_bdists:
             distribution = self.add_msdeploy(path)
             self.distributions.append(distribution)
             if not distribution.has_msdeploy_manifest:

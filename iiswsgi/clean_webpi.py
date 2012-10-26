@@ -14,6 +14,10 @@ from iiswsgi import fcgi
 
 webpi_cache = os.path.join(
     '%LOCALAPPDATA%', 'Microsoft', 'Web Platform Installer')
+bdist_msdeploy_opt = (
+    'msdeploy-bdists=', 'm',
+    'Paths to dists containing built MSDeploy packages to include in the feed.'
+    )
 
 logger = logging.getLogger('iiswsgi.webpi')
 
@@ -40,9 +44,12 @@ class clean_webpi(cmd.Command):
     stamp_filename = options.stamp_filename
 
     def initialize_options(self):
+        self.msdeploy_bdists = None
         self.webpi_cache = None
 
     def finalize_options(self):
+        self.set_undefined_options(
+            'bdist_webpi', ('msdeploy_bdists', 'msdeploy_bdists'))
         if self.webpi_cache is None:
             self.webpi_cache = webpi_cache
         self.webpi_cache = os.path.expandvars(self.webpi_cache)
@@ -50,7 +57,7 @@ class clean_webpi(cmd.Command):
         options.ensure_verbosity(self)
 
     def run(self):
-        for path in self.distribution.bdist_msdeploy:
+        for path in self.msdeploy_bdists:
             distribution = core.run_setup('setup.py', stop_after='commandline')
             distribution.msdeploy_app_name = get_app_name(path)
             self.delete_installer_cache(distribution)
