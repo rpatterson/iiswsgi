@@ -10,6 +10,8 @@ provides distutils commands for building, distributing and installing
 `Microsoft Web Deploy`_ (MSDeploy) packages through the `Web Platform
 Installer`_ (WebPI).
 
+.. contents:: :local:
+
 
 Quick Start
 ===========
