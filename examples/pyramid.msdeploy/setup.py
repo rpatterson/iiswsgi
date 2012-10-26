@@ -1,3 +1,10 @@
+import os
+import logging
+import subprocess
+import sysconfig
+
+from distutils import core
+
 from setuptools import setup
 
 from iiswsgi import install_msdeploy
@@ -11,28 +18,21 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         """Add a project from a scaffold before testing."""
         self.install()
 
-        import os
-        import logging
-
-        from distutils import core
-        from distutils import errors
-
         logger = logging.getLogger('pyramid.iiswsgi')
+        cwd = os.getcwd()
 
         scaffold = '__pyramid_scaffold__'
         if scaffold == '__' + 'pyramid_scaffold' + '__':
             # Testing outside of WebPI
             scaffold = "starter"
 
-        from pyramid.scripts import pcreate
-        argv = ['pcreate', '-s', scaffold, '__pyramid_project__']
-        logger.info('Creating Pyramid project: {0}'.format(' '.join(argv)))
-        returncode = pcreate.main(argv, quiet=(self.verbose == 0))
-        if returncode:
-            raise errors.DistutilsError(
-                "Pyramid's pcreate returned an error: {0}".format(returncode))
+        pcreate = os.path.join(
+            sysconfig.get_path('scripts', vars=dict(base=cwd)),
+            'pcreate' + sysconfig.get_config_var('EXE'))
+        cmd = [pcreate, '-s', scaffold, '__pyramid_project__']
+        logger.info('Creating Pyramid project: {0}'.format(' '.join(cmd)))
+        subprocess.check_call(cmd)
 
-        cwd = os.getcwd()
         logger.info(
             'Installing __pyramid_project__ project for development')
         try:
