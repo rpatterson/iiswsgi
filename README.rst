@@ -4,8 +4,8 @@ iiswsgi
 Serving Python WSGI applications natively from IIS
 ==================================================
 
-The `iiswsgi`_ module implements a `FastCGI`_ to `WSGI`_ gateway that
-is compatible with `IIS`_'s variation of the FastCGI protocol.  It also
+The `iiswsgi`_ module implements a FastCGI to `WSGI`_ gateway that
+is compatible with `IIS`_'s variation of the `FastCGI protocol`_.  It also
 provides `distutils`_ commands for building, distributing and installing
 `Microsoft Web Deploy`_ (MSDeploy) packages through the `Web Platform
 Installer`_ (WebPI).
@@ -137,11 +137,11 @@ IIS Web Config
 
     Use the ``web.config.in`` template to generate the `IIS site
     configuration file`_.  When using `iiswsgi`_, it contains a
-    `fastCgi`_ application that invokes the `iiswsgi.exe`_ server.
-    Most packages will want to adjust the `<application...`_
-    attributes that control process behavior.  This is also where the
-    ``*.ini`` config file or `entry_point`_ that define the WSGI app
-    to run are specified.
+    `fastCgi`_ application that invokes the ``iiswsgi.exe`` `iiswsgi
+    FCGI Gateway`_.  Most packages will want to adjust the
+    `<application...`_ attributes that control process behavior.  This
+    is also where the ``*.ini`` config file or `entry_point`_ that
+    define the WSGI app to run are specified.
 
 IIS Install Stamp File
 ----------------------
@@ -263,10 +263,10 @@ IIS' implementation of the FastCGI protocol is not fully compliant.
 Most significantly, what is passed in on `STDIN_FILENO`_ is not a
 handle to an open socket but rather to a `Windows named pipe`_.  This
 names pipe does not support socket-like behavior, at least under
-Python.  As such, the `iiswsgi.server`_ module extends `flup's WSGI to
-FCGI gateway`_ to support using ``STDIN_FILENO`` opened twice, once
-each approximating the ``recv`` and ``send`` end of a socket as is
-specified in FastCGI.
+Python.  As such, the ``iiswsgi.exe`` `iiswsgi FCGI Gateway`_ extends
+`flup's WSGI to FCGI gateway`_ to support using ``STDIN_FILENO``
+opened twice, once each approximating the ``recv`` and ``send`` end of
+a socket as is specified in FastCGI.
 
 IIS FastCGI Applications
 ------------------------
@@ -350,6 +350,7 @@ IIS Management Console dependency
 .. _WSGI: http://wsgi.readthedocs.org/en/latest/
 .. _Paste config file: http://pythonpaste.org/deploy/#config-format
 .. _Paste Deploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
+.. _flup's WSGI to FCGI gateway: http://trac.saddi.com/flup/wiki/FlupServers
 
 .. _IIS: http://www.iis.net
 .. _Microsoft Web Deploy: http://www.iis.net/downloads/microsoft/web-deploy
@@ -358,9 +359,9 @@ IIS Management Console dependency
 .. _WebPI caches: http://www.iis.net/learn/troubleshoot/web-platform-installer-issues/troubleshooting-problems-with-microsoft-web-platform-installer
 .. _Install fciv.exe: http://support.microsoft.com/kb/841290
 .. _MSDeploy manifest: http://www.iis.net/learn/develop/windows-web-application-gallery/reference-for-the-web-application-package
-.. _Manifest.xml: MSDeploy_
-.. _Parameters.xml: MSDeploy_
-.. _MSDeploy package: MSDeploy_
+.. _Manifest.xml: MSDeploy manifest_
+.. _Parameters.xml: MSDeploy manifest_
+.. _MSDeploy package: MSDeploy manifest_
 .. _runCommand: http://technet.microsoft.com/en-us/library/ee619740(v=ws.10).aspx
 .. _IIS site configuration file: http://technet.microsoft.com/en-us/library/cc754617(v=ws.10).aspx
 .. _web.config: IIS site configuration file_
@@ -371,7 +372,7 @@ IIS Management Console dependency
 .. _AppCmd.exe: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
 .. _IIS FastCGI Reference: http://www.iis.net/ConfigReference/system.webServer/fastCgi
 
-.. _FastCGI: http://www.fastcgi.com/drupal/
+.. _FastCGI protocol: http://www.fastcgi.com/drupal/
 .. _STDIN_FILENO: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
 .. _Windows named pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
 
