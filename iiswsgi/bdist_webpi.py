@@ -110,6 +110,7 @@ default, but passing this option overrides both.  Use \
         dist_feed = os.path.join(
             self.dist_dir,
             options.get_egg_name(self.distribution) + '.webpi.xml')
+        self.mkpath(self.dist_dir)
         self.write_feed(dist_feed)
         self.distribution.dist_files.append(('webpi', '', dist_feed))
 
