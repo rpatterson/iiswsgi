@@ -77,7 +77,7 @@ used to released to WebPI:
    #. Search for your dist and install
    #. Watch WebPI launch Web Matrix and open the site in a browser
 
-#. Upload/Release
+#. Upload/Release::
 
     >C:\Python27\python.exe setup.py bdist_msdeploy bdist_webpi -m . upload
 
