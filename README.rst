@@ -161,7 +161,7 @@ The moving parts of ``iiswsgi`` are as follows:
 
     This console script is the FastCGI to WSGI gateway.  IIS invokes
     this script to start a Python WSGI app as a FastCGI process.  This
-    can be used independently of the `distutils` commands.
+    can be used independently of the `distutils`_ commands.
 
 ``>python.exe setup.py build_msdeploy``
 
@@ -192,7 +192,7 @@ The moving parts of ``iiswsgi`` are as follows:
     ``install_msdeploy`` in case your package needs any of the results
     of the installation process and to test the installation process.
     Finally, it creates a MSDeploy package zip file with the contents
-    contolled by the same tools that `distutils` provides for
+    contolled by the same tools that `distutils`_ provides for
     ``sdist`` distributions, including ``MANIFEST.in``.
 
 ``>iiswsgi_install.exe``
@@ -232,72 +232,9 @@ The moving parts of ``iiswsgi`` are as follows:
     MSDeploy packages and the feed itself.
 
 
-Building
---------
-
-The ``iiswsgi_webpi.exe`` console script can be used to automate most of
-the repetitive tasks involved:
-
-* build Microsoft Web Deploy packages
-* add them to a Web Platform Installer feed
-* clear any relevant caches so changes take effect
-
-Because of the ``Could not find file '\\?\C:\...`` error described below
-in `Known Issues`_, it's not advisable to exit and re-launch WebPI.
-As such, the best way to get feed changes to take effect in WebPI may
-be to:
-
-* Click on the `options` link in the bottom right of WebPI
-* Click the `X` next to your feed to remove it
-* Click `OK` and wait for WebPI to finish updating the remaining feeds
-* Run `iiswsgi_webpi.exe`
-* Click on the `options` link again in WebPI
-* Enter the feed URL and click `Add Feed` to restore the feed
-* Click `OK` and wait for WebPI again
-
-Now your feed changes should be reflected in WebPI.
-
 Debugging
 =========
 
-Sample Package
-==============
-
-The `examples\sample.msdeploy` sub-directory can be used to build a
-sample MSDeploy package to be used with the `web-pi.xml` file as a
-custom `Web Platform Installer feed
-<http://blogs.iis.net/kateroh/archive/2009/10/24/web-pi-extensibility-custom-feeds-installing-custom-applications.aspx>`_
-to test or as a basis for building your own packages and custom feeds.
-
-  #. Exit the Web Platform Installer
-
-     To make sure it uses the current version of the package and feed.
-
-  #. Build the package
- 
-     A script is provided to make this easier.  Change to the directory
-     containing this file in a `cmd.exe` prompt and run the following
-     command::
- 
-       >C:\Python27\python.exe build_package.py
- 
-     That will build the package, clear the WebPI caches, and update
-     the custom feed.
- 
-  #. Point WebPI to the local feed
-
-     Skip this if you've already done it before.
-   
-     Force WebPI to use the modified feed.  Use the WebPI options
-     screen to remove any previous Plone installer feeds and adding
-     ``file:///C:/.../iiswsgi/examples/web-pi.xml`` replacing ``...``
-     with the appropriate path.
-
-  #. Install the package in WebPI
-
-     Use the search box in WebPI to search for `iiswsgi`, click `Add`
-     then click the `Install` button below and follow the
-     instructions.
 
 IIS FastCGI
 ===========
@@ -306,9 +243,9 @@ IIS' implementation of the FastCGI protocol is not fully compliant.
 Most significantly, what is passed in on `STDIN_FILENO`_ is not a
 handle to an open socket but rather to a `Windows named pipe`_.  This
 names pipe does not support socket-like behavior, at least under
-Python.  As such, the `iiswsgi.server` module extends `flup's WSGI to
-FCGI gateway` to support using ``STDIN_FILENO`` opened twice, once
-each approximating the `recv` and `send` end of a socket as is
+Python.  As such, the `iiswsgi.server`_ module extends `flup's WSGI to
+FCGI gateway`_ to support using ``STDIN_FILENO`` opened twice, once
+each approximating the ``recv`` and ``send`` end of a socket as is
 specified in FastCGI.
 
 IIS FastCGI Applications
@@ -338,7 +275,7 @@ IIS will return an opaque 500 error.
 Known Issues
 ============
 
-`System.IO.FileNotFoundException: Could not find file '\\?\C:\...`
+``System.IO.FileNotFoundException: Could not find file '\\?\C:\...``
 
     I've run into this error on Windows 7 on two different machines
     and multiple installs, one OEM and one vanilla Windows 7 Extreme.
@@ -349,7 +286,21 @@ Known Issues
     WebPI package runCommand not working in Manifest.xml`_ for more
     information.
 
-TODO building a MSDeploy package from an existing project
+    As such, it's not advisable to exit and re-launch WebPI.
+    As such, the best way to get feed changes to take effect in WebPI may
+    be to:
+    
+    * Click on the `options` link in the bottom right of WebPI
+    * Click the `X` next to your feed to remove it
+    * Click `OK` and wait for WebPI to finish updating the remaining feeds
+    * Run `iiswsgi_webpi.exe`
+    * Click on the `options` link again in WebPI
+    * Enter the feed URL and click `Add Feed` to restore the feed
+    * Click `OK` and wait for WebPI again
+    
+    Now your feed changes should be reflected in WebPI.
+
+``<fastCgi><application>`` doesn't take effect in ``web.config``
 
 .. _MS WebPI package runCommand not working in Manifest.xml: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
 .. _Windows named pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
