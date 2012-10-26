@@ -42,10 +42,6 @@ class install_msdeploy(cmd.Command):
         self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
     def finalize_options(self):
-        # Configure logging
-        build = self.distribution.get_command_obj('build_msdeploy')
-        build.ensure_finalized()
-
         cwd = os.getcwd()
         if 'APPL_PHYSICAL_PATH' not in os.environ:
             os.environ['APPL_PHYSICAL_PATH'] = cwd
