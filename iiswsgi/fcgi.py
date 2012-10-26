@@ -20,7 +20,9 @@ try:
     app_attr_defaults_init['maxInstances'] = multiprocessing.cpu_count()
 except NotImplementedError:
     # NotImplementedError: cannot determine number of cpus
-    pass
+    if 'NUMBER_OF_PROCESSORS' in os.environ:
+        app_attr_defaults_init['maxInstances'] = os.environ[
+            'NUMBER_OF_PROCESSORS']
 
 
 def get_web_config_apps(web_config):
