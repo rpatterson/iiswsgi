@@ -185,16 +185,16 @@ iiswsgi FCGI Gateway
     process.  This can be used independently of the `distutils`_
     commands.
 
-build_msdeploy
---------------
+Build MSDeploy Package
+----------------------
 
-    This distutils command compiles a MSDeploy ``Manifest.xml``
-    converting any ``runCommand`` attributes into the necessary hash.
-    It will also copy into place the ``iis_install.stamp`` stamp file
-    used by ``>iiswsgi_install.exe`` to find the right
-    ``APPL_PHYSICAL_PATH`` at install time.
+    The ``build_msdeploy`` distutils command compiles a MSDeploy
+    ``Manifest.xml`` converting any ``runCommand`` attributes into the
+    necessary hash.  It will also copy into place the
+    ``iis_install.stamp`` stamp file used by ``>iiswsgi_install.exe``
+    to find the right ``APPL_PHYSICAL_PATH`` at install time.
 
-install_msdeploy
+Install MSDeploy
 ----------------
 
     This distutils command performs common actions needed to deploy
@@ -209,19 +209,19 @@ install_msdeploy
     ``web.config`` worked as it should.  Anyone with a MS support
     contract, please submit a request about this.
 
-bdist_msdeploy
---------------
+Build MSDeploy Distribution
+---------------------------
 
-    This distutils command assembles an actual MSDeploy package: It
-    starts by running ``build_msdeploy``.  Then it runs
-    ``install_msdeploy`` in case your package needs any of the results
-    of the installation process and to test the installation process.
-    Finally, it creates a MSDeploy package zip file with the contents
-    contolled by the same tools that `distutils`_ provides for
-    ``sdist`` distributions, including ``MANIFEST.in``.
+    The ``bdist_msdeploy`` distutils command assembles an actual
+    MSDeploy package: It starts by running ``build_msdeploy``.  Then
+    it runs ``install_msdeploy`` in case your package needs any of the
+    results of the installation process and to test the installation
+    process.  Finally, it creates a MSDeploy package zip file with the
+    contents contolled by the same tools that `distutils`_ provides
+    for ``sdist`` distributions, including ``MANIFEST.in``.
 
-iiswsgi_install
----------------
+MSDeploy Install Bootstrap
+--------------------------
 
     The ``iiswsgi_install.exe`` script bootstraps the MSDeploy package
     install process optionally setting up a virtualenv first.  It
@@ -246,18 +246,18 @@ iiswsgi_install
     Anyone with a MS support contract, please submit a request about
     this.
 
-bdist_webpi
------------
+Build WebPI Feed Distribution
+-----------------------------
 
-    This distutils command assembles a WebPI feed from one or more
-    MSDeploy packages with dependencies.  It can also include entries
-    for normal Python dists.
+    The ``bdist_webpi`` distutils command assembles a WebPI feed from
+    one or more MSDeploy packages with dependencies.  It can also
+    include entries for normal Python dists.
 
-clean_webpi
------------
+Clean WebPI Caches
+------------------
 
-    This distutils command clears the WebPI caches for one or more
-    MSDeploy packages and the feed itself.
+    The ``clean_webpi`` distutils command clears the WebPI caches for
+    one or more MSDeploy packages and the feed itself.
 
 
 Debugging
