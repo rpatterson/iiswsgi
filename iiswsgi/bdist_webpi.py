@@ -102,7 +102,7 @@ default, but passing this option overrides both.  Use \
                 continue
             distribution.msdeploy_app_name = clean_webpi.get_app_name(path)
 
-        for name in self.distribution.extras_require['bdist_webpi']:
+        for name in self.distribution.extras_require['webpi_eggs']:
             distribution = self.add_dist(name)
             self.distributions.append(distribution)
 

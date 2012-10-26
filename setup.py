@@ -31,7 +31,7 @@ setup(name=name,
       install_requires=['flup>=1.0.3.dev_20110405'],
       extras_require=dict(config=['PasteDeploy'],
                           webpi=['zope.pagetemplate'],
-                          bdist_webpi=['virtualenv', name]),
+                          webpi_eggs=['virtualenv', name]),
       scripts=['test.ini'],
       entry_points={
           'console_scripts':
