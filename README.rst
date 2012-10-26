@@ -332,3 +332,5 @@ Known Issues
 .. _AppCmd.exe: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
 .. _IIS FastCGI Reference: http://www.iis.net/ConfigReference/system.webServer/fastCgi
 .. _Paste Deploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
+
+.. _setup-py: setuppy_
