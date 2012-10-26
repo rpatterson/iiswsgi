@@ -253,5 +253,5 @@ def install_console(args=None):
     args, unknown = install_console_parser.parse_known_args(args=args)
     if unknown:
         setup = unknown
-    installer = Installer(args.app_name, args.require_stamp)
+    installer = Installer(**vars(args))
     installer(setup)

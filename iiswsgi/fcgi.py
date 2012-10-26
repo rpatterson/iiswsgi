@@ -183,7 +183,7 @@ def install_fcgi_app_console(args=None):
     """
     logging.basicConfig(level=logging.INFO)
     options, args = install_fcgi_app_parser.parse_args(args=args)
-    install_fcgi_app(**options.__dict__)
+    install_fcgi_app(**vars(options))
 
 
 install_fcgi_app_parser = argparse.ArgumentParser(
