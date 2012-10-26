@@ -20,6 +20,12 @@ def assert_string(dist, attr, value):
             'The {0} option must be a string: {1}'.format(attr, value))
 
 
+def assert_list(dist, attr, value):
+    if not isinstance(value, list):
+        raise errors.DistutilsOptionError(
+            'The {0} option must be a list: {1}'.format(attr, value))
+
+
 def debug_environ():
     """Log useful debug information."""
     # Some useful startup debugging info
