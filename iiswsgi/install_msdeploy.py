@@ -223,8 +223,9 @@ class Installer(object):
             self.logger.info(
                 'APPL_PHYSICAL_PATH environment variable not set')
 
-        appl_physical_paths = list(fcgi.list_stamp_paths(
-            self.app_name, self.stamp_filename, appcmd_exe))
+        appl_physical_paths = list(
+            path for path in fcgi.list_stamp_paths(self.app_name, appcmd_exe)
+            if os.path.exists(os.path.join(path, self.stamp_filename)))
         if not appl_physical_paths:
             if os.path.exists('setup.py'):
                 # maybe the current directory is the path

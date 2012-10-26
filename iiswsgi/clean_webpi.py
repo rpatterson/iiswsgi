@@ -71,7 +71,10 @@ class clean_webpi(cmd.Command):
         Clean up likely stale iis_install.stamp files for bdist_webpi packages.
         """
         for appl_physical_path in fcgi.list_stamp_paths(
-            distribution.msdeploy_app_name, self.stamp_filename):
+            distribution.msdeploy_app_name):
+            if not os.path.exists(os.path.join(
+                appl_physical_path, self.stamp_filename)):
+                continue
             stamp_file = os.path.join(
                 appl_physical_path, self.stamp_filename)
             if os.path.exists(stamp_file):

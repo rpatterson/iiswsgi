@@ -54,8 +54,7 @@ def get_appcmd_apps(appcmd_exe=None):
         yield dict((key, value) for key, value in app.attributes.items())
 
 
-def list_stamp_paths(app_name=None, stamp_filename=options.stamp_filename,
-                     appcmd_exe=None):
+def list_appl_paths(app_name=None, appcmd_exe=None):
     appcmd_exe = get_appcmd_exe(appcmd_exe)
     if appcmd_exe is None:
         return
@@ -77,9 +76,7 @@ def list_stamp_paths(app_name=None, stamp_filename=options.stamp_filename,
 
         for app in site.getElementsByTagName('application'):
             for vdir in app.getElementsByTagName('virtualDirectory'):
-                path = vdir.getAttribute('physicalPath')
-                if os.path.exists(os.path.join(path, stamp_filename)):
-                    yield path
+                yield vdir.getAttribute('physicalPath')
 
 
 def format_appcmd_attrs(**kw):
