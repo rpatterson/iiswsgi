@@ -2,10 +2,10 @@
   
   <parameter 
     name="ApplicationPath" 
-    description="Full site path where you would like to install your application (i.e., PyramidApp)" 
-    defaultValue="Default Web Site/PyramidApp" 
+    description="Full site path where you would like to install your application (i.e., PyramidIISApp)" 
+    defaultValue="Default Web Site/PyramidIISApp" 
     tags="iisApp">
-    <parameterEntry kind="ProviderPath" scope="iisApp" match="PyramidApp" />
+    <parameterEntry kind="ProviderPath" scope="iisApp" match="PyramidIISApp" />
   </parameter>
   
   <parameter 

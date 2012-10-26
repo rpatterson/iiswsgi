@@ -2,7 +2,7 @@ from setuptools import setup
 
 version = '0.1'
 
-setup(name='IISWSGISampleApp',
+setup(name='WSGISampleIISApp',
       version=version,
       title='IIS WSGI Sample App',
       description="""Sample app demonstrating the use of IISWSGI \

@@ -44,7 +44,7 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         self.test()
 
 
-setup(name='PyramidApp',
+setup(name='PyramidIISApp',
       version=version,
       title="Pyramid Application",
       description="""Pyramid application project.""",
