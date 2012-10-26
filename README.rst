@@ -15,9 +15,9 @@ Installer`_ (WebPI).
 Quick Start
 ===========
 
-Assuming an existing Python distribution with a `Setup Script`_ and
-a WSGI ``*.ini`` config file, roughly the following steps could be
-used to released to WebPI:
+Assuming an existing Python distribution with a `Setup Script`_ using
+`setuptools`_ and a WSGI ``*.ini`` config file, roughly the following
+steps could be used to released to WebPI:
 
 #. Install `iiswsgi`_ into the Python environment used to build releases::
 
