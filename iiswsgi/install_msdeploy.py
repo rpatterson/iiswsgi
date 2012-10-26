@@ -193,7 +193,7 @@ class Installer(object):
                                  .format(' '.join(cmd)))
                 subprocess.check_call(cmd)
 
-                cmd = [executable, '-m', 'pdb', 'setup.py'] + setup_args
+                cmd = [executable, 'setup.py'] + setup_args
                 self.logger.info('Installing aplication: {0}'.format(
                     ' '.join(cmd)))
                 return subprocess.check_call(cmd)
