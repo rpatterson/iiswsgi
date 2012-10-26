@@ -184,7 +184,7 @@ class Installer(object):
                 executable = self.setup_virtualenv(bootstrap=bootstrap)
 
                 # Install iiswsgi for the setup commands
-                cmd = [executable, os.path.join(sysconfig.get_path(
+                cmd = [os.path.join(sysconfig.get_path(
                     'scripts', vars=dict(base=os.curdir)),
                     'easy_install' + sysconfig.get_config_var('EXE')),
                        '--find-links', distutils.sysconfig.get_python_lib(),
