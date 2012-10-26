@@ -1,17 +1,14 @@
 ==================================================
 iiswsgi
 ==================================================
-Serving Python WSGI applications natively from IIS
-==================================================
+
+.. contents::
 
 The `iiswsgi`_ module implements a FastCGI to WSGI gateway that is
 compatible with IIS's variation of the FastCGI protocol.  It also
 provides distutils commands for building, distributing and installing
 `Microsoft Web Deploy`_ (MSDeploy) packages through the `Web Platform
 Installer`_ (WebPI).
-
-.. toctree::
-
 
 Quick Start
 ===========
