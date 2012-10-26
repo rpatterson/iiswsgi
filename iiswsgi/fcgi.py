@@ -8,8 +8,6 @@ import re
 
 from xml.dom import minidom
 
-from iiswsgi import options
-
 logger = logging.getLogger('iiswsgi.fcgi')
 
 app_attr_defaults_init = dict(
@@ -17,7 +15,12 @@ app_attr_defaults_init = dict(
     arguments='-u %SystemDrive%\\Python27\\Scripts\\iiswsgi-script.py',
     activityTimeout='600', requestTimeout='600', idleTimeout='604800',
     monitorChangesTo='{SystemDrive}\\Scripts\\iiswsgi-script.py',
-    maxInstances=multiprocessing.cpu_count())
+    maxInstances=2)
+try:
+    app_attr_defaults_init['maxInstances'] = multiprocessing.cpu_count()
+except NotImplementedError:
+    # NotImplementedError: cannot determine number of cpus
+    pass
 
 
 def get_web_config_apps(web_config):
