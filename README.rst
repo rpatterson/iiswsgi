@@ -185,8 +185,8 @@ iiswsgi FCGI Gateway
     process.  This can be used independently of the `distutils`_
     commands.
 
-``build_msdeploy``
-------------------
+build_msdeploy
+--------------
 
     This distutils command compiles a MSDeploy ``Manifest.xml``
     converting any ``runCommand`` attributes into the necessary hash.
@@ -194,8 +194,8 @@ iiswsgi FCGI Gateway
     used by ``>iiswsgi_install.exe`` to find the right
     ``APPL_PHYSICAL_PATH`` at install time.
 
-``install_msdeploy``
---------------------
+install_msdeploy
+----------------
 
     This distutils command performs common actions needed to deploy
     Python web apps on IIS: install dependencies, do variable
@@ -209,8 +209,8 @@ iiswsgi FCGI Gateway
     ``web.config`` worked as it should.  Anyone with a MS support
     contract, please submit a request about this.
 
-``bdist_msdeploy``
-------------------
+bdist_msdeploy
+--------------
 
     This distutils command assembles an actual MSDeploy package: It
     starts by running ``build_msdeploy``.  Then it runs
@@ -220,8 +220,8 @@ iiswsgi FCGI Gateway
     contolled by the same tools that `distutils`_ provides for
     ``sdist`` distributions, including ``MANIFEST.in``.
 
-``iiswsgi_install``
-------------------------
+iiswsgi_install
+---------------
 
     The ``iiswsgi_install.exe`` script bootstraps the MSDeploy package
     install process optionally setting up a virtualenv first.  It
@@ -246,15 +246,15 @@ iiswsgi FCGI Gateway
     Anyone with a MS support contract, please submit a request about
     this.
 
-``bdist_webpi``
----------------
+bdist_webpi
+-----------
 
     This distutils command assembles a WebPI feed from one or more
     MSDeploy packages with dependencies.  It can also include entries
     for normal Python dists.
 
-``clean_webpi``
----------------
+clean_webpi
+-----------
 
     This distutils command clears the WebPI caches for one or more
     MSDeploy packages and the feed itself.
@@ -325,6 +325,10 @@ Known Issues
     Now your feed changes should be reflected in WebPI.
 
 ``<fastCgi><application>`` doesn't take effect in ``web.config``
+
+Web Deploy dependency
+
+IIS Management Console dependency
 
 
 .. _iiswsgi: https://github.com/rpatterson/iiswsgi#iiswsgi
