@@ -260,13 +260,9 @@ following may help understand what's involved.
 You can use IIS's `AppCmd.exe`_ to install new FastCGI applications.
 You can find it at ``%ProgramFiles%\IIS Express\appcmd.exe`` for
 WebMatrix/IIS Express or ``%systemroot%\system32\inetsrv\AppCmd.exe``
-for IIS.  Note that you need to replace
-``%SystemDrive%\Python27\Scripts\test.ini`` with the full path to a
-`Paste Deploy INI configuration file`_
-that defines the WSGI app and ``IISWSGI-Test`` with the name of your
-app as IIS will see it::
+for IIS.  Here's an example::
 
-    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %SystemDrive%\Python27\Scripts\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='C:\Python27\Scripts\test.ini']" /commit:apphost
+    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %HOMEDRIVE%%HOMEPATH%\Documents\My Web Sites\FooApp\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='C:\Users\Administrator\Documents\My Web Sites\FooApp\test.ini']" /commit:apphost
 
 See the `IIS FastCGI Reference`_ for
 more details on how to configure IIS for FastCGI.  Note that you
