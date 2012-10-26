@@ -32,8 +32,6 @@ setup(name=name,
       extras_require=dict(config=['PasteDeploy'],
                           webpi=['zope.pagetemplate'],
                           bdist_webpi=['virtualenv', name]),
-      bdist_msdeploy=['examples/sample.msdeploy',
-                      'examples/pyramid.msdeploy'],
       scripts=['test.ini'],
       entry_points={
           'console_scripts':
@@ -42,12 +40,9 @@ setup(name=name,
            'iiswsgi_install_fcgi_app = iiswsgi.fcgi:install_fcgi_app_console'],
           'paste.app_factory': ['test_app = iiswsgi.server:make_test_app'],
           "distutils.commands": [
-            "install_virtualenv = "
-              "iiswsgi.install_virtualenv:install_virtualenv",
             "build_msdeploy = iiswsgi.build_msdeploy:build_msdeploy",
             "install_msdeploy = iiswsgi.install_msdeploy:install_msdeploy",
             "bdist_msdeploy = iiswsgi.bdist_msdeploy:bdist_msdeploy",
-            "build_webpi = iiswsgi.build_webpi:build_webpi",
             "bdist_webpi = iiswsgi.bdist_webpi:bdist_webpi",
             "clean_webpi = iiswsgi.clean_webpi:clean_webpi"],
           "distutils.setup_keywords": [
@@ -59,6 +54,5 @@ setup(name=name,
             "icon_url = iiswsgi.options:assert_string",
             "screenshot_url = iiswsgi.options:assert_string",
             "discovery_file = iiswsgi.options:assert_string",
-            "msdeploy_url_template = iiswsgi.options:assert_string",
-            "bdist_msdeploy = iiswsgi.options:assert_editable_dists"]},
+            "msdeploy_url_template = iiswsgi.options:assert_string"]},
       )

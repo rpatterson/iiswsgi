@@ -1,14 +1,18 @@
 """Run post-install tasks for a MS Web Deploy package."""
 
 
+import sys
 import os
 import subprocess
 import argparse
 import logging
 import re
+import sysconfig
 
 from xml.dom import minidom
 
+import distutils.sysconfig
+from distutils import errors
 from distutils import core
 from distutils import cmd
 
@@ -150,9 +154,10 @@ class Installer(object):
     stamp_filename = options.stamp_filename
 
     def __init__(self, app_name=None, require_stamp=True,
-                 install_fcgi_app=True):
+                 install_fcgi_app=True, virtualenv=None):
         self.app_name = app_name
         self.require_stamp = require_stamp
+        self.virtualenv = virtualenv
 
     def __call__(self, setup_args=setup_args):
         appl_physical_path = self.get_appl_physical_path()
@@ -168,10 +173,19 @@ class Installer(object):
                 'No IIS install stamp file found at {0}'.format(stamp_path))
 
         cwd = os.getcwd()
-        self.logger.info('Installing aplication: setup.py {0}'.format(
-            ' '.join(setup_args)))
         try:
             os.chdir(appl_physical_path)
+            if self.virtualenv:
+                bootstrap = None
+                if self.virtualenv is not None:
+                    bootstrap = self.virtualenv
+                executable = self.setup_virtualenv(bootstrap=bootstrap)
+                cmd = [executable, 'setup.py'] + setup_args
+                self.logger.info('Installing aplication: {0}'.format(
+                    ' '.join(cmd)))
+                return subprocess.check_call(cmd)
+            self.logger.info('Installing aplication: setup.py {0}'.format(
+                ' '.join(setup_args)))
             return core.run_setup('setup.py', script_args=setup_args)
         finally:
             os.chdir(cwd)
@@ -229,6 +243,64 @@ class Installer(object):
 
         return appl_physical_path
 
+    def setup_virtualenv(self, home_dir=os.curdir, bootstrap=None, **opts):
+        """
+        Set up a virtualenv in the `directory` with options.
+
+        If a `bootstrap` file is provided or the `virtualenv_script`
+        exists, it is run as a script with positional `args` inserted
+        into `sys.argv`.  Otherwise, `virtualenv` is imported and
+        `create_environment()` is called with any kwargs.
+
+        Following the run of this command, dependencies can
+        automatically be installed with the develop command.
+        """
+        if bootstrap is None and os.path.exists(self.virtualenv_script):
+            bootstrap = self.virtualenv_script
+
+        if bootstrap:
+            virtualenv_globals = dict(__file__=bootstrap)
+            execfile(bootstrap, virtualenv_globals)
+
+            argv = [bootstrap]
+            if self.verbose == 0:
+                argv.append('--quiet')
+            elif self.verbose == 2:
+                argv.append('--verbose')
+            for option, value in opts.iteritems():
+                argv.extend(['--' + option, value])
+            argv.append(home_dir)
+
+            self.logger.info(
+                'Setting up a isolated Python with bootstrap script: {0}'
+                .format(' '.join(argv)))
+            orig_argv = sys.argv[:]
+            try:
+                sys.argv[:] = argv
+                virtualenv_globals['main']()
+            finally:
+                sys.argv[:] = orig_argv
+        else:
+            try:
+                import virtualenv
+            except ImportError:
+                raise errors.DistutilsModuleError(
+                    'The virtualenv module must be available if no virtualenv '
+                    'bootstrap script is given: {0}'.format(bootstrap))
+            self.logger.info(
+                'Setting up a isolated Python with module: '
+                '{0}.create_environment({1} {2})'.format(
+                    virtualenv, repr(home_dir), ' '.join(
+                        '{0}={1}'.format(item) for item in opts.items())))
+            virtualenv.logger = virtualenv.Logger([(
+                virtualenv.Logger.level_for_integer(2 - self.verbose),
+                sys.stdout)])
+
+            virtualenv.create_environment(home_dir, **opts)
+
+        return os.path.join(sysconfig.get_path('scripts'),
+                            'python' + sysconfig.get_config_var('EXE'))
+
 install_parser = argparse.ArgumentParser(add_help=False)
 install_parser.add_argument(
     '-a', '--app-name', help="""\
@@ -240,6 +312,9 @@ install_parser.add_argument(
 Run the install process even if the `iis_install.stamp` file is not present.  \
 This can be usefule to manually re-run the deployment after an error that \
 stopped a previous run has been addressed.""")
+install_parser.add_argument(
+    '-e', '--virtualenv', nargs="?", const=True, help="""\
+Set up a virtualenv.  If an arg is given, use it as a bootstrap script.""")
 install_console_parser = argparse.ArgumentParser(
     description=Installer.__doc__,
     epilog=Installer.get_appl_physical_path.__doc__,
