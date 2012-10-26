@@ -169,14 +169,14 @@ The moving parts of ``iiswsgi`` are as follows:
     converting any ``runCommand`` attributes into the necessary hash.
     It will also copy into place the ``iis_install.stamp`` stamp file
     used by ``>iiswsgi_install.exe`` to find the right
-    APPL_PHYSICAL_PATH at install time.
+    ``APPL_PHYSICAL_PATH`` at install time.
 
 ``>python.exe setup.py install_msdeploy``
 
     This distutils command performs common actions needed to deploy
-    Python web apps on IIS: set up a virtualenv, install dependencies,
-    do variable substitution in ``web.config``, and install the
-    FastCGI application into the IIS global config.
+    Python web apps on IIS: install dependencies, do variable
+    substitution in ``web.config``, and install the FastCGI
+    application into the IIS global config.
 
     The latter should be possible to do in the ``web.config`` file but
     that doesn't work.  Hence ``install_msdeploy`` works around this
@@ -197,6 +197,11 @@ The moving parts of ``iiswsgi`` are as follows:
 
 ``>iiswsgi_install.exe``
 
+    Bootstrap the MSDeploy package install process optionally setting
+    up a virtualenv first.  It finds the correct
+    ``APPL_PHYSICAL_PATH``, changes to that directory and invokes
+    ``setup.py`` with arguments.
+
     This console script attempts to workaround the fact that WebPI and
     MSDeploy don't provide any context to the app being installed.
     Specifically, when using the ``runCommand`` MSDeploy provider in the
@@ -215,11 +220,17 @@ The moving parts of ``iiswsgi`` are as follows:
     Anyone with a MS support contract, please submit a request about
     this.
 
-``>iiswsgi_webpi.exe``
+``>python.exe setup.py bdist_webpi``
 
-    This console script automates the building of one or multiple
-    MSDeploy packages and updating a WebPI feed. See
-    ``>Scripts\iiswsgi_webpi.exe --help`` for more details.
+    This distutils command assembles a WebPI feed from one or more
+    MSDeploy packages with dependencies.  It can also include entries
+    for normal Python dists.
+
+``>python.exe setup.py clean_webpi``
+
+    This distutils command clears the WebPI caches for one or more
+    MSDeploy packages and the feed itself.
+
 
 Building
 --------
