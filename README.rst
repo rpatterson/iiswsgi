@@ -4,9 +4,9 @@ iiswsgi
 Serving Python WSGI applications natively from IIS
 ==================================================
 
-The `iiswsgi`_ module implements a FastCGI to WSGI gateway that is
-compatible with IIS's variation of the FastCGI protocol.  It also
-provides distutils commands for building, distributing and installing
+The `iiswsgi`_ module implements a `FastCGI`_ to `WSGI`_ gateway that
+is compatible with `IIS`_'s variation of the FastCGI protocol.  It also
+provides `distutils`_ commands for building, distributing and installing
 `Microsoft Web Deploy`_ (MSDeploy) packages through the `Web Platform
 Installer`_ (WebPI).
 
@@ -16,8 +16,8 @@ Quick Start
 ===========
 
 Assuming an existing Python distribution with a `Setup Script`_ using
-`setuptools`_ and a WSGI ``*.ini`` config file, roughly the following
-steps could be used to released to WebPI:
+`setuptools`_ and a `WSGI`_ ``*.ini`` `Paste config file`_, roughly
+the following steps could be used to released to WebPI:
 
 #. Install `iiswsgi`_ into the Python environment used to build releases::
 
@@ -72,7 +72,7 @@ steps could be used to released to WebPI:
    ``%ProgramFiles%\Microsoft\Web Platform Installer`` because it's
    placed on the path when WebPI is installed.
 
-#. Build a local WebPI feed::
+#. Build a local `WebPI feed`_::
 
     >C:\Python27\python.exe setup.py bdist_webpi -u "{msdeploy_package_url}" -m .
 
@@ -91,7 +91,7 @@ steps could be used to released to WebPI:
     >C:\Python27\python.exe setup.py bdist_msdeploy bdist_webpi -m . upload
 
 If everything is working correctly, both a MSDeploy zip package and
-the WebPI feed should be uploaded to PyPI.  Then you can instruct
+the WebPI feed should be uploaded to `PyPI`_.  Then you can instruct
 users to add the feed to WebPI and they can install your package.
 
 
@@ -99,7 +99,7 @@ Web Deploy Package Contents
 ===========================
 
 A developer releasing a MSDeploy package of a Python web app,
-interacts with ``iiswsgi`` though the following files in a Python
+interacts with `iiswsgi`_ though the following files in a Python
 distribution:
 
 Setup Script
@@ -112,22 +112,22 @@ Setup Script
 Python Manifest
 ---------------
 
-    Use Python's source distribution ``MANIFEST.in`` template format
+    Use Python's source distribution `MANIFEST.in`_ template format
     to declare what will be in the package.
 
 MSDeploy Manifest
 -----------------
 
-    Use the ``Manifest.xml.in`` template to generate the MSDeploy
-    manifest.  When using `iiswsgi`_, it contains a ``runCommand``
-    provider that invokes `iiswsgi_install.exe`_.  Most packages will
-    want to install into a virtualenv by including a ``-e`` option to
-    `iiswsgi_install.exe`_.
+    Use the ``Manifest.xml.in`` template to generate the `MSDeploy
+    manifest`_.  When using `iiswsgi`_, it contains a `runCommand`_
+    provider that invokes the ``iswsgi_install.exe`` `MSDeploy Install
+    Bootstrap`_ script.  Most packages will want to install into a
+    virtualenv by including a ``-e`` option to ``iiswsgi_install.exe``.
 
 MSDeploy Parameters
 -------------------
 
-    The ``Parameters.xml`` file defines the parameters WebPI will
+    The `Parameters.xml`_ file defines the parameters WebPI will
     prompt the user for when installing.  See
     ``examples/pyramid.msdeploy/Parameters.xml`` for an example of
     using parameters to influence custom setup.
@@ -135,10 +135,10 @@ MSDeploy Parameters
 IIS Web Config
 --------------
 
-    Use the ``web.config.in`` template to generate the IIS site
-    configuration file.  When using `iiswsgi`_, it contains a
-    ``fastCgi`` application that invokes the `iiswsgi.exe`_ server.
-    Most packages will want to adjust the ``<application...``
+    Use the ``web.config.in`` template to generate the `IIS site
+    configuration file`_.  When using `iiswsgi`_, it contains a
+    `fastCgi`_ application that invokes the `iiswsgi.exe`_ server.
+    Most packages will want to adjust the `<application...`_
     attributes that control process behavior.  This is also where the
     ``*.ini`` config file or `entry_point`_ that define the WSGI app
     to run are specified.
@@ -147,15 +147,15 @@ IIS Install Stamp File
 ----------------------
 
     The ``iis_install.stamp.in`` template copied into place to serve
-    as the ``iis_install.stamp`` stamp file used by
-    `iiswsgi_install.exe`_ to find the right ``APPL_PHYSICAL_PATH``
-    at install time.
+    as the ``iis_install.stamp`` stamp file used by the
+    ``iiswsgi_install.exe`` `MSDeploy Install Bootstrap`_ script to
+    find the right ``APPL_PHYSICAL_PATH`` at install time.
 
 Setup Congig
 ------------
 
-    The ``setup.cfg`` file is only necessary if your `Setup Script`_ is
-    not using ``setuptools``.  IOW, under ``setuptools`` the commands
+    The `setup.cfg`_ file is only necessary if your `Setup Script`_ is
+    not using `setuptools`.  IOW, under ``setuptools`` the commands
     are automatically available is ``iiswsgi`` is installed and
     there's no need for this file.  Without ``setuptools``, use the
     following to make the ``iiswsgi`` distutils commands available to
@@ -189,36 +189,32 @@ Build MSDeploy Package
 ----------------------
 
     The ``build_msdeploy`` distutils command compiles a MSDeploy
-    ``Manifest.xml`` converting any ``runCommand`` attributes into the
-    necessary hash.  It will also copy into place the
-    ``iis_install.stamp`` stamp file used by ``>iiswsgi_install.exe``
-    to find the right ``APPL_PHYSICAL_PATH`` at install time.
+    ``Manifest.xml`` converting any `runCommand`_ attributes into the
+    necessary hash.  It will also copy into place the `IIS Install
+    Stamp File`_ ``iis_install.stamp`` stamp file used by the
+    `MSDeploy Install Bootstrap`_ ``iiswsgi_install.exe`` script to
+    find the right ``APPL_PHYSICAL_PATH`` at install time.
 
 Install MSDeploy
 ----------------
 
-    This distutils command performs common actions needed to deploy
-    Python web apps on IIS: install dependencies, do variable
-    substitution in ``web.config``, and install the FastCGI
+    The ``install_msdeploy`` distutils command performs common actions
+    needed to deploy Python web apps on IIS: install dependencies, do
+    variable substitution in `web.config`_, and install the FastCGI
     application into the IIS global config.
-
-    The latter should be possible to do in the ``web.config`` file but
-    that doesn't work.  Hence ``install_msdeploy`` works around this
-    by reading the ``web.config`` and using ``appcmd.exe`` to do the
-    actually FCGI app installation.  It would be much better if
-    ``web.config`` worked as it should.  Anyone with a MS support
-    contract, please submit a request about this.
 
 Build MSDeploy Distribution
 ---------------------------
 
     The ``bdist_msdeploy`` distutils command assembles an actual
-    MSDeploy package: It starts by running ``build_msdeploy``.  Then
-    it runs ``install_msdeploy`` in case your package needs any of the
-    results of the installation process and to test the installation
-    process.  Finally, it creates a MSDeploy package zip file with the
-    contents contolled by the same tools that `distutils`_ provides
-    for ``sdist`` distributions, including ``MANIFEST.in``.
+    MSDeploy package: It starts by running the ``build_msdeploy``
+    `Build MSDeploy Package`_ command.  Then it runs the
+    ``install_msdeploy`` `Install MSDeploy`_ command in case your
+    package needs any of the results of the installation process and
+    to test the installation process.  Finally, it creates a `MSDeploy
+    package`_ zip file with the contents contolled by the same tools
+    that `distutils`_ provides for ``sdist`` distributions, including
+    ``MANIFEST.in``.
 
 MSDeploy Install Bootstrap
 --------------------------
@@ -326,18 +322,50 @@ Known Issues
 
 ``<fastCgi><application>`` doesn't take effect in ``web.config``
 
+    It should be possible to register a FCGI application in the
+    ``web.config`` file but that doesn't work.  Hence
+    ``install_msdeploy`` works around this by reading the
+    ``web.config`` and using `AppCmd.exe`_ to do the actually FCGI app
+    installation.  It would be much better if ``web.config`` worked as
+    it should.  Anyone with a MS support contract, please submit a
+    request about this.
+
 Web Deploy dependency
 
 IIS Management Console dependency
 
 
 .. _iiswsgi: https://github.com/rpatterson/iiswsgi#iiswsgi
+.. _distutils: http://docs.python.org/distutils/
+.. _setup.cfg: http://docs.python.org/distutils/configfile.html
+.. _PyPI: http://pypi.python.org/pypi
+.. _setuptools: http://packages.python.org/distribute
+.. _entry_point: http://packages.python.org/distribute/setuptools.html#entry-points
+.. _MANIFEST.in: http://docs.python.org/distutils/sourcedist.html#the-manifest-in-template
+.. _WSGI: http://wsgi.readthedocs.org/en/latest/
+.. _Paste config file: http://pythonpaste.org/deploy/#config-format
+.. _Paste Deploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
+
+.. _IIS: http://www.iis.net
 .. _Microsoft Web Deploy: http://www.iis.net/downloads/microsoft/web-deploy
 .. _Web Platform Installer: http://www.microsoft.com/web/downloads/platform.aspx
+.. _WebPI feed: http://technet.microsoft.com/en-us/library/ee424348(v=ws.10).aspx
 .. _Install fciv.exe: http://support.microsoft.com/kb/841290
+.. _MSDeploy manifest: http://www.iis.net/learn/develop/windows-web-application-gallery/reference-for-the-web-application-package
+.. _Manifest.xml: MSDeploy_
+.. _Parameters.xml: MSDeploy_
+.. _MSDeploy package: MSDeploy_
+.. _runCommand: http://technet.microsoft.com/en-us/library/ee619740(v=ws.10).aspx
+.. _IIS site configuration file: http://technet.microsoft.com/en-us/library/cc754617(v=ws.10).aspx
+.. _web.config: IIS site configuration file_
+.. _fastCgi: http://www.iis.net/configreference/system.webserver/fastcgi
+.. _<application...: http://www.iis.net/configreference/system.webserver/fastcgi/application
 .. _MS WebPI package runCommand not working in Manifest.xml: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
-.. _Windows named pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
-.. _STDIN_FILENO: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
+
 .. _AppCmd.exe: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
 .. _IIS FastCGI Reference: http://www.iis.net/ConfigReference/system.webServer/fastCgi
-.. _Paste Deploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
+
+.. _FastCGI: http://www.fastcgi.com/drupal/
+.. _STDIN_FILENO: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
+.. _Windows named pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
+
