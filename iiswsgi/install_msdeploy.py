@@ -12,6 +12,7 @@ import sysconfig
 
 from xml.dom import minidom
 
+import distutils.sysconfig
 from distutils import errors
 from distutils import core
 from distutils import cmd
@@ -181,7 +182,18 @@ class Installer(object):
                 if self.virtualenv is not True:
                     bootstrap = self.virtualenv
                 executable = self.setup_virtualenv(bootstrap=bootstrap)
-                cmd = [executable, 'setup.py'] + setup_args
+
+                # Install iiswsgi for the setup commands
+                cmd = [executable, os.path.join(sysconfig.get_path(
+                    'scripts', vars=dict(base=os.curdir)),
+                    'easy_install' + sysconfig.get_config_var('EXE')),
+                       '--find-links', distutils.sysconfig.get_python_lib(),
+                       'iiswsgi']
+                self.logger.info('Installing iiswsgi into virtualenv: {0}'
+                                 .format(' '.join(cmd)))
+                subprocess.check_call(cmd)
+
+                cmd = [executable, '-m', 'pdb', 'setup.py'] + setup_args
                 self.logger.info('Installing aplication: {0}'.format(
                     ' '.join(cmd)))
                 return subprocess.check_call(cmd)
@@ -310,8 +322,9 @@ class Installer(object):
 
             virtualenv.create_environment(home_dir, **opts)
 
-        return os.path.join(sysconfig.get_path('scripts'),
-                            'python' + sysconfig.get_config_var('EXE'))
+        return os.path.join(
+            sysconfig.get_path('scripts', vars=dict(base=home_dir)),
+            'python' + sysconfig.get_config_var('EXE'))
 
 install_parser = argparse.ArgumentParser(add_help=False)
 install_parser.add_argument(
