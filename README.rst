@@ -15,7 +15,7 @@ Installer`_ (WebPI).
 Quick Start
 ===========
 
-Assuming an existing Python distribution with a `Setup Script`_ using
+Assuming an existing `Python`_ distribution with a `Setup Script`_ using
 `setuptools`_ and a `WSGI`_ ``*.ini`` `Paste config file`_, roughly
 the following steps could be used to released to WebPI:
 
@@ -226,21 +226,17 @@ MSDeploy Install Bootstrap
 
     This console script attempts to workaround the fact that WebPI and
     MSDeploy don't provide any context to the app being installed.
-    Specifically, when using the ``runCommand`` MSDeploy provider in the
-    ``Manifest.xml``, the process started by ``runCommand`` has no way
-    to know which app it's being invoked for on install: not the
+    Specifically, when using the `runCommand`_ MSDeploy provider in
+    the `Manifest.xml`_, the process started by ``runCommand`` has no
+    way to know which app it's being invoked for on install: not the
     current working directory, not in an argument, nor in any
     environment variable.
 
     As such this script has to search for the app before calling it's
-    `Setup Script`_.  It uses ``appcmd.exe`` to look in virtual
+    `Setup Script`_.  It uses `appcmd.exe`_ to look in virtual
     directories whose site matches the app name and which contain a
     stamp file still in place.  See ``>Scripts\iiswsgi_install.exe
-    --help`` for more details.  This is far too fragile and it would
-    be vastly preferable if MSDeploy or WebPI set the
-    APPL_PHYSICAL_PATH environment variable for ``runCommand``.
-    Anyone with a MS support contract, please submit a request about
-    this.
+    --help`` for more details.
 
 Build WebPI Feed Distribution
 -----------------------------
@@ -252,8 +248,8 @@ Build WebPI Feed Distribution
 Clean WebPI Caches
 ------------------
 
-    The ``clean_webpi`` distutils command clears the WebPI caches for
-    one or more MSDeploy packages and the feed itself.
+    The ``clean_webpi`` distutils command clears the `WebPI caches`_
+    for one or more MSDeploy packages and the feed itself.
 
 
 Debugging
@@ -330,12 +326,21 @@ Known Issues
     it should.  Anyone with a MS support contract, please submit a
     request about this.
 
+Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
+
+    The current method of searching for the  is far too fragile and it would
+    be vastly preferable if MSDeploy or WebPI set the
+    APPL_PHYSICAL_PATH environment variable for ``runCommand``.
+    Anyone with a MS support contract, please submit a request about
+    this.
+
 Web Deploy dependency
 
 IIS Management Console dependency
 
 
 .. _iiswsgi: https://github.com/rpatterson/iiswsgi#iiswsgi
+.. _Python: http://python.org
 .. _distutils: http://docs.python.org/distutils/
 .. _setup.cfg: http://docs.python.org/distutils/configfile.html
 .. _PyPI: http://pypi.python.org/pypi
@@ -350,6 +355,7 @@ IIS Management Console dependency
 .. _Microsoft Web Deploy: http://www.iis.net/downloads/microsoft/web-deploy
 .. _Web Platform Installer: http://www.microsoft.com/web/downloads/platform.aspx
 .. _WebPI feed: http://technet.microsoft.com/en-us/library/ee424348(v=ws.10).aspx
+.. _WebPI caches: http://www.iis.net/learn/troubleshoot/web-platform-installer-issues/troubleshooting-problems-with-microsoft-web-platform-installer
 .. _Install fciv.exe: http://support.microsoft.com/kb/841290
 .. _MSDeploy manifest: http://www.iis.net/learn/develop/windows-web-application-gallery/reference-for-the-web-application-package
 .. _Manifest.xml: MSDeploy_
