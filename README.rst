@@ -64,13 +64,21 @@ used to released to WebPI:
 
    See ``examples/pyramid.msdeploy/setup.py`` for an example.  
 
+#. Install the `Web Platform Installer`_:
+
+#. `Install fciv.exe`_ to generate SHA1 hashes:
+
+   Must be placed on the ``%PATH%``.  The recommended place would be
+   ``%ProgramFiles%\Microsoft\Web Platform Installer`` because it's
+   placed on the path when WebPI is installed.
+
 #. Build a local WebPI feed::
 
     >C:\Python27\python.exe setup.py bdist_webpi -u "{msdeploy_package_url}" -m .
 
 #. Test locally:
 
-   #. Install and launch the Web Platform Installer
+   #. Launch the Web Platform Installer
    #. Click on the `options` link to the bottom right,
    #. Enter the feed URL below and click `Add Feed`:
       ``file:///C:/Users/%USERNAME%/Documents/GitHub/%DIST_NAME%/dist/%DIST_NAME%-%VERSION%-py2.7-win32.webpi.xml``
@@ -299,11 +307,14 @@ Known Issues
 
 ``<fastCgi><application>`` doesn't take effect in ``web.config``
 
+
+.. _iiswsgi: https://github.com/rpatterson/iiswsgi#iiswsgi
+.. _Microsoft Web Deploy: http://www.iis.net/downloads/microsoft/web-deploy
+.. _Web Platform Installer: http://www.microsoft.com/web/downloads/platform.aspx
+.. _Install fciv.exe: http://support.microsoft.com/kb/841290
 .. _MS WebPI package runCommand not working in Manifest.xml: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
 .. _Windows named pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
 .. _STDIN_FILENO: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
-.. _Microsoft Web Deploy: http://www.iis.net/downloads/microsoft/web-deploy
-.. _Web Platform Installer: http://www.microsoft.com/web/downloads/platform.aspx
 .. _AppCmd.exe: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
 .. _IIS FastCGI Reference: http://www.iis.net/ConfigReference/system.webServer/fastCgi
 .. _Paste Deploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
