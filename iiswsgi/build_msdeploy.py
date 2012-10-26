@@ -55,6 +55,8 @@ class build_msdeploy(cmd.Command):
         options.ensure_verbosity(self)
 
     def run(self):
+        os.environ['DIST_NAME'] = self.distribution.get_name()
+
         self.write_manifest()
 
         stamp_template = self.stamp_filename + '.in'
@@ -77,7 +79,10 @@ class build_msdeploy(cmd.Command):
             # No manifest template, don't update real manifest
             return
 
-        manifest = minidom.parse(manifest_template)
+        # Substitute environment variables so that hashes can be dynamice
+        manifest_str = os.path.expandvars(open(manifest_template).read())
+
+        manifest = minidom.parseString(manifest_str)
         for runcommand in manifest.getElementsByTagName('runCommand'):
             # Collect the attributes that need to be passed as settings
             path = None
