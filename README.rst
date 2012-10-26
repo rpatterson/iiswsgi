@@ -31,33 +31,33 @@ used to released to WebPI:
 
 #. Add custom setup to ``setup.py``::
 
-   ...
-   from iiswsgi import install_msdeploy
-   ...
-   class install_custom_msdeploy(install_msdeploy.install_msdeploy):
-       def run(self):
-           """Perform custom tasks."""
-           self.install()
-           CUSTOM_SETUP
-           self.test()
-   ...
-   setup(
-   ...
-         cmdclass=dict(install_msdeploy=install_custom_msdeploy),
-   ...
+    ...
+    from iiswsgi import install_msdeploy
+    ...
+    class install_custom_msdeploy(install_msdeploy.install_msdeploy):
+        def run(self):
+            """Perform custom tasks."""
+            self.install()
+            CUSTOM_SETUP
+            self.test()
+    ...
+    setup(
+    ...
+          cmdclass=dict(install_msdeploy=install_custom_msdeploy),
+    ...
 
 #. Build a MSDeploy package::
 
-   >C:\Python27\python.exe setup.py bdist_msdeploy
+    >C:\Python27\python.exe setup.py bdist_msdeploy
 
 #. Add WebPI dependencies to ``setup.py``::
 
-   ...
-   setup(
-   ...
-         extras_require=dict(install_msdeploy=['virtualenv'],
-                             webpi_eggs=['virtualenv', 'iiswsgi']),
-   ...
+    ...
+    setup(
+    ...
+          extras_require=dict(install_msdeploy=['virtualenv'],
+                              webpi_eggs=['virtualenv', 'iiswsgi']),
+    ...
 
 #. Add WebPI feed metadata to ``setup.py``:
 
@@ -65,7 +65,7 @@ used to released to WebPI:
 
 #. Build a local WebPI feed::
 
-   >C:\Python27\python.exe setup.py bdist_webpi -u "{msdeploy_package_url}" -m .
+    >C:\Python27\python.exe setup.py bdist_webpi -u "{msdeploy_package_url}" -m .
 
 #. Test locally:
 
@@ -79,7 +79,7 @@ used to released to WebPI:
 
 #. Upload/Release
 
-   >C:\Python27\python.exe setup.py bdist_msdeploy bdist_webpi -m . upload
+    >C:\Python27\python.exe setup.py bdist_msdeploy bdist_webpi -m . upload
 
 If everything is working correctly, both a MSDeploy zip package and
 the WebPI feed should be uploaded to PyPI.  Then you can instruct
