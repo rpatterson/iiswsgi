@@ -32,6 +32,8 @@ setup(name=name,
       extras_require=dict(config=['PasteDeploy'],
                           webpi=['zope.pagetemplate'],
                           bdist_webpi=['virtualenv', name]),
+      bdist_msdeploy=['examples/sample.msdeploy',
+                      'examples/pyramid.msdeploy'],
       scripts=['test.ini'],
       entry_points={
           'console_scripts':
@@ -54,5 +56,6 @@ setup(name=name,
             "icon_url = iiswsgi.options:assert_string",
             "screenshot_url = iiswsgi.options:assert_string",
             "discovery_file = iiswsgi.options:assert_string",
-            "msdeploy_url_template = iiswsgi.options:assert_string"]},
+            "msdeploy_url_template = iiswsgi.options:assert_string",
+            "bdist_msdeploy = iiswsgi.options:assert_editable_dists"]},
       )
