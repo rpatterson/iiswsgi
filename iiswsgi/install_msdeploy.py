@@ -253,17 +253,19 @@ class Installer(object):
             path for path in fcgi.list_appl_paths(self.app_name, appcmd_exe)
             if os.path.exists(os.path.join(path, self.stamp_filename)))
         if len(appl_physical_paths) > 1:
+            appl_physical_path = appl_physical_paths[0]
             logger.error(
                 ('Found multiple {0} stamp files in the virtual directories, '
                  '{1}.  Choosing the most recent one: {2}').format(
                     self.stamp_filename, appl_physical_paths[1:],
                     appl_physical_path))
-            return appl_physical_paths[0]
+            return appl_physical_path
         elif len(appl_physical_paths) == 1:
+            appl_physical_path = appl_physical_paths[0]
             self.logger.info(
                 ('Found just one IIS app with a stamp file: {0}'
                  ).format(appl_physical_path))
-            return appl_physical_paths[0]
+            return appl_physical_path
 
         raise ValueError(
             ('Found no {0} stamp file in any of the virtual '
