@@ -68,6 +68,7 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
          ).format(' '.join(cmd)))
     sites_output = subprocess.check_output(cmd)
     sites_dom = minidom.parseString(sites_output)
+    # Work backward through the list, most recent sites are last
     for site in reversed(sites_dom.getElementsByTagName('site')):
         site_name = site.getAttribute('name')
         if app_name and app_name_pattern.match(site_name) is None:
