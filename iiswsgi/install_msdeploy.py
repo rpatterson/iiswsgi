@@ -1,5 +1,6 @@
 """Run post-install tasks for a MS Web Deploy package."""
 
+# TODO uninstall fastCgi apps
 
 import sys
 import os
@@ -225,9 +226,16 @@ class Installer(object):
         appl_physical_paths = list(fcgi.list_stamp_paths(
             self.app_name, self.stamp_filename, appcmd_exe))
         if not appl_physical_paths:
-            raise ValueError(
-                ('Found no {0} stamp file in any of the virtual directories '
-                 'returned by appcmd.exe').format(self.stamp_filename))
+            if os.path.exists('setup.py'):
+                # maybe the current directory is the path
+                dist = core.run_setup('setup.py', stop_after='commandline')
+                if dist.get_name() == self.app_name:
+                    appl_physical_path = os.getcwd()
+            else:
+                raise ValueError(
+                    ('Found no {0} stamp file in any of the virtual '
+                     'directories returned by appcmd.exe').format(
+                        self.stamp_filename))
         elif len(appl_physical_paths) > 1:
             appl_physical_path = appl_physical_paths[0]
             logger.error(
