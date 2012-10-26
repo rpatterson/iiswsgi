@@ -103,17 +103,20 @@ interacts with ``iiswsgi`` though the following files in a Python
 distribution:
 
 ``setup.py``
+------------
 
     As with other Python build, distribute, and install tasks, this is
     where to control how the MSDeploy package is built, what is
     distributed, and how it's installed.
 
 ``MANIFEST.in``
+---------------
 
     Use Python's source distribution manifest format to declare what
     will be in the package.
 
 ``Manifest.xml.in``
+-------------------
 
     A template used to generate the MSDeploy manifest.  When using `iiswsgi`_,
     it contains a ``runCommand`` provider that invokes
@@ -121,12 +124,14 @@ distribution:
     virtualenv by including a ``-e`` option to `iiswsgi_install.exe`_.
 
 ``Parameters.xml``
+------------------
 
     Defines the parameters WebPI will prompt the user for when
     installing.  See ``examples/pyramid.msdeploy/Parameters.xml`` for
     an example of using parameters to influence custom setup.
 
 ``web.config.in``
+-----------------
 
     A template used to generate the IIS site configuration file.  When
     using `iiswsgi`_, it contains a ``fastCgi`` application that
@@ -136,12 +141,14 @@ distribution:
     `entry_point`_ that define the WSGI app to run are specified.
 
 ``iis_install.stamp.in``
+------------------------
 
     A template copied into place to serve as the ``iis_install.stamp``
     stamp file used by ``>iiswsgi_install.exe`` to find the right
     ``APPL_PHYSICAL_PATH`` at install time.
 
 ``setup.cfg``
+-------------
 
     This is only necessary if your ``setup.py`` is not using
     ``setuptools``.  IOW, under ``setuptools`` the commands are
@@ -167,12 +174,14 @@ IIS WSGI Tools
 The moving parts of ``iiswsgi`` are as follows:
 
 ``>iiswsgi.exe``
+----------------
 
     This console script is the FastCGI to WSGI gateway.  IIS invokes
     this script to start a Python WSGI app as a FastCGI process.  This
     can be used independently of the `distutils`_ commands.
 
 ``>python.exe setup.py build_msdeploy``
+---------------------------------------
 
     This distutils command compiles a MSDeploy ``Manifest.xml``
     converting any ``runCommand`` attributes into the necessary hash.
@@ -181,6 +190,7 @@ The moving parts of ``iiswsgi`` are as follows:
     ``APPL_PHYSICAL_PATH`` at install time.
 
 ``>python.exe setup.py install_msdeploy``
+-----------------------------------------
 
     This distutils command performs common actions needed to deploy
     Python web apps on IIS: install dependencies, do variable
@@ -195,6 +205,7 @@ The moving parts of ``iiswsgi`` are as follows:
     contract, please submit a request about this.
 
 ``>python.exe setup.py bdist_msdeploy``
+---------------------------------------
 
     This distutils command assembles an actual MSDeploy package: It
     starts by running ``build_msdeploy``.  Then it runs
@@ -205,6 +216,7 @@ The moving parts of ``iiswsgi`` are as follows:
     ``sdist`` distributions, including ``MANIFEST.in``.
 
 ``>iiswsgi_install.exe``
+------------------------
 
     Bootstrap the MSDeploy package install process optionally setting
     up a virtualenv first.  It finds the correct
@@ -230,12 +242,14 @@ The moving parts of ``iiswsgi`` are as follows:
     this.
 
 ``>python.exe setup.py bdist_webpi``
+------------------------------------
 
     This distutils command assembles a WebPI feed from one or more
     MSDeploy packages with dependencies.  It can also include entries
     for normal Python dists.
 
 ``>python.exe setup.py clean_webpi``
+------------------------------------
 
     This distutils command clears the WebPI caches for one or more
     MSDeploy packages and the feed itself.
