@@ -155,11 +155,12 @@ class Installer(object):
     stamp_filename = options.stamp_filename
 
     def __init__(self, app_name=None, require_stamp=True,
-                 install_fcgi_app=True, virtualenv=None, verbose=None):
+                 install_fcgi_app=True, virtualenv=None,
+                 verbose=options.default_level):
         self.app_name = app_name
         self.require_stamp = require_stamp
         self.virtualenv = virtualenv
-        self.verbose = verbose
+        self.verbose = (options.default_level - verbose) / 10
 
     def __call__(self, setup_args=setup_args):
         appl_physical_path = self.get_appl_physical_path()
