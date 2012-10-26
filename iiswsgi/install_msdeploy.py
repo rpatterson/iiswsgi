@@ -178,7 +178,7 @@ class Installer(object):
             os.chdir(appl_physical_path)
             if self.virtualenv:
                 bootstrap = None
-                if self.virtualenv is not None:
+                if self.virtualenv is not True:
                     bootstrap = self.virtualenv
                 executable = self.setup_virtualenv(bootstrap=bootstrap)
                 cmd = [executable, 'setup.py'] + setup_args
@@ -264,9 +264,6 @@ class Installer(object):
         Following the run of this command, dependencies can
         automatically be installed with the develop command.
         """
-        if bootstrap is None and os.path.exists(self.virtualenv_script):
-            bootstrap = self.virtualenv_script
-
         if bootstrap:
             virtualenv_globals = dict(__file__=bootstrap)
             execfile(bootstrap, virtualenv_globals)
