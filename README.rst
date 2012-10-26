@@ -106,13 +106,31 @@ distribution:
 
 ``Manifest.xml.in``
 
+    A template used to generate the MSDeploy manifest.  When using `iiswsgi`_,
+    it contains a ``runCommand`` provider that invokes
+    `iiswsgi_install.exe`_.  Most packages will want to install into a
+    virtualenv by including a ``-e`` option to `iiswsgi_install.exe`_.
+
 ``Parameters.xml``
+
+    Defines the parameters WebPI will prompt the user for when
+    installing.  See ``examples/pyramid.msdeploy/Parameters.xml`` for
+    an example of using parameters to influence custom setup.
 
 ``web.config.in``
 
-``..\web-pi.xml``
+    A template used to generate the IIS site configuration file.  When
+    using `iiswsgi`_, it contains a ``fastCgi`` application that
+    invokes the `iiswsgi.exe`_ server.  Most packages will want to
+    adjust the ``<application...`` attributes that control process
+    behavior.  This is also where the ``*.ini`` config file or
+    `entry_point`_ that define the WSGI app to run are specified.
 
 ``iis_install.stamp.in``
+
+    A template copied into place to serve as the ``iis_install.stamp``
+    stamp file used by ``>iiswsgi_install.exe`` to find the right
+    ``APPL_PHYSICAL_PATH`` at install time.
 
 ``setup.cfg``
 
@@ -128,7 +146,10 @@ distribution:
 
 Aside from these files, a Web Deploy package using ``iiswsgi`` is no
 different than any other Python distribution or project nor should any
-of the ``iiswsgi`` pieces interfere with any thing.
+of the ``iiswsgi`` pieces interfere with any other uses of the same
+distribution.  In particular, it should be possible to build and
+upload MSDeploy package and WebPI feed dists in the same command as
+building and uploading any other dist.
 
 
 IIS WSGI Tools
