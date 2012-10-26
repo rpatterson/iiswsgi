@@ -223,34 +223,40 @@ class Installer(object):
             self.logger.info(
                 'APPL_PHYSICAL_PATH environment variable not set')
 
+        if os.path.exists('setup.py'):
+            # maybe the current directory is the path
+            dist = core.run_setup('setup.py', stop_after='commandline')
+            if (dist.get_name() != self.app_name) or (
+                self.require_stamp and not
+                os.path.exists(self.stamp_filename)):
+                # nope
+                pass
+            else:
+                cwd = os.getcwd()
+                self.logger.info(
+                    'Found IIS app in the current diectory {0}'.format(cwd))
+                return cwd
+
         appl_physical_paths = list(
             path for path in fcgi.list_appl_paths(self.app_name, appcmd_exe)
             if os.path.exists(os.path.join(path, self.stamp_filename)))
-        if not appl_physical_paths:
-            if os.path.exists('setup.py'):
-                # maybe the current directory is the path
-                dist = core.run_setup('setup.py', stop_after='commandline')
-                if dist.get_name() == self.app_name:
-                    appl_physical_path = os.getcwd()
-            else:
-                raise ValueError(
-                    ('Found no {0} stamp file in any of the virtual '
-                     'directories returned by appcmd.exe').format(
-                        self.stamp_filename))
-        elif len(appl_physical_paths) > 1:
-            appl_physical_path = appl_physical_paths[0]
+        if len(appl_physical_paths) > 1:
             logger.error(
                 ('Found multiple {0} stamp files in the virtual directories, '
                  '{1}.  Choosing the most recent one: {2}').format(
                     self.stamp_filename, appl_physical_paths[1:],
                     appl_physical_path))
-        else:
-            appl_physical_path = appl_physical_paths[0]
+            return appl_physical_paths[0]
+        elif len(appl_physical_paths) == 1:
             self.logger.info(
                 ('Found just one IIS app with a stamp file: {0}'
                  ).format(appl_physical_path))
+            return appl_physical_paths[0]
 
-        return appl_physical_path
+        raise ValueError(
+            ('Found no {0} stamp file in any of the virtual '
+             'directories returned by appcmd.exe').format(
+                self.stamp_filename))
 
     def setup_virtualenv(self, home_dir=os.curdir, bootstrap=None, **opts):
         """
