@@ -205,19 +205,34 @@ class Installer(object):
         """
         Finding the `APPL_PHYSICAL_PATH`.
 
-        If already defined, its value is taken as the location of the
-        IIS application.  If not attempt to infer the appropriate
-        directory.  Until such a time as Web Platform Installer or Web
-        Deploy provide some way to identify the physical path of the
-        `iisApp` being installed when the `runCommand` provider is
-        used, we have to guess the physical path.
+        If the current director is a Python distributiuon, it's
+        checked first.  If APPL_PHYSICAL_PATH is already defined, its
+        value is taken as the location of the IIS application.  If not
+        attempt to infer the appropriate directory.
 
-        Start by querying appcmd.exe for all
-        sites/site/application/virtualDirectory/@physicalPath
+        Until such a time as Web Platform Installer or Web Deploy
+        provide some way to identify the physical path of the `iisApp`
+        being installed when the `runCommand` provider is used, we
+        have to guess the physical path.  Start by querying appcmd.exe
+        for all sites/site/application/virtualDirectory/@physicalPath
         definitions whose sites/site/@name matches the app name if
         given.  The first such physicalPath with a stamp file is taken
         to be the APPL_PHYSICAL_PATH.
+
+        Whatever path is found, it is checked for the stamp file and
+        the correct app name if either of those options is given.
         """
+        if os.path.exists('setup.py'):
+            # maybe the current directory is the path
+            dist = core.run_setup('setup.py', stop_after='commandline')
+            if (not self.app_name or dist.get_name() == self.app_name) and (
+                not self.require_stamp or
+                not os.path.exists(self.stamp_filename)):
+                cwd = os.getcwd()
+                self.logger.info(
+                    'Found IIS app in the current diectory {0}'.format(cwd))
+                return cwd
+
         appl_physical_path = os.environ.get('APPL_PHYSICAL_PATH')
         if appl_physical_path is not None:
             if not os.path.exists(appl_physical_path):
@@ -232,20 +247,6 @@ class Installer(object):
         else:
             self.logger.info(
                 'APPL_PHYSICAL_PATH environment variable not set')
-
-        if os.path.exists('setup.py'):
-            # maybe the current directory is the path
-            dist = core.run_setup('setup.py', stop_after='commandline')
-            if (dist.get_name() != self.app_name) or (
-                self.require_stamp and not
-                os.path.exists(self.stamp_filename)):
-                # nope
-                pass
-            else:
-                cwd = os.getcwd()
-                self.logger.info(
-                    'Found IIS app in the current diectory {0}'.format(cwd))
-                return cwd
 
         appl_physical_paths = list(
             path for path in fcgi.list_appl_paths(self.app_name, appcmd_exe)
