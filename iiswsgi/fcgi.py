@@ -76,7 +76,7 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
     cwd = os.getcwd()
     # Work backward through the list, most recent sites are last
     for site in reversed(sites_dom.getElementsByTagName('site')):
-        for app in site.getElementsByTagName('application'):
+        for app in reversed(site.getElementsByTagName('application')):
             for vdir in app.getElementsByTagName('virtualDirectory'):
                 path = os.path.expandvars(vdir.getAttribute('physicalPath'))
                 if app_name:
