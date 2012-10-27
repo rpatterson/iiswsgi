@@ -3,6 +3,6 @@
   <iisApp path="%DIST_NAME%" />
   <runCommand
       path="%SystemDrive%\Python27\Scripts\iiswsgi_install.exe -vv -a %DIST_NAME%"
-      successReturnCodes="0x0"
+      waitAttempts="10" successReturnCodes="0x0"
       MSDeploy.MSDeployKeyAttributeName="path" />
 </msDeploy.iisApp>
