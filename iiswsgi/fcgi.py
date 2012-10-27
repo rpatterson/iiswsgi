@@ -89,7 +89,7 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
                     finally:
                         os.chdir(cwd)
                     dist_name = dist.get_name()
-                    if not app_name != dist_name:
+                    if app_name != dist_name:
                         # Not an instance of this app
                         continue
                 yield path
