@@ -81,7 +81,9 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
         for app in site.getElementsByTagName('application'):
             for vdir in app.getElementsByTagName('virtualDirectory'):
                 path = os.path.expandvars(vdir.getAttribute('physicalPath'))
-                if app_name and os.path.exists(os.path.join(path, 'setup.py')):
+                if app_name:
+                    if not os.path.exists(os.path.join(path, 'setup.py')):
+                        continue
                     try:
                         os.chdir(path)
                         dist = core.run_setup(
