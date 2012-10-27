@@ -65,8 +65,6 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
     appcmd_exe = get_appcmd_exe(appcmd_exe)
     if appcmd_exe is None:
         return
-    if app_name:
-        app_name_pattern = re.compile('^{0}[0-9]*$'.format(app_name))
     cmd = [appcmd_exe, 'list', 'config',
            '/section:system.applicationHost/sites', '/xml']
     logger.info(
@@ -91,7 +89,7 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
                     finally:
                         os.chdir(cwd)
                     dist_name = dist.get_name()
-                    if not app_name_pattern.match(dist_name) is None:
+                    if not app_name != dist_name:
                         # Not an instance of this app
                         continue
                 yield path
