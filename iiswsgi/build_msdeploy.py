@@ -57,8 +57,6 @@ class build_msdeploy(cmd.Command):
     def run(self):
         os.environ['DIST_NAME'] = self.distribution.get_name()
 
-        self.write_manifest()
-
         stamp_template = self.stamp_filename + '.in'
         if os.path.exists(stamp_template):
             stamp_path = os.path.splitext(stamp_template)[0]
@@ -70,7 +68,10 @@ class build_msdeploy(cmd.Command):
                 stamp_path))
             shutil.copyfile(stamp_template, stamp_path)
 
+        self.write_manifest()
+
     def write_manifest(self):
+        # TODO Seems not to be working the first time for pyramid
         manifest_template = self.manifest_filename + '.in'
         if not os.path.exists(manifest_template):
             self.logger.warn(
