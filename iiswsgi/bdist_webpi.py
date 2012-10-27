@@ -114,8 +114,8 @@ default, but passing this option overrides both.  Use \
         self.write_feed(dist_feed)
         self.distribution.dist_files.append(('webpi', '', dist_feed))
         logger.info('Local Web Platform Installer feed URL: {0}'.format(
-            urlparse.urlunsplit((
-                'file', '', urllib.pathname2url(dist_feed), '', ''))))
+            urlparse.urlunsplit(('file', '', urllib.pathname2url(
+                os.path.abspath(dist_feed)), '', ''))))
 
     def add_msdeploy(self, path, *args):
         cwd = os.getcwd()
