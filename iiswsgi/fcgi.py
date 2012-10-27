@@ -80,7 +80,7 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
     for site in reversed(sites_dom.getElementsByTagName('site')):
         for app in site.getElementsByTagName('application'):
             for vdir in app.getElementsByTagName('virtualDirectory'):
-                path = vdir.getAttribute('physicalPath')
+                path = os.path.expandvars(vdir.getAttribute('physicalPath'))
                 if app_name:
                     try:
                         os.chdir(path)
