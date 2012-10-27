@@ -124,13 +124,13 @@ class install_msdeploy(cmd.Command):
                 fullPath, arguments = add.getAttribute(
                     'scriptProcessor').split('|', 1)
                 cmd = '"{0}" {1} --test'.format(fullPath, arguments)
-                logger.info('Testing the WSGI app: {0}'.format(cmd))
+                logger.info('Testing the WSGI app:\n{0}'.format(cmd))
                 try:
                     subprocess.check_call(cmd, shell=True)
                 except subprocess.CalledProcessError, exc:
                     if exc.returncode == 127:
                         logger.exception(
-                            'FCGI app scriptProcessor not found: {0}'
+                            'FCGI app scriptProcessor not found:\n{0}'
                             .format(cmd))
 
 
@@ -187,12 +187,12 @@ class Installer(object):
                     'easy_install' + sysconfig.get_config_var('EXE'))),
                        '--find-links', distutils.sysconfig.get_python_lib(),
                        'iiswsgi']
-                self.logger.info('Installing iiswsgi into virtualenv: {0}'
+                self.logger.info('Installing iiswsgi into virtualenv:\n{0}'
                                  .format(' '.join(cmd)))
                 subprocess.check_call(cmd)
 
                 cmd = [executable, 'setup.py'] + setup_args
-                self.logger.info('Installing aplication: {0}'.format(
+                self.logger.info('Installing aplication:\n{0}'.format(
                     ' '.join(cmd)))
                 return subprocess.check_call(cmd)
             self.logger.info('Installing aplication: setup.py {0}'.format(

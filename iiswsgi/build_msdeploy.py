@@ -118,7 +118,7 @@ class build_msdeploy(cmd.Command):
                     .format(msdeploy=self.msdeploy_exe, source=source,
                             package=package))
                 self.logger.info(
-                    'Generating runCommand manifest: {0}'.format(cmd))
+                    'Generating runCommand manifest:\n{0}'.format(cmd))
                 if self.msdeploy_exe and os.path.exists(self.msdeploy_exe):
                     subprocess.check_call(cmd, shell=True)
                 else:

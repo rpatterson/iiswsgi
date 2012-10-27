@@ -238,7 +238,7 @@ def test_app(environ, start_response,
              response_template=response_template, row_template=row_template):
     """Render the WSGI environment as an HTML table."""
     import pprint
-    logger.debug('Recieved WSGI request with environ: {0}'.format(
+    logger.debug('Recieved WSGI request with environ:\n{0}'.format(
         pprint.pformat(environ)))
     wsgi_rows = '\n'.join(
         (row_template.format(*item)) for item in environ.iteritems())

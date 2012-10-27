@@ -113,7 +113,7 @@ default, but passing this option overrides both.  Use \
         self.mkpath(self.dist_dir)
         self.write_feed(dist_feed)
         self.distribution.dist_files.append(('webpi', '', dist_feed))
-        logger.info('Local Web Platform Installer feed URL: {0}'.format(
+        logger.info('Local Web Platform Installer feed URL:\n{0}'.format(
             urlparse.urlunsplit(('file', '', urllib.pathname2url(
                 os.path.abspath(dist_feed)), '', ''))))
 
@@ -146,7 +146,7 @@ default, but passing this option overrides both.  Use \
                 webpi_sha1_output = subprocess.check_output(cmd)
             except OSError, error:
                 if error.errno == errno.ENOENT:
-                    logger.exception('Error getting SHA1: {0}'.format(
+                    logger.exception('Error getting SHA1:\n{0}'.format(
                         ' '.join(cmd)))
                 else:
                     raise

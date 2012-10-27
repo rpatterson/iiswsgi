@@ -53,7 +53,7 @@ def get_appcmd_apps(appcmd_exe=None):
         return
     cmd = [appcmd_exe, 'list', 'config', '/section:fastCgi', '/xml']
     logger.info(('Querying appcmd.exe for '
-                      'fastCgi/application/@fullPath,@arguments: {0}'
+                      'fastCgi/application/@fullPath,@arguments:\n{0}'
                       ).format(' '.join(cmd)))
     apps_output = subprocess.check_output(cmd)
     apps_dom = minidom.parseString(apps_output)
@@ -69,7 +69,7 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
            '/section:system.applicationHost/sites', '/xml']
     logger.info(
         ('Querying appcmd.exe for '
-         'sites/site/application/virtualDirectory/@physicalPath: {0}'
+         'sites/site/application/virtualDirectory/@physicalPath:\n{0}'
          ).format(' '.join(cmd)))
     sites_output = subprocess.check_output(cmd)
     sites_dom = minidom.parseString(sites_output)
@@ -164,7 +164,7 @@ def install_fcgi_app(appcmd_exe=None,
                    '/-' + format_appcmd_attrs(**app),
                    '/commit:apphost']
             logger.warn(
-                'Clearing duplicate FCGI app: {0}'.format(' '.join(cmd)))
+                'Clearing duplicate FCGI app:\n{0}'.format(' '.join(cmd)))
             subprocess.check_call(cmd)
 
     if appcmd_exe is None:
@@ -175,7 +175,7 @@ def install_fcgi_app(appcmd_exe=None,
         appcmd_cmd = (
             appcmd_exe, "set", "config", "-section:system.webServer/fastCgi",
                     '/+' + format_appcmd_attrs(**app_attrs), '/commit:apphost')
-        logger.info('Installing IIS FastCGI application: {0!r}'.format(
+        logger.info('Installing IIS FastCGI application:\n{0!r}'.format(
             ' '.join(appcmd_cmd)))
         if os.path.exists(appcmd_exe):
             return subprocess.check_call(appcmd_cmd, stderr=subprocess.PIPE)
