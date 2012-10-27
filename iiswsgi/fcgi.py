@@ -8,6 +8,8 @@ import re
 
 from xml.dom import minidom
 
+from distutils import core
+
 logger = logging.getLogger('iiswsgi.fcgi')
 
 app_attr_defaults_init = dict(
@@ -73,16 +75,24 @@ def list_appl_paths(app_name=None, appcmd_exe=None):
          ).format(' '.join(cmd)))
     sites_output = subprocess.check_output(cmd)
     sites_dom = minidom.parseString(sites_output)
+    cwd = os.getcwd()
     # Work backward through the list, most recent sites are last
     for site in reversed(sites_dom.getElementsByTagName('site')):
-        site_name = site.getAttribute('name')
-        if app_name and app_name_pattern.match(site_name) is None:
-            # Not an instance of this app
-            continue
-
         for app in site.getElementsByTagName('application'):
             for vdir in app.getElementsByTagName('virtualDirectory'):
-                yield vdir.getAttribute('physicalPath')
+                path = vdir.getAttribute('physicalPath')
+                if app_name:
+                    try:
+                        os.chdir(path)
+                        dist = core.run_setup(
+                            'setup.py', stop_after='commandline')
+                    finally:
+                        os.chdir(cwd)
+                    dist_name = dist.get_name()
+                    if not app_name_pattern.match(dist_name) is None:
+                        # Not an instance of this app
+                        continue
+                yield path
 
 
 def format_appcmd_attrs(**kw):
