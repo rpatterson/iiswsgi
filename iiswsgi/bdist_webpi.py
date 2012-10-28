@@ -10,6 +10,7 @@ import rfc822
 import StringIO
 import urllib
 import urlparse
+import shlex
 
 import pkg_resources
 from distutils import core
@@ -60,10 +61,11 @@ default, but passing this option overrides both.  Use \
         self.msdeploy_url_template = None
 
     def finalize_options(self):
-        self.ensure_string_list('msdeploy_bdists')
         if not self.msdeploy_bdists:
             raise errors.DistutilsOptionError(
                 'The msdeploy_bdists option is required')
+        else:
+            self.msdeploy_bdists = shlex.split(self.msdeploy_bdists)
         self.distributions = []
         self.ensure_filename('template')
         if self.template is None:
