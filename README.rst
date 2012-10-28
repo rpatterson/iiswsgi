@@ -294,6 +294,15 @@ file`_:
 This is not intrinsically related to the `distutils`_ commands and can
 be used independently of them if a project should need to.
 
+IIS' implementation of the FastCGI protocol is not fully compliant.
+Most significantly, what is passed in on `STDIN_FILENO`_ is not a
+handle to an open socket but rather to a `Windows named pipe`_.  This
+names pipe does not support socket-like behavior, at least under
+Python.  As such, the ``egg:iiswsgi#iis`` gateway extends `flup's WSGI
+to FCGI gateway`_ to support using ``STDIN_FILENO`` opened twice, once
+each approximating the ``recv`` and ``send`` end of a socket as is
+specified in FastCGI.
+
 Build MSDeploy Package
 ----------------------
 
@@ -317,10 +326,18 @@ Since most apps will require path or parameter specific bits in the
 variable substitution while writing the ``web.config.in`` template to
 ``web.config``.  To add variables to the substitution, just use
 `Custom Set Up`_ to put them into `os.environ`_ before calling the
-base class's ``run()`` method.  Since ``<fastCgi><application...``
-elements don't take effect in the ``web.config``, the
-`install_msdeploy`_ command will use ``appcmd.exe`` to install an FCGI
-apps in ``web.config``.
+base class's ``run()`` method.
+
+Since ``<fastCgi><application...`` elements don't take effect in the
+``web.config``, the `install_msdeploy`_ command will use.  For
+reference or debugging here's an example::
+
+    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %HOMEDRIVE%%HOMEPATH%\Documents\My Web Sites\FooApp\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='C:\Users\Administrator\Documents\My Web Sites\FooApp\test.ini']" /commit:apphost
+
+See the `IIS FastCGI Reference`_ for
+more details on how to configure IIS for FastCGI.  Note that you
+cannot use environment variable in the `monitorChangesTo` argument,
+IIS will return an opaque 500 error.
 
 This is also where to `Custom Set Up`_ by subclassing the
 ``install_msdeploy`` `Install MSDeploy`_ command in the ``setup.py``
@@ -437,38 +454,6 @@ Logging
 Pdb
 
 
-IIS FastCGI
-===========
-
-IIS' implementation of the FastCGI protocol is not fully compliant.
-Most significantly, what is passed in on `STDIN_FILENO`_ is not a
-handle to an open socket but rather to a `Windows named pipe`_.  This
-names pipe does not support socket-like behavior, at least under
-Python.  As such, the ``egg:iiswsgi#iis`` `iiswsgi FCGI Gateway`_
-extends `flup's WSGI to FCGI gateway`_ to support using
-``STDIN_FILENO`` opened twice, once each approximating the ``recv``
-and ``send`` end of a socket as is specified in FastCGI.
-
-IIS FastCGI Applications
-------------------------
-
-The ``iiswsgi.install`` package provides helpers which can be using an
-an application's `Manifest.xml`_ file to automate the installation of
-an IIS FastCGI application.  For those needing more control, the
-following may help understand what's involved.
-
-You can use IIS's `AppCmd.exe`_ to install new FastCGI applications.
-You can find it at ``%ProgramFiles%\IIS Express\appcmd.exe`` for
-WebMatrix/IIS Express or ``%systemroot%\system32\inetsrv\AppCmd.exe``
-for IIS.  Here's an example::
-
-    > appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='%SystemDrive%\Python27\python.exe',arguments='-u %SystemDrive%\Python27\Scripts\iiswsgi-script.py -c %HOMEDRIVE%%HOMEPATH%\Documents\My Web Sites\FooApp\test.ini',maxInstances='%NUMBER_OF_PROCESSORS%',monitorChangesTo='C:\Users\Administrator\Documents\My Web Sites\FooApp\test.ini']" /commit:apphost
-
-See the `IIS FastCGI Reference`_ for
-more details on how to configure IIS for FastCGI.  Note that you
-cannot use environment variable in the `monitorChangesTo` argument,
-IIS will return an opaque 500 error.
-
 Known Issues
 ============
 
@@ -584,7 +569,6 @@ WebPI Errors May be Burried
 
 .. _AppCmd.exe: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
 .. _IIS FastCGI Reference: http://www.iis.net/ConfigReference/system.webServer/fastCgi
-
 .. _FastCGI protocol: http://www.fastcgi.com/drupal/
 .. _STDIN_FILENO: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
 .. _Windows named pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
