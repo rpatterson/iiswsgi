@@ -57,5 +57,7 @@ setup(name=name,
             "discovery_file = iiswsgi.options:assert_string",
             "msdeploy_url_template = iiswsgi.options:assert_string",
             "install_msdeploy = iiswsgi.options:assert_list",
-            "install_webpi = iiswsgi.options:assert_list"]},
+            "install_webpi = iiswsgi.options:assert_list"],
+          'paste.server_runner': ['iis = iiswsgi.server:server_runner'],
+          'paste.server_factory': ['iis = iiswsgi.server:server_factory']},
       )

@@ -182,11 +182,11 @@ IIS Web Config
 
     Use the ``web.config.in`` template to generate the `IIS site
     configuration file`_.  When using `iiswsgi`_, it contains a
-    `fastCgi`_ application that invokes the ``iiswsgi.exe`` `iiswsgi
-    FCGI Gateway`_.  Most packages will want to adjust the
+    `fastCgi`_ application that invokes the ``egg:iiswsgi#iis``
+    `iiswsgi FCGI Gateway`_.  Most packages will want to adjust the
     `<application...`_ attributes that control process behavior.  This
-    is also where the ``*.ini`` config file or `app_factory
-    entry point`_ that define the WSGI app to run are specified.
+    is also where the ``*.ini`` config file or `app_factory entry
+    point`_ that define the WSGI app to run are specified.
 
 IIS Install Stamp File
 ----------------------
@@ -225,10 +225,19 @@ The moving parts of ``iiswsgi`` are as follows:
 iiswsgi FCGI Gateway
 --------------------
 
-    The ``iiswsgi.exe`` console script is the FastCGI to WSGI gateway.
-    IIS invokes this script to start a Python WSGI app as a FastCGI
-    process.  This can be used independently of the `distutils`_
-    commands.
+    The ``egg:iiswsgi#iis`` `paste.server_runner`_ or
+    `paste.server_factory`_ is the FastCGI to WSGI gateway.  IIS
+    invokes the `paster`_ script from `PasterSctipt`_ with a
+    `PasteDeploy INI configuration file`_ to start a Python WSGI app
+    as a FastCGI process.  Tell ``paster`` to use the IIS FCGI gateway
+    with ``paster.exe serve -s "egg:iiswsgi#iis" ...`` or in the
+    `PasteDeploy INI configuration file`_:
+
+        [server:iis]
+        use = egg:iiswsgi#iis
+
+    This is not intrinsically related to the `distutils`_ commands and
+    can be used independently of them if a project should need to.
 
 Build MSDeploy Package
 ----------------------
@@ -345,10 +354,10 @@ IIS' implementation of the FastCGI protocol is not fully compliant.
 Most significantly, what is passed in on `STDIN_FILENO`_ is not a
 handle to an open socket but rather to a `Windows named pipe`_.  This
 names pipe does not support socket-like behavior, at least under
-Python.  As such, the ``iiswsgi.exe`` `iiswsgi FCGI Gateway`_ extends
-`flup's WSGI to FCGI gateway`_ to support using ``STDIN_FILENO``
-opened twice, once each approximating the ``recv`` and ``send`` end of
-a socket as is specified in FastCGI.
+Python.  As such, the ``egg:iiswsgi#iis`` `iiswsgi FCGI Gateway`_
+extends `flup's WSGI to FCGI gateway`_ to support using
+``STDIN_FILENO`` opened twice, once each approximating the ``recv``
+and ``send`` end of a socket as is specified in FastCGI.
 
 IIS FastCGI Applications
 ------------------------
@@ -444,8 +453,11 @@ WebPI Errors May be Burried
 .. _MANIFEST.in: http://docs.python.org/distutils/sourcedist.html#the-manifest-in-template
 .. _WSGI: http://wsgi.readthedocs.org/en/latest/
 .. _Paste config file: http://pythonpaste.org/deploy/#config-format
-.. _Paste Deploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
+.. _PasteDeploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
+.. _PasterSctipt: http://pythonpaste.org/script/#paster-serve
 .. _app_factory entry point: http://pythonpaste.org/deploy/#paste-app-factory
+.. _paste.server_runner: http://pythonpaste.org/deploy/#paste-server-runner
+.. _paste.server_factory: http://pythonpaste.org/deploy/#paste-server-factory
 .. _flup's WSGI to FCGI gateway: http://trac.saddi.com/flup/wiki/FlupServers
 .. _virtualenv: http://www.virtualenv.org
 

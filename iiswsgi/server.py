@@ -3,7 +3,6 @@
 import sys
 import os
 import logging
-import argparse
 
 from struct import unpack
 from select import error as select_error
@@ -23,7 +22,6 @@ from flup.server import singleserver
 if __debug__:
     from flup.server.fcgi_base import _debug
 
-from iiswsgi import options
 from iiswsgi.filesocket import FileSocket
 
 root = logging.getLogger()
@@ -234,6 +232,67 @@ row_template = """\
         <tr><th>{0}</th><td>{1}</td></tr>"""
 
 
+def serve(app, handler=None, log_dir='%TEMP%'):
+    if handler:
+        # Include the time
+        formatter = logging.Formatter('%(asctime)s:' + logging.BASIC_FORMAT)
+        handler.setFormatter(formatter)
+
+        # Find a better log file
+        if 'IIS_USER_HOME' in os.environ:
+            log_dir = os.path.join(os.environ['IIS_USER_HOME'], 'Logs')
+        if 'IISEXPRESS_SITENAME' in os.environ:
+            log_dir = os.path.join(log_dir, os.environ['IISEXPRESS_SITENAME'])
+        if not os.path.exists(log_dir):
+            # Directory doesn't exist until IIS logs the first request
+            os.makedirs(log_dir)
+        new_log = os.path.join(
+            log_dir, os.path.basename(handler.stream.name))
+        if new_log != handler.stream.name:
+            new_handler = logging.FileHandler(new_log)
+            new_handler.setFormatter(formatter)
+            root.addHandler(new_handler)
+            root.removeHandler(handler)
+
+    server = IISWSGIServer(app)
+    logger.info('Starting FCGI server with app %r' % app)
+    try:
+        server.run()
+    except KeyboardInterrupt:
+        # allow CTRL+C to shutdown
+        pass
+    except BaseException:
+        logger.exception('server.run() raised an exception')
+        raise
+    return server
+
+
+def server_runner(app, global_conf, *args, **kw):
+    # Need to setup file logging as soon as possible as IIS seems to
+    # swallow everything on startup, safest fallback possible
+    handler = log_dir = None
+    try:
+        log_dir = os.environ.get('TEMP', os.sep)
+        handler = logging.FileHandler(os.path.join(log_dir, 'iiswsgi.log'))
+        root.addHandler(handler)
+    except BaseException:
+        # Better to keep running than to fail silently
+        pass
+
+    try:
+        serve(app, *args, **kw)
+    except BaseException, exc:
+        logger.exception('Exception starting FCGI server:')
+        # Don't print traceback twice when logging to stdout
+        sys.exit(getattr(exc, 'code', 1))
+
+
+def server_factory(global_conf, *args, **kw):
+    def serve(app):
+        server_runner(app, global_conf, *args, **kw)
+    return serve
+
+
 def test_app(environ, start_response,
              response_template=response_template, row_template=row_template):
     """Render the WSGI environment as an HTML table."""
@@ -260,126 +319,5 @@ def make_test_app(global_config):
     return test_app
 
 
-def loadapp_option(value):
-    from paste.deploy import loadapp
-    config = os.path.abspath(value)
-    logger.info('Loading WSGI app from config file %r' % config)
-    app = loadapp('config:%s' % (config,))
-    return app
-
-
-def ep_app_option(value):
-    import pkg_resources
-    ep = pkg_resources.EntryPoint.parse('app=' + value)
-    logger.info('Loading WSGI app from entry_point %r' % value)
-    app = ep.load(require=False)
-    return app
-
-
-def run_trace(server):
-    for handler in root.handlers:
-        if isinstance(handler, logging.StreamHandler):
-            sys.stdout = handler.stream
-    import trace
-    tracer = trace.Trace(
-        ignoremods=('pprint', 'logging', 'warnings',
-                    'posixpath', 'ntpath', 'genericpath'))
-    logger.warn(
-        'Running the FCGI server with line execution tracing: {0}'.format(
-            sys.stdout))
-    tracer.runfunc(server.run)
-
-
-def run(args=None):
-    """Run a WSGI app as an IIS FastCGI process."""
-    # Need to setup file logging as soon as possible as IIS seems to
-    # swallow everything on startup, safest fallback possible
-    handler = log_dir = None
-    try:
-        log_dir = os.environ.get('TEMP', os.sep)
-        handler = logging.FileHandler(os.path.join(log_dir, 'iiswsgi.log'))
-        root.addHandler(handler)
-    except BaseException:
-        # Better to keep running than to fail silently
-        pass
-
-    try:
-        _run_with_logging(handler, log_dir, args)
-    except BaseException, exc:
-        logger.exception('Exception starting FCGI server:')
-        # Don't print traceback twice when logging to stdout
-        sys.exit(getattr(exc, 'code', 1))
-
-
-def _run_with_logging(handler, log_dir, args=None):
-    # Include the time
-    formatter = logging.Formatter('%(asctime)s:' + logging.BASIC_FORMAT)
-    handler.setFormatter(formatter)
-
-    # Find a better log file
-    if 'IIS_USER_HOME' in os.environ:
-        log_dir = os.path.join(os.environ['IIS_USER_HOME'], 'Logs')
-    if 'IISEXPRESS_SITENAME' in os.environ:
-        log_dir = os.path.join(log_dir, os.environ['IISEXPRESS_SITENAME'])
-    if not os.path.exists(log_dir):
-        # Directory doesn't exist until IIS logs the first request
-        os.makedirs(log_dir)
-    new_log = os.path.join(
-        log_dir, os.path.basename(handler.stream.name))
-    if new_log != handler.stream.name:
-        new_handler = logging.FileHandler(new_log)
-        new_handler.setFormatter(formatter)
-        root.addHandler(new_handler)
-        root.removeHandler(handler)
-
-    try:
-        args = parser.parse_args(args=args)
-    except SystemExit:
-        # Don't log intentional exits from the parser
-        raise
-    except:
-        logger.exception('Error parsing arguments.')
-        # Don't print traceback twice when logging to stdout
-        sys.exit(1)
-
-    server = IISWSGIServer(args.app)
-
-    if args.test:
-        logger.info('Successfully created FCGI server with app %r' %
-                    args.app)
-        return
-
-    logger.info('Starting FCGI server with app %r' % args.app)
-    try:
-        if args.trace:
-            run_trace(server)
-        else:
-            server.run()
-    except BaseException:
-        logger.exception('server.run() raised an exception')
-        raise
-
-
-parser = argparse.ArgumentParser(description=run.__doc__,
-                               parents=[options.parent_parser])
-app_group = parser.add_mutually_exclusive_group()
-app_group.add_argument(
-    "-c", "--config", metavar="FILE", dest='app', type=loadapp_option,
-    help="Load the  the WSGI app from paster config FILE.")
-app_group.add_argument(
-    "-e", "--entry-point", metavar="ENTRY_POINT", dest='app',
-    default=test_app, type=ep_app_option,
-    help="Load the WSGI app from pkg_resources.EntryPoint.parse(ENTRY_POINT)."
-    "  The default is a simple test app that displays the WSGI environment."
-    "  [default: iiswsgi:test_app]")
-parser.add_argument(
-    '-t', '--test', action='store_true', help="""\
-Only load the app and create the server but don't run it.  Useful to assert \
-that the app will at least respond to requests when run by IIS.""")
-parser.add_argument(
-    '-r', '--trace', action='store_true', help="""\
-Trace execution of the WSGI app from the point where the server is started.""")
-parser.set_defaults(app=test_app)
-
 if __name__ == '__main__':
-    run()
+    serve(test_app)
