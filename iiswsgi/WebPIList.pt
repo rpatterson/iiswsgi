@@ -110,6 +110,9 @@
     <dependency tal:condition="dist/msdeploy_url|nothing">
       <and>
         <dependency>
+          <productId>WDeploy</productId>
+        </dependency>
+        <dependency>
           <productId>Python27</productId>
         </dependency>
         <dependency>

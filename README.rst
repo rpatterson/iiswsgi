@@ -500,16 +500,21 @@ Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
     Anyone with a MS support contract, please submit a request about
     this.
 
-``System.IO.FileNotFoundException: Could not load file or assembly``::
+``System.IO.FileNotFoundException: Could not load file or assembly``
 
-    DownloadManager Error: 0 : System.IO.FileNotFoundException: Could not load file or assembly 'Microsoft.Web.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its dependencies. The system cannot find the file specified.
-    File name: 'Microsoft.Web.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-       at Microsoft.Web.PlatformInstaller.MSDeployProxy.GetDeclaredParameters()
-       at Microsoft.Web.PlatformInstaller.MSDeployPackage.get_DeclaredParameters()
-       at Microsoft.Web.PlatformInstaller.UI.AppSitePage.GetApplicationName(MSDeployPackage package, String& appName)
-       at Microsoft.Web.PlatformInstaller.UI.AppSitePage.InitializeComponent()
+    This error happens when using WebPI to install on full IIS, IOW
+    when not using IIS Express and Web Matrix.  It can be worked
+    around by installing the "Web Deploy Tool" in WebPI.  The
+    `bdist_webpi`_ command works around this by adding it as a
+    dependency for all MSDeploy packages.  Here's the error from the
+    logs::
 
-Web Deploy dependency
+        DownloadManager Error: 0 : System.IO.FileNotFoundException: Could not load file or assembly 'Microsoft.Web.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its dependencies. The system cannot find the file specified.
+        File name: 'Microsoft.Web.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
+           at Microsoft.Web.PlatformInstaller.MSDeployProxy.GetDeclaredParameters()
+           at Microsoft.Web.PlatformInstaller.MSDeployPackage.get_DeclaredParameters()
+           at Microsoft.Web.PlatformInstaller.UI.AppSitePage.GetApplicationName(MSDeployPackage package, String& appName)
+           at Microsoft.Web.PlatformInstaller.UI.AppSitePage.InitializeComponent()
 
 IIS Management Console dependency
 
