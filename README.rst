@@ -520,6 +520,11 @@ IIS Management Console dependency
 
 WebPI Errors May be Burried
 
+    On occasion, WebPI may burry error messages behind the WebPI
+    window.  So if WebPI has been hung for a long time, try using
+    ``Alt-TAB`` to see if there's an error window hidden behind the
+    WebPI window.
+
 
 .. _special files: Web Deploy Package Contents_
 .. _bdist_webpi: Build WebPI Feed Distribution_
