@@ -28,9 +28,9 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
     def finalize_options(self):
         """Handle unreplaced parameters when testing locally."""
         install_msdeploy.install_msdeploy.finalize_options(self)
-        if self.scaffold == '__pyramid_scaffold__':
+        if self.scaffold == '__msdeploy_scaffold__':
             self.scaffold = 'starter'
-        if self.project == '__pyramid_project__':
+        if self.project == '__msdeploy_project__':
             self.project = 'MyProject'
 
     def run(self):
