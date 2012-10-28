@@ -34,10 +34,10 @@ class install_msdeploy(cmd.Command):
                      "Do not install IIS FCGI apps.")]
 
     logger = logger
+    app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
     def initialize_options(self):
         self.skip_fcgi_app_install = False
-        self.app_name_pattern = re.compile(r'^(.*?)([0-9]*)$')
 
     def finalize_options(self):
         cwd = os.getcwd()
