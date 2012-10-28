@@ -9,8 +9,6 @@ from distutils import errors
 
 stamp_filename = 'iis_install.stamp'
 
-root = logging.getLogger()
-default_level = root.level
 logger = logging.getLogger('iiswsgi')
 
 
@@ -36,7 +34,7 @@ def debug_environ():
                   for key, value in os.environ.iteritems())))
 
 
-def ensure_verbosity(self, level=default_level):
+def ensure_verbosity(self, level=logging.INFO):
     """Ensure that logging is configured per the verbosity setting."""
     if self.verbose == 0:
         level += 10
@@ -48,6 +46,7 @@ def ensure_verbosity(self, level=default_level):
 
 
 def increase_verbosity():
+    root = logging.getLogger()
     root.setLevel(root.level - 10)
     if root.level == logging.DEBUG:
         debug_environ()
