@@ -190,91 +190,86 @@ Web Deploy Package Contents
 
 A developer releasing a MSDeploy package of a Python web app,
 interacts with `iiswsgi`_ though the following files in a Python
-distribution:
+distribution.  Aside from these files, a Web Deploy package using
+``iiswsgi`` is no different than any other Python distribution or
+project nor should any of the ``iiswsgi`` pieces interfere with any
+other uses of the same distribution.  In particular, it should be
+possible to build and upload MSDeploy package and WebPI feed dists in
+the same command as building and uploading any other dist.
 
 Setup Script
 ------------
 
-    As with other Python build, distribute, and install tasks, the
-    ``setup.py`` script is where to control how the MSDeploy package
-    is built, what is distributed, and how it's installed.
+As with other Python build, distribute, and install tasks, the
+``setup.py`` script is where to control how the MSDeploy package is
+built, what is distributed, and how it's installed.
 
 Python Manifest
 ---------------
 
-    Use Python's source distribution `MANIFEST.in`_ template format
-    to declare what will be in the package.
+Use Python's source distribution `MANIFEST.in`_ template format to
+declare what will be in the package.
 
 MSDeploy Manifest
 -----------------
 
-    Use the ``Manifest.xml.in`` template to generate the `MSDeploy
-    manifest`_.  When using `iiswsgi`_, it contains a `runCommand`_
-    provider that invokes the ``iswsgi_install.exe`` `MSDeploy Install
-    Bootstrap`_ script.  Most packages will want to install into a
-    `virtualenv`_ by including a ``-e`` option to ``iiswsgi_install.exe``.
+Use the ``Manifest.xml.in`` template to generate the `MSDeploy
+manifest`_.  When using `iiswsgi`_, it contains a `runCommand`_
+provider that invokes the ``iswsgi_install.exe`` `MSDeploy Install
+Bootstrap`_ script.  Most packages will want to install into a
+`virtualenv`_ by including a ``-e`` option to ``iiswsgi_install.exe``.
 
-    The `build_msdeploy`_ command can be used to write `runCommand
-    option attributes`_ into the hash that MSDeploy uses when
-    processing the manifest during installation.  Most apps will want
-    to include the ``successReturnCodes="0x0"`` attribute to ensure
-    that failures in the command are reported back to the user.  Many
-    apps will also want to adjust the ``waitAttempts="5"`` and/or
-    ``waitInterval="1000"`` attributes to give the commands enough
-    time to complete.
+The `build_msdeploy`_ command can be used to write `runCommand option
+attributes`_ into the hash that MSDeploy uses when processing the
+manifest during installation.  Most apps will want to include the
+``successReturnCodes="0x0"`` attribute to ensure that failures in the
+command are reported back to the user.  Many apps will also want to
+adjust the ``waitAttempts="5"`` and/or ``waitInterval="1000"``
+attributes to give the commands enough time to complete.
 
-    Another ``runCommand`` provider can be placed in
-    ``Manifest.xml.in`` to invoke `paster request`_ to test the app
-    during installation.  This ensures that if the app isn't working
-    after the rest of installation has succeeded, the user will still
-    see an error message in WebPI.
+Another ``runCommand`` provider can be placed in ``Manifest.xml.in``
+to invoke `paster request`_ to test the app during installation.  This
+ensures that if the app isn't working after the rest of installation
+has succeeded, the user will still see an error message in WebPI.
 
 MSDeploy Parameters
 -------------------
 
-    The `Parameters.xml`_ file defines the parameters WebPI will
-    prompt the user for when installing.  See
-    ``examples/pyramid.msdeploy/Parameters.xml`` for an example of
-    using parameters to influence custom setup.
+The `Parameters.xml`_ file defines the parameters WebPI will prompt
+the user for when installing.  See
+``examples/pyramid.msdeploy/Parameters.xml`` for an example of using
+parameters to influence custom setup.
 
 IIS Web Config
 --------------
 
-    Use the ``web.config.in`` template to generate the `IIS site
-    configuration file`_.  When using `iiswsgi`_, it contains a
-    `fastCgi`_ application that invokes the ``egg:iiswsgi#iis``
-    `iiswsgi FCGI Gateway`_.  Most packages will want to adjust the
-    `<application...`_ attributes that control process behavior.  This
-    is also where the ``*.ini`` config file or `app_factory entry
-    point`_ that define the WSGI app to run are specified.
+Use the ``web.config.in`` template to generate the `IIS site
+configuration file`_.  When using `iiswsgi`_, it contains a `fastCgi`_
+application that invokes the ``egg:iiswsgi#iis`` `iiswsgi FCGI
+Gateway`_.  Most packages will want to adjust the `<application...`_
+attributes that control process behavior.  This is also where the
+``*.ini`` config file or `app_factory entry point`_ that define the
+WSGI app to run are specified.
 
 IIS Install Stamp File
 ----------------------
 
-    The ``iis_install.stamp.in`` template copied into place to serve
-    as the ``iis_install.stamp`` stamp file used by the
-    ``iiswsgi_install.exe`` `MSDeploy Install Bootstrap`_ script to
-    find the right ``APPL_PHYSICAL_PATH`` at install time.
+The ``iis_install.stamp.in`` template copied into place to serve as
+the ``iis_install.stamp`` stamp file used by the
+``iiswsgi_install.exe`` `MSDeploy Install Bootstrap`_ script to find
+the right ``APPL_PHYSICAL_PATH`` at install time.
 
 Setup Congig
 ------------
 
-    The `setup.cfg`_ file is only necessary if your `Setup Script`_ is
-    not using `setuptools`.  IOW, under ``setuptools`` the commands
-    are automatically available is ``iiswsgi`` is installed and
-    there's no need for this file.  Without ``setuptools``, use the
-    following to make the ``iiswsgi`` distutils commands available to
-    your package::
+The `setup.cfg`_ file is only necessary if your `Setup Script`_ is not
+using `setuptools`.  IOW, under ``setuptools`` the commands are
+automatically available is ``iiswsgi`` is installed and there's no
+need for this file.  Without ``setuptools``, use the following to make
+the ``iiswsgi`` distutils commands available to your package::
 
-        [global]
-        command_packages = iiswsgi
-
-Aside from these files, a Web Deploy package using ``iiswsgi`` is no
-different than any other Python distribution or project nor should any
-of the ``iiswsgi`` pieces interfere with any other uses of the same
-distribution.  In particular, it should be possible to build and
-upload MSDeploy package and WebPI feed dists in the same command as
-building and uploading any other dist.
+    [global]
+    command_packages = iiswsgi
 
 
 IIS WSGI Tools
@@ -285,128 +280,126 @@ The moving parts of ``iiswsgi`` are as follows:
 iiswsgi FCGI Gateway
 --------------------
 
-    The ``egg:iiswsgi#iis`` `paste.server_runner`_ or
-    `paste.server_factory`_ is the FastCGI to WSGI gateway.  IIS
-    invokes the `paster`_ script from `PasterSctipt`_ with a
-    `PasteDeploy INI configuration file`_ to start a Python WSGI app
-    as a FastCGI process.  Tell ``paster`` to use the IIS FCGI gateway
-    with ``paster.exe serve -s "egg:iiswsgi#iis" ...`` or in the
-    `PasteDeploy INI configuration file`_:
+The ``egg:iiswsgi#iis`` `paste.server_runner`_ or
+`paste.server_factory`_ is the FastCGI to WSGI gateway.  IIS invokes
+the `paster`_ script from `PasterSctipt`_ with a `PasteDeploy INI
+configuration file`_ to start a Python WSGI app as a FastCGI process.
+Tell ``paster`` to use the IIS FCGI gateway with ``paster.exe serve -s
+"egg:iiswsgi#iis" ...`` or in the `PasteDeploy INI configuration
+file`_:
 
-        [server:iis]
-        use = egg:iiswsgi#iis
+    [server:iis]
+    use = egg:iiswsgi#iis
 
-    This is not intrinsically related to the `distutils`_ commands and
-    can be used independently of them if a project should need to.
+This is not intrinsically related to the `distutils`_ commands and can
+be used independently of them if a project should need to.
 
 Build MSDeploy Package
 ----------------------
 
-    The ``build_msdeploy`` distutils command compiles a MSDeploy
-    ``Manifest.xml`` converting any `runCommand`_ attributes into the
-    necessary hash.  It will also copy into place the `IIS Install
-    Stamp File`_ ``iis_install.stamp`` stamp file used by the
-    `MSDeploy Install Bootstrap`_ ``iiswsgi_install.exe`` script to
-    find the right ``APPL_PHYSICAL_PATH`` at install time.
+The ``build_msdeploy`` distutils command compiles a MSDeploy
+``Manifest.xml`` converting any `runCommand`_ attributes into the
+necessary hash.  It will also copy into place the `IIS Install Stamp
+File`_ ``iis_install.stamp`` stamp file used by the `MSDeploy Install
+Bootstrap`_ ``iiswsgi_install.exe`` script to find the right
+``APPL_PHYSICAL_PATH`` at install time.
 
 Install MSDeploy
 ----------------
 
-    The ``install_msdeploy`` distutils command performs common actions
-    needed to deploy Python web apps on IIS: install dependencies, do
-    variable substitution in `web.config`_, and install the FastCGI
-    application into the IIS global config.
+The ``install_msdeploy`` distutils command performs common actions
+needed to deploy Python web apps on IIS: install dependencies, do
+variable substitution in `web.config`_, and install the FastCGI
+application into the IIS global config.
 
-    Since most apps will require path or parameter specific bits in
-    the ``web.config`` file, the `install_msdeploy`_ command will
-    perform variable substitution while writing the ``web.config.in``
-    template to ``web.config``.  To add variables to the substitution,
-    just use `Custom Set Up`_ to put them into `os.environ`_ before
-    calling the base class's ``run()`` method.  Since
-    ``<fastCgi><application...`` elements don't take effect in the
-    ``web.config``, the `install_msdeploy`_ command will use
-    ``appcmd.exe`` to install an FCGI apps in ``web.config``.
+Since most apps will require path or parameter specific bits in the
+``web.config`` file, the `install_msdeploy`_ command will perform
+variable substitution while writing the ``web.config.in`` template to
+``web.config``.  To add variables to the substitution, just use
+`Custom Set Up`_ to put them into `os.environ`_ before calling the
+base class's ``run()`` method.  Since ``<fastCgi><application...``
+elements don't take effect in the ``web.config``, the
+`install_msdeploy`_ command will use ``appcmd.exe`` to install an FCGI
+apps in ``web.config``.
 
-    This is also where to `Custom Set Up`_ by subclassing the
-    ``install_msdeploy`` `Install MSDeploy`_ command in the
-    ``setup.py`` `Setup Script`_ and using the distutils `cmdclass`_
-    kwarg to ``setup()``.  See `Quick Start`_ for a small example or
-    ``examples\pyramid.msdeploy\setup.py`` for a working example.
+This is also where to `Custom Set Up`_ by subclassing the
+``install_msdeploy`` `Install MSDeploy`_ command in the ``setup.py``
+`Setup Script`_ and using the distutils `cmdclass`_ kwarg to
+``setup()``.  See `Quick Start`_ for a small example or
+``examples\pyramid.msdeploy\setup.py`` for a working example.
 
 Build MSDeploy Distribution
 ---------------------------
 
-    The ``bdist_msdeploy`` distutils command assembles an actual
-    MSDeploy package: It starts by running the ``build_msdeploy``
-    `Build MSDeploy Package`_ command.  Then it runs the
-    ``install_msdeploy`` `Install MSDeploy`_ command in case your
-    package needs any of the results of the installation process and
-    to test the installation process.  Finally, it creates a `MSDeploy
-    package`_ zip file with the contents contolled by the same tools
-    that `distutils`_ provides for ``sdist`` distributions, including
-    ``MANIFEST.in``.
+The ``bdist_msdeploy`` distutils command assembles an actual MSDeploy
+package: It starts by running the ``build_msdeploy`` `Build MSDeploy
+Package`_ command.  Then it runs the ``install_msdeploy`` `Install
+MSDeploy`_ command in case your package needs any of the results of
+the installation process and to test the installation process.
+Finally, it creates a `MSDeploy package`_ zip file with the contents
+contolled by the same tools that `distutils`_ provides for ``sdist``
+distributions, including ``MANIFEST.in``.
 
 MSDeploy Install Bootstrap
 --------------------------
 
-    The ``iiswsgi_install.exe`` script bootstraps the MSDeploy package
-    install process optionally setting up a virtualenv first.  It
-    finds the correct ``APPL_PHYSICAL_PATH``, changes to that
-    directory and invokes the `Setup Script`_ with arguments.
+The ``iiswsgi_install.exe`` script bootstraps the MSDeploy package
+install process optionally setting up a virtualenv first.  It finds
+the correct ``APPL_PHYSICAL_PATH``, changes to that directory and
+invokes the `Setup Script`_ with arguments.
 
-    This console script attempts to workaround the fact that WebPI and
-    MSDeploy don't provide any context to the app being installed.
-    Specifically, when using the `runCommand`_ MSDeploy provider in
-    the `Manifest.xml`_, the process started by ``runCommand`` has no
-    way to know which app it's being invoked for on install: not the
-    current working directory, not in an argument, nor in any
-    environment variable.
+This console script attempts to workaround the fact that WebPI and
+MSDeploy don't provide any context to the app being installed.
+Specifically, when using the `runCommand`_ MSDeploy provider in the
+`Manifest.xml`_, the process started by ``runCommand`` has no way to
+know which app it's being invoked for on install: not the current
+working directory, not in an argument, nor in any environment
+variable.
 
-    As such this script has to search for the app before calling it's
-    `Setup Script`_.  It uses `appcmd.exe`_ to look in virtual
-    directories whose site matches the app name and which contain a
-    stamp file still in place.  See ``>Scripts\iiswsgi_install.exe
-    --help`` for more details.
+As such this script has to search for the app before calling it's
+`Setup Script`_.  It uses `appcmd.exe`_ to look in virtual directories
+whose site matches the app name and which contain a stamp file still
+in place.  See ``>Scripts\iiswsgi_install.exe --help`` for more
+details.
 
 Build WebPI Feed Distribution
 -----------------------------
 
-    The ``bdist_webpi`` distutils command assembles a WebPI feed from
-    one or more MSDeploy packages with dependencies.  The MSDeploy
-    packages to include are defined by passing paths to distrubutions
-    with ``setup.py`` files whose MSDeploy dist zip files have
-    previously been built in the ``--msdeploy-bdists`` command option
-    separated by `shlex.split`_.
+The ``bdist_webpi`` distutils command assembles a WebPI feed from one
+or more MSDeploy packages with dependencies.  The MSDeploy packages to
+include are defined by passing paths to distrubutions with
+``setup.py`` files whose MSDeploy dist zip files have previously been
+built in the ``--msdeploy-bdists`` command option separated by
+`shlex.split`_.
 
-    The global feed metadata is taken from the distribution the
-    command is being run for.  Entries are added to the feed for the
-    distributions lited in the ``--msdeploy-bdists`` command option
-    and the ``webpi_eggs`` depdencies in `extras_require`_. The WebPI
-    dependencies and related products are taken from the lists given
-    in the ``install_msdeploy`` and ``install_webpi`` ``setup()``
-    kwargs respectivels.  The metadata for those entries is taken from
-    the corresponding distributions.  The following are additional
-    ``setup()`` kwargs that are used in the feed if defined for a
-    given distrubution:
+The global feed metadata is taken from the distribution the command is
+being run for.  Entries are added to the feed for the distributions
+lited in the ``--msdeploy-bdists`` command option and the
+``webpi_eggs`` depdencies in `extras_require`_. The WebPI dependencies
+and related products are taken from the lists given in the
+``install_msdeploy`` and ``install_webpi`` ``setup()`` kwargs
+respectivels.  The metadata for those entries is taken from the
+corresponding distributions.  The following are additional ``setup()``
+kwargs that are used in the feed if defined for a given distrubution:
 
-        * title
-        * author_url
-        * license_url
-        * display_url
-        * help_url
-        * published
-        * icon_url
-        * screenshot_url
-        * discovery_file
-        * msdeploy_url_template
+    * title
+    * author_url
+    * license_url
+    * display_url
+    * help_url
+    * published
+    * icon_url
+    * screenshot_url
+    * discovery_file
+    * msdeploy_url_template
             
 Clean WebPI Caches
 ------------------
 
-    The ``clean_webpi`` distutils command clears the `WebPI caches`_
-    for one or more MSDeploy package downloads and the feed itself.
-    The MSDeploy packages to be cleared from the cache are taken from
-    the same ``--msdeploy-bdists`` command option.
+The ``clean_webpi`` distutils command clears the `WebPI caches`_ for
+one or more MSDeploy package downloads and the feed itself.  The
+MSDeploy packages to be cleared from the cache are taken from the same
+``--msdeploy-bdists`` command option.
 
 
 Debugging
