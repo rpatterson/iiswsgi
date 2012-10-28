@@ -424,7 +424,10 @@ or more MSDeploy packages with dependencies.  The MSDeploy packages to
 include are defined by passing paths to distrubutions with
 ``setup.py`` files whose MSDeploy dist zip files have previously been
 built in the ``--msdeploy-bdists`` command option separated by
-`shlex.split`_.
+`shlex.split`_.  The download URLs for the MSDeploy zip files is
+determined by expanding the ``msdeploy_url_template`` ``setup()``
+kwarg with `Python string.format()`_.
+
 
 The global feed metadata is taken from the distribution the command is
 being run for.  Entries are added to the feed for the distributions
@@ -445,7 +448,6 @@ kwargs that are used in the feed if defined for a given distrubution:
     * icon_url
     * screenshot_url
     * discovery_file
-    * msdeploy_url_template
             
 Clean WebPI Caches
 ------------------
@@ -579,6 +581,7 @@ WebPI Errors May be Burried
 .. _distutils: http://docs.python.org/distutils/
 .. _setup.cfg: http://docs.python.org/distutils/configfile.html
 .. _cmdclass: http://docs.python.org/distutils/extending.html#integrating-new-commands
+.. _Python string.format(): http://docs.python.org/2/library/string.html#formatstrings
 .. _PyPI: http://pypi.python.org/pypi
 .. _setuptools: http://packages.python.org/distribute
 .. _entry points: http://packages.python.org/distribute/setuptools.html#entry-points
