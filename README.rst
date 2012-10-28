@@ -38,6 +38,7 @@ the following steps could be used to released to WebPI:
     class install_custom_msdeploy(install_msdeploy.install_msdeploy):
         def run(self):
             """Perform custom tasks."""
+            os.environ['WEB_CONFIG_VAR'] = 'foo'
             install_msdeploy.install_msdeploy.run(self)
             CUSTOM_SETUP
     ...
@@ -102,19 +103,19 @@ See the `Web Deploy Package Contents`_ and `IIS WSGI Tools`_ sections
 for more technical details.  Here is an overview of the process and
 the technologies involved.
 
-Define a Distribution
+A Python Distribution
 ---------------------
 
 This is a pre-requisite and is not at all specific to IIS, MSDeploy or
 WebPI, only Python.  This is just a directory with a ``setup.py``
 `Setup Script`_ that defines the distribution and it's metadata and
-very little is done differently from the standard Python `disutils`_
+very little is done differently from the standard Python `distutils`_
 and `setuptools`_ ways of doing things.  IOW, wherever possible,
 `iiswsgi` tries to re-use ``setup.py`` metadata and where it needs new
 metadata it uses `setuptools`_ `entry points`_ to add `setup kwargs`_.
 
-Implement Custom Set Up
------------------------
+Custom Set Up
+-------------
 
 If the app requires extra set up beyond just setting up a
 `virtualenv`_ and installing dependencies, this can also be
@@ -122,21 +123,66 @@ implemented in ``setup.py`` by subclassing the ``install_msdeploy``
 `Install MSDeploy`_ command.  See the `Quick Start`_ and the `Install
 MSDeploy`_ command for more details.
 
-Build the MSDeploy Package
---------------------------
+The MSDeploy Package
+--------------------
 
-The package building process involves three `distutils`_ commands,
-each of which can be run indiviually or run all at once by running
-just the last step which will run the others first.
+Microsoft's Web Deploy Tool is what WebPI uses to install an IIS app
+and expects a `MSDeploy package`_, simple zip file with some metadata
+in it.  There some `special files`_ and three ``iiswsgi`` `distutils`_
+commands that help in defining and building a MSDeploy package.  The
+commands can also be run indiviually or run all at once by running
+just the last step which will run the others first.  Running them
+individually is useful to debug packaging problems.
 
     #. `Build MSDeploy Package`_ ``build_msdeploy`` command
     #. `Install MSDeploy`_ ``install_msdeploy`` command
     #. `Build MSDeploy Distribution`_ ``bdist_msdeploy`` command
 
-Build the WebPI Feed
---------------------
+On completion of the last command a MSDeploy zip file will be in the
+``dist`` directory just like any other dist command, such as
+``sdist``.  You can also upload the package using the ``upload``
+command.
 
+The WebPI Feed
+--------------
 
+The Web Platform installer can be given additional feeds in it's
+options dialog.  This feed can define things that can be installed
+along with their metadata including dependencies.  The `bdist_webpi`_
+command can build this feed as another dist file, and can thus also be
+released using the ``upload`` command.
+
+To test locally, use the ``bdist_webpi -u "{msdeploy_package_url}"``
+option to put ``file:///...`` download URLs for the MSDeploy packages
+in the feed.  Then use the ``file:///...`` URL for the feed
+itself in WebPI's options dialog that is printed to the console when
+the ``bdist_webpi`` command is run.
+
+MSDeploy Package Installation
+-----------------------------
+
+Once the feed is included in WebPI, the entries can be searched for
+and installed.  After installation, but before WebPI reports
+completion, any `runCommand` providers in the `MSDeploy Manifest`_ are
+run which is when `iiswsgi_install.exe`_ script is invoked to find the
+installed app and to run distutils setup commands, `install_msdeploy`_
+by default, in that distribution.  Most apps will want to use the
+`iiswsgi_install.exe -e`_ option to setup a virtualenv before running
+setup commands.  See `MSDeploy Manifest`_ and `install_msdeploy`_ for
+more details and considerations.
+
+IIS Hosting
+-----------
+
+If installation has completed, there will be a
+``<fastCgi><application...`` in the global IIS config, a corresponding
+handler in the app's ``web.config`` and when a request comes in for
+the app, IIS will invoke the handler specified.  For `iiswsgi`_, the
+handler will be an `paster serve`_ invocation that uses the
+`egg:iiswsgi#iis`_ FCGI server.  To use a general purpose `PasteConfig
+INI configuration file`_, you can use a handler like ``paster.exe
+serve -s "egg:iiswsgi#iis" ...`` to use the `iiswsgi` FCGI server with
+a configuration file that doesn't specify it.
 
 
 Web Deploy Package Contents
@@ -167,6 +213,15 @@ MSDeploy Manifest
     provider that invokes the ``iswsgi_install.exe`` `MSDeploy Install
     Bootstrap`_ script.  Most packages will want to install into a
     `virtualenv`_ by including a ``-e`` option to ``iiswsgi_install.exe``.
+
+    The `build_msdeploy`_ command can be used to write `runCommand
+    option attributes`_ into the hash that MSDeploy uses when
+    processing the manifest during installation.  Most apps will want
+    to include the ``successReturnCodes="0x0"`` attribute to ensure
+    that failures in the command are reported back to the user.  Many
+    apps will also want to adjust the ``waitAttempts="5"`` and/or
+    ``waitInterval="1000"`` attributes to give the commands enough
+    time to complete.
 
     Another ``runCommand`` provider can be placed in
     ``Manifest.xml.in`` to invoke `paster request`_ to test the app
@@ -262,10 +317,20 @@ Install MSDeploy
     variable substitution in `web.config`_, and install the FastCGI
     application into the IIS global config.
 
-    This is also where to `Implement Custom Set Up`_ by subclassing
-    the ``install_msdeploy`` `Install MSDeploy`_ command in the
+    Since most apps will require path or parameter specific bits in
+    the ``web.config`` file, the `install_msdeploy`_ command will
+    perform variable substitution while writing the ``web.config.in``
+    template to ``web.config``.  To add variables to the substitution,
+    just use `Custom Setup`_ to put them into `os.environ`_ before
+    calling the base class's ``run()`` method.  Since
+    ``<fastCgi><application...`` elements don't take effect in the
+    ``web.config``, the `install_msdeploy`_ command will use
+    ``appcmd.exe`` to install an FCGI apps in ``web.config``.
+
+    This is also where to `Custom Set Up`_ by subclassing the
+    ``install_msdeploy`` `Install MSDeploy`_ command in the
     ``setup.py`` `Setup Script`_ and using the distutils `cmdclass`_
-    kwarg to ``setup()``.  See `Quick Setup`_ for a small example or
+    kwarg to ``setup()``.  See `Quick Start`_ for a small example or
     ``examples\pyramid.msdeploy\setup.py`` for a working example.
 
 Build MSDeploy Distribution
@@ -307,14 +372,41 @@ Build WebPI Feed Distribution
 -----------------------------
 
     The ``bdist_webpi`` distutils command assembles a WebPI feed from
-    one or more MSDeploy packages with dependencies.  It can also
-    include entries for normal Python dists.  The global feed metadata 
+    one or more MSDeploy packages with dependencies.  The MSDeploy
+    packages to include are defined by passing paths to distrubutions
+    with ``setup.py`` files whose MSDeploy dist zip files have
+    previously been built in the ``--msdeploy-bdists`` command option
+    separated by `shlex.split`_.
 
+    The global feed metadata is taken from the distribution the
+    command is being run for.  Entries are added to the feed for the
+    distributions lited in the ``--msdeploy-bdists`` command option
+    and the ``webpi_eggs`` depdencies in `extras_require`_. The WebPI
+    dependencies and related products are taken from the lists given
+    in the ``install_msdeploy`` and ``install_webpi`` ``setup()``
+    kwargs respectivels.  The metadata for those entries is taken from
+    the corresponding distributions.  The following are additional
+    ``setup()`` kwargs that are used in the feed if defined for a
+    given distrubution:
+
+        * title
+        * author_url
+        * license_url
+        * display_url
+        * help_url
+        * published
+        * icon_url
+        * screenshot_url
+        * discovery_file
+        * msdeploy_url_template
+            
 Clean WebPI Caches
 ------------------
 
     The ``clean_webpi`` distutils command clears the `WebPI caches`_
-    for one or more MSDeploy packages and the feed itself.
+    for one or more MSDeploy package downloads and the feed itself.
+    The MSDeploy packages to be cleared from the cache are taken from
+    the same ``--msdeploy-bdists`` command option.
 
 
 Debugging
@@ -323,7 +415,7 @@ Debugging
 One of the more important goals of `iiswsgi`_ is to bring some greater
 transparency and introspection to the process of integrating with
 IIS.  It's a very common experience for developers in the
-non-Window/*NIX world that developing and even deploying on Windows is
+non-Window/UNIX world that developing and even deploying on Windows is
 much more fragile and opaque than on any other OS.  Here's some of
 what `iiswsgi` does to try and address that.
 
@@ -430,7 +522,7 @@ Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
     Anyone with a MS support contract, please submit a request about
     this.
 
-``System.IO.FileNotFoundException: Could not load file or assembly``
+``System.IO.FileNotFoundException: Could not load file or assembly``::
 
     DownloadManager Error: 0 : System.IO.FileNotFoundException: Could not load file or assembly 'Microsoft.Web.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its dependencies. The system cannot find the file specified.
     File name: 'Microsoft.Web.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
@@ -446,6 +538,9 @@ IIS Management Console dependency
 WebPI Errors May be Burried
 
 
+.. _special files: Web Deploy Package Contents_
+.. _bdist_webpi: Build WebPI Feed Distribution_
+
 .. _iiswsgi: https://github.com/rpatterson/iiswsgi#iiswsgi
 .. _Python: http://python.org
 .. _distutils: http://docs.python.org/distutils/
@@ -455,11 +550,14 @@ WebPI Errors May be Burried
 .. _setuptools: http://packages.python.org/distribute
 .. _entry points: http://packages.python.org/distribute/setuptools.html#entry-points
 .. _setup kwargs: http://packages.python.org/distribute/setuptools.html#adding-setup-arguments
+.. _extras_require: http://packages.python.org/distribute/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies
 .. _MANIFEST.in: http://docs.python.org/distutils/sourcedist.html#the-manifest-in-template
 .. _WSGI: http://wsgi.readthedocs.org/en/latest/
 .. _Paste config file: http://pythonpaste.org/deploy/#config-format
 .. _PasteDeploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
 .. _PasterSctipt: http://pythonpaste.org/script/#paster-serve
+.. _paster: PasterSctipt_
+.. _paster request: http://pythonpaste.org/modules/request.html
 .. _app_factory entry point: http://pythonpaste.org/deploy/#paste-app-factory
 .. _paste.server_runner: http://pythonpaste.org/deploy/#paste-server-runner
 .. _paste.server_factory: http://pythonpaste.org/deploy/#paste-server-factory
