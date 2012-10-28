@@ -319,7 +319,7 @@ iiswsgi FCGI Gateway
 
 The ``egg:iiswsgi#iis`` `paste.server_runner`_ or
 `paste.server_factory`_ is the FastCGI to WSGI gateway.  IIS invokes
-the `paster`_ script from `PasterSctipt`_ with a `PasteDeploy INI
+the `paster`_ script from `PasteScript`_ with a `PasteDeploy INI
 configuration file`_ to start a Python WSGI app as a FastCGI process.
 Tell ``paster`` to use the IIS FCGI gateway with ``paster.exe serve -s
 "egg:iiswsgi#iis" ...`` or in the `PasteDeploy INI configuration
@@ -590,9 +590,9 @@ WebPI Errors May be Burried
 .. _WSGI: http://wsgi.readthedocs.org/en/latest/
 .. _Paste config file: http://pythonpaste.org/deploy/#config-format
 .. _PasteDeploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
-.. _PasterSctipt: http://pythonpaste.org/script/#paster-serve
-.. _paster: PasterSctipt_
-.. _paster serve: PasterSctipt_
+.. _PasteScript: http://pythonpaste.org/script/#paster-serve
+.. _paster: PasteScript_
+.. _paster serve: PasteScript_
 .. _paster request: http://pythonpaste.org/modules/request.html
 .. _app_factory entry point: http://pythonpaste.org/deploy/#paste-app-factory
 .. _paste.server_runner: http://pythonpaste.org/deploy/#paste-server-runner
