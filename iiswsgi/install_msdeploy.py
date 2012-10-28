@@ -10,8 +10,6 @@ import logging
 import re
 import sysconfig
 
-from xml.dom import minidom
-
 import distutils.sysconfig
 from distutils import errors
 from distutils import core
