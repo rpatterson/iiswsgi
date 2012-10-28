@@ -323,7 +323,7 @@ the `paster`_ script from `PasteScript`_ with a `PasteDeploy INI
 configuration file`_ to start a Python WSGI app as a FastCGI process.
 Tell ``paster`` to use the IIS FCGI gateway with ``paster.exe serve -s
 "egg:iiswsgi#iis" ...`` or in the `PasteDeploy INI configuration
-file`_:
+file`_::
 
     [server:iis]
     use = egg:iiswsgi#iis
