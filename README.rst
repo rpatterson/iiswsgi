@@ -167,7 +167,7 @@ completion, any `runCommand` providers in the `MSDeploy Manifest`_ are
 run which is when `iiswsgi_install.exe`_ script is invoked to find the
 installed app and to run distutils setup commands, `install_msdeploy`_
 by default, in that distribution.  Most apps will want to use the
-`iiswsgi_install.exe -e`_ option to setup a virtualenv before running
+``iiswsgi_install.exe -e`` option to setup a virtualenv before running
 setup commands.  See `MSDeploy Manifest`_ and `install_msdeploy`_ for
 more details and considerations.
 
@@ -179,7 +179,7 @@ If installation has completed, there will be a
 handler in the app's ``web.config`` and when a request comes in for
 the app, IIS will invoke the handler specified.  For `iiswsgi`_, the
 handler will be an `paster serve`_ invocation that uses the
-`egg:iiswsgi#iis`_ FCGI server.  To use a general purpose `PasteConfig
+`egg:iiswsgi#iis`_ FCGI server.  To use a general purpose `PasteDeploy
 INI configuration file`_, you can use a handler like ``paster.exe
 serve -s "egg:iiswsgi#iis" ...`` to use the `iiswsgi` FCGI server with
 a configuration file that doesn't specify it.
@@ -321,7 +321,7 @@ Install MSDeploy
     the ``web.config`` file, the `install_msdeploy`_ command will
     perform variable substitution while writing the ``web.config.in``
     template to ``web.config``.  To add variables to the substitution,
-    just use `Custom Setup`_ to put them into `os.environ`_ before
+    just use `Custom Set Up`_ to put them into `os.environ`_ before
     calling the base class's ``run()`` method.  Since
     ``<fastCgi><application...`` elements don't take effect in the
     ``web.config``, the `install_msdeploy`_ command will use
@@ -540,9 +540,15 @@ WebPI Errors May be Burried
 
 .. _special files: Web Deploy Package Contents_
 .. _bdist_webpi: Build WebPI Feed Distribution_
+.. _iiswsgi_install.exe: MSDeploy Install Bootstrap_
+.. _install_msdeploy: Install MSDeploy_
+.. _egg:iiswsgi#iis: iiswsgi FCGI Gateway_
+.. _build_msdeploy: Build MSDeploy Package_
 
 .. _iiswsgi: https://github.com/rpatterson/iiswsgi#iiswsgi
 .. _Python: http://python.org
+.. _os.environ: http://docs.python.org/2/library/os.html#os.environ
+.. _shlex.split: http://docs.python.org/2/library/shlex.html#shlex.split
 .. _distutils: http://docs.python.org/distutils/
 .. _setup.cfg: http://docs.python.org/distutils/configfile.html
 .. _cmdclass: http://docs.python.org/distutils/extending.html#integrating-new-commands
@@ -557,6 +563,7 @@ WebPI Errors May be Burried
 .. _PasteDeploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
 .. _PasterSctipt: http://pythonpaste.org/script/#paster-serve
 .. _paster: PasterSctipt_
+.. _paster serve: PasterSctipt_
 .. _paster request: http://pythonpaste.org/modules/request.html
 .. _app_factory entry point: http://pythonpaste.org/deploy/#paste-app-factory
 .. _paste.server_runner: http://pythonpaste.org/deploy/#paste-server-runner
@@ -575,6 +582,7 @@ WebPI Errors May be Burried
 .. _Parameters.xml: MSDeploy manifest_
 .. _MSDeploy package: MSDeploy manifest_
 .. _runCommand: http://technet.microsoft.com/en-us/library/ee619740(v=ws.10).aspx
+.. _runcommand option attributes: runCommand_
 .. _IIS site configuration file: http://technet.microsoft.com/en-us/library/cc754617(v=ws.10).aspx
 .. _web.config: IIS site configuration file_
 .. _fastCgi: http://www.iis.net/configreference/system.webserver/fastcgi
