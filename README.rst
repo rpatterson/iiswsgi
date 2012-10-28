@@ -485,8 +485,6 @@ Logging
     other platforms.  See the sections of `How it Works`_ for where to
     look for log files for each part of the process.
 
-Pdb
-
 
 Known Issues
 ============
