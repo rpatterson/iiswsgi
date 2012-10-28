@@ -14,29 +14,43 @@ version = '0.1'
 
 class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
 
+    scaffold = 'starter'
+    project = 'MyProject'
+
+    user_options = install_msdeploy.install_msdeploy.user_options + [
+        ('scaffold', 's',
+         'The Pyramid scaffold to use to create the project. [default: {0}]'
+         .format(scaffold)),
+        ('project', 's',
+         'The name of the project to create. [default: {0}]'
+         .format(project))]
+
+    def finalize_options(self):
+        """Handle unreplaced parameters when testing locally."""
+        install_msdeploy.install_msdeploy.finalize_options(self)
+        if self.scaffold == '__pyramid_scaffold__':
+            self.scaffold = 'starter'
+        if self.project == '__pyramid_project__':
+            self.project = 'MyProject'
+
     def run(self):
-        """Add a project from a scaffold before testing."""
+        """Add a project from a project before testing."""
         install_msdeploy.install_msdeploy.run(self)
 
         logger = logging.getLogger('pyramid.iiswsgi')
         cwd = os.getcwd()
 
-        scaffold = '__pyramid_scaffold__'
-        if scaffold == '__' + 'pyramid_scaffold' + '__':
-            # Testing outside of WebPI
-            scaffold = "starter"
-
         pcreate = os.path.join(
             sysconfig.get_path('scripts', vars=dict(base=cwd)),
             'pcreate' + sysconfig.get_config_var('EXE'))
-        cmd = [pcreate, '-s', scaffold, '__pyramid_project__']
+        cmd = [pcreate, '-s', self.scaffold, self.project]
         logger.info('Creating Pyramid project: {0}'.format(' '.join(cmd)))
         subprocess.check_call(cmd)
 
         logger.info(
-            'Installing __pyramid_project__ project for development')
+            'Installing {0} project for development'.format(self.project))
         try:
-            os.chdir('__pyramid_project__')
+            os.chdir(self.project)
             return core.run_setup('setup.py', script_args=['develop'])
         finally:
             os.chdir(cwd)
