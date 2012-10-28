@@ -516,7 +516,13 @@ Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
            at Microsoft.Web.PlatformInstaller.UI.AppSitePage.GetApplicationName(MSDeployPackage package, String& appName)
            at Microsoft.Web.PlatformInstaller.UI.AppSitePage.InitializeComponent()
 
-IIS Management Console dependency
+
+``retrieving the com class factory for remote component CLSID 2b72133b-3f5b-4602-8952-803546CE3344 error 80040154``
+
+    This error happens when using WebPI to install on full IIS, IOW
+    when not using IIS Express and Web Matrix.  It can be worked
+    around by installing the "IIS Management Console" in WebPI
+    dependency
 
 WebPI Errors May be Burried
 
