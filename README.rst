@@ -38,9 +38,8 @@ the following steps could be used to released to WebPI:
     class install_custom_msdeploy(install_msdeploy.install_msdeploy):
         def run(self):
             """Perform custom tasks."""
-            self.install()
+            install_msdeploy.install_msdeploy.run(self)
             CUSTOM_SETUP
-            self.test()
     ...
     setup(
     ...
@@ -168,6 +167,12 @@ MSDeploy Manifest
     provider that invokes the ``iswsgi_install.exe`` `MSDeploy Install
     Bootstrap`_ script.  Most packages will want to install into a
     `virtualenv`_ by including a ``-e`` option to ``iiswsgi_install.exe``.
+
+    Another ``runCommand`` provider can be placed in
+    ``Manifest.xml.in`` to invoke `paster request`_ to test the app
+    during installation.  This ensures that if the app isn't working
+    after the rest of installation has succeeded, the user will still
+    see an error message in WebPI.
 
 MSDeploy Parameters
 -------------------

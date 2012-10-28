@@ -54,26 +54,9 @@ class install_msdeploy(cmd.Command):
 
         options.ensure_verbosity(self)
 
-    def run(self):
+    def run(self, *requirements):
         """
         Run all post-install deployment tasks as appropriate.
-
-        * `self.install()`: perform tasks as appropriate
-
-        * `self.test()`: test the WSGI application and FCGI server
-
-        To excercise custom control over installation, override this
-        method in a subclass and use:
-
-            setup(...
-                cmdclass=dict(install_msdeploy=<install_msdeploy_subclass>)...
-        """
-        self.install()
-        self.test()
-
-    def install(self, *requirements):
-        """
-        Set up the app to a point whee it can be tested:
 
         `setyp.py develop`:
 
@@ -86,6 +69,12 @@ class install_msdeploy(cmd.Command):
         `iiswsgi.fcgi.install_fcgi_app()`:
 
             Install an IIS FastCGI application.
+
+        To excercise custom control over installation, override this
+        method in a subclass and use:
+
+            setup(...
+                cmdclass=dict(install_msdeploy=<install_msdeploy_subclass>)...
         """
         self.run_command('develop')
 
@@ -115,23 +104,6 @@ class install_msdeploy(cmd.Command):
         self.logger.info('Doing variable substitution in web.config')
         open('web.config', 'w').write(os.path.expandvars(web_config))
         return web_config
-
-    def test(self):
-        """Test the WSGI application and FCGI server."""
-        web_config = minidom.parse('web.config')
-        for handler in web_config.getElementsByTagName("handlers"):
-            for add in handler.getElementsByTagName("add"):
-                fullPath, arguments = add.getAttribute(
-                    'scriptProcessor').split('|', 1)
-                cmd = '"{0}" {1} --test'.format(fullPath, arguments)
-                logger.info('Testing the WSGI app:\n{0}'.format(cmd))
-                try:
-                    subprocess.check_call(cmd, shell=True)
-                except subprocess.CalledProcessError, exc:
-                    if exc.returncode == 127:
-                        logger.exception(
-                            'FCGI app scriptProcessor not found:\n{0}'
-                            .format(cmd))
 
 
 def has_msdeploy_manifest(self):
