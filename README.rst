@@ -143,6 +143,11 @@ On completion of the last command a MSDeploy zip file will be in the
 ``sdist``.  You can also upload the package using the ``upload``
 command.
 
+Logging output or managing verbosity for building the package is no
+different than for any other disutils/setup.py uses, output is on the
+console and can be redirected if you wan to capture it.  See
+``>C:\Python27\python.exe setup.py --help`` for more details.
+
 The WebPI Feed
 --------------
 
@@ -158,6 +163,11 @@ in the feed.  Then use the ``file:///...`` URL for the feed
 itself in WebPI's options dialog that is printed to the console when
 the ``bdist_webpi`` command is run.
 
+WebPI logs information while processing the feed in the
+``%LOCALAPPDATA%\Microsoft/Web Platform Installer/logs/webpi``
+diretory.  When debugging feed issues just look at the most recently
+modified ``webpi#.txt`` file in that directory.
+
 MSDeploy Package Installation
 -----------------------------
 
@@ -171,6 +181,16 @@ by default, in that distribution.  Most apps will want to use the
 setup commands.  See `MSDeploy Manifest`_ and `install_msdeploy`_ for
 more details and considerations.
 
+While installing, WebPI and MSDeploy log output into
+``%LOCALAPPDATA%\Microsoft/Web Platform Installer/logs/install``.
+When debugging installation issues just look at the ``App Title.txt``
+file in the most recently modified date-stamped direstory within that
+directory.  Verbosity can be controlled by adding the
+``iiswsgi_install.exe -v`` option in your `Manifest.xml`_
+``<runCommand path=...`` attribute.  It's also often valuable to run
+the `install_msdeploy` command locally in the installed app after an
+installation error to debug further.
+
 IIS Hosting
 -----------
 
@@ -183,6 +203,23 @@ handler will be an `paster serve`_ invocation that uses the
 INI configuration file`_, you can use a handler like ``paster.exe
 serve -s "egg:iiswsgi#iis" ...`` to use the `iiswsgi` FCGI server with
 a configuration file that doesn't specify it.
+
+IIS swallows all FCGI process output if there are any errors starting
+up which can make startup issues really hard to debug.  The first step
+should be manually invoking the FCGI process using the ``fullPath``
+and ``arguments`` attributes from the ``<application...`` element in
+``web.config``.  In case that doesn't reproduce the error, the
+`egg:iiswsgi#iis`_ FCGI server tries to be conservative during startup
+to ensure that output is logged *somewhere*.  Check the following
+locations for output:
+
+    * ``%IIS_USER_HOME%\Logs\%IISEXPRESS_SITENAME%\iiswsgi.log``
+    * ``%IIS_USER_HOME%\Logs\iiswsgi.log``
+    * ``%TEMP%\iiswsgi.log``
+    * ``\iiswsgi.log``
+
+Verbosity is controlled by giving the ``paster serve -v...`` option to
+`PasteScript`_ in the `web.config.in`_ template.
 
 
 Web Deploy Package Contents
@@ -443,13 +480,10 @@ Graceful Degredation on non-Windows
 
 Logging
 
-    There are different ways to 
-
-    Server conservative/early logging
-
-    Log locations
-
-    Verbosity
+    Finding information about what went wrong when some part of the
+    process fails can be a lot more difficult on Windows than it is on
+    other platforms.  See the sections of `How it Works`_ for where to
+    look for log files for each part of the process.
 
 Pdb
 
@@ -538,6 +572,7 @@ WebPI Errors May be Burried
 .. _install_msdeploy: Install MSDeploy_
 .. _egg:iiswsgi#iis: iiswsgi FCGI Gateway_
 .. _build_msdeploy: Build MSDeploy Package_
+.. _web.config.in: IIS Web Config_
 
 .. _iiswsgi: https://github.com/rpatterson/iiswsgi#iiswsgi
 .. _Python: http://python.org
