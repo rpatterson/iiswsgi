@@ -510,8 +510,8 @@ Known Issues
     Now your feed changes should be reflected in WebPI.
 
 ``<fastCgi><application>`` doesn't take effect in ``web.config``
-    It should be possible to register a FCGI application in the
-    ``web.config`` file but that doesn't work.  Hence
+    It should be possible to `register a FCGI application in the
+    web.config`_ file but that doesn't work.  Hence
     ``install_msdeploy`` works around this by reading the
     ``web.config`` and using `AppCmd.exe`_ to do the actually FCGI app
     installation.  It would be much better if ``web.config`` worked as
@@ -605,6 +605,7 @@ WebPI Errors May be Burried
 .. _fastCgi: http://www.iis.net/configreference/system.webserver/fastcgi
 .. _<application...: http://www.iis.net/configreference/system.webserver/fastcgi/application
 .. _MS WebPI package runCommand not working in Manifest.xml: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
+.. _register a FCGI application in the web.config: http://stackoverflow.com/questions/12525508/system-webserver-fastcgi-application-not-working-in-web-config
 
 .. _AppCmd.exe: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
 .. _IIS FastCGI Reference: http://www.iis.net/ConfigReference/system.webServer/fastCgi
