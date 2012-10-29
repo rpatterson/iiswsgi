@@ -1,9 +1,8 @@
+import sys
 import os
 import logging
 import subprocess
 import sysconfig
-
-from distutils import core
 
 from setuptools import setup
 
@@ -47,11 +46,13 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         logger.info('Creating Pyramid project: {0}'.format(' '.join(cmd)))
         subprocess.check_call(cmd)
 
+        cmd = [sys.executable, 'setup.py', '-v', 'develop']
         logger.info(
-            'Installing {0} project for development'.format(self.project))
+            'Installing {0} project for development: {1}'.format(
+                self.project, ' '.join(cmd)))
         try:
             os.chdir(self.project)
-            return core.run_setup('setup.py', script_args=['develop'])
+            subprocess.check_call(cmd)
         finally:
             os.chdir(cwd)
 
