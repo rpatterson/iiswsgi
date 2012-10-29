@@ -136,6 +136,7 @@ individually is useful to debug packaging problems.
 
     #. `Build MSDeploy Package`_ ``build_msdeploy`` command
     #. `Install MSDeploy`_ ``install_msdeploy`` command
+    #. `Test MSDeploy`_ ``test_msdeploy`` command
     #. `Build MSDeploy Distribution`_ ``bdist_msdeploy`` command
 
 On completion of the last command a MSDeploy zip file will be in the
@@ -176,10 +177,10 @@ and installed.  After installation, but before WebPI reports
 completion, any `runCommand` providers in the `MSDeploy Manifest`_ are
 run which is when `iiswsgi_install.exe`_ script is invoked to find the
 installed app and to run distutils setup commands, `install_msdeploy`_
-by default, in that distribution.  Most apps will want to use the
-``iiswsgi_install.exe -e`` option to setup a virtualenv before running
-setup commands.  See `MSDeploy Manifest`_ and `install_msdeploy`_ for
-more details and considerations.
+and `test_msdeploy`_ by default, in that distribution.  Most apps will
+want to use the ``iiswsgi_install.exe -e`` option to setup a
+virtualenv before running setup commands.  See `MSDeploy Manifest`_
+and `install_msdeploy`_ for more details and considerations.
 
 While installing, WebPI and MSDeploy log output into
 ``%LOCALAPPDATA%\Microsoft/Web Platform Installer/logs/install``.
@@ -263,11 +264,6 @@ manifest during installation.  Most apps will want to include the
 command are reported back to the user.  Many apps will also want to
 adjust the ``waitAttempts="5"`` and/or ``waitInterval="1000"``
 attributes to give the commands enough time to complete.
-
-Another ``runCommand`` provider can be placed in ``Manifest.xml.in``
-to invoke `paster request`_ to test the app during installation.  This
-ensures that if the app isn't working after the rest of installation
-has succeeded, the user will still see an error message in WebPI.
 
 MSDeploy Parameters
 -------------------
@@ -381,6 +377,18 @@ This is also where to `Custom Set Up`_ by subclassing the
 `Setup Script`_ and using the distutils `cmdclass`_ kwarg to
 ``setup()``.  See `Quick Start`_ for a small example or
 ``examples\pyramid.msdeploy\setup.py`` for a working example.
+
+Test MSDeploy
+-------------
+
+The ``test_msdeploy`` distutils command uses `paster request`_ with a
+`PasteDeploy INI configuration file`_ to simulate sending a request to
+the app.  If it fails, the command fails, making this useful to run
+during `MSDeploy Package Installation`_ to ensure the user sees an
+error in WebPI if the app isn't working even though the rest of the
+install succeeded.  See ``>C:\Python27\python.exe setup.py
+test_msdeploy --help`` for more details.
+
 
 Build MSDeploy Distribution
 ---------------------------
@@ -557,6 +565,7 @@ WebPI Errors May be Burried
 .. _bdist_webpi: Build WebPI Feed Distribution_
 .. _iiswsgi_install.exe: MSDeploy Install Bootstrap_
 .. _install_msdeploy: Install MSDeploy_
+.. _test_msdeploy: Test MSDeploy_
 .. _egg:iiswsgi#iis: iiswsgi FCGI Gateway_
 .. _build_msdeploy: Build MSDeploy Package_
 .. _web.config.in: IIS Web Config_
