@@ -37,6 +37,7 @@ class clean_webpi(cmd.Command):
     description = __doc__ = __doc__
 
     user_options = [
+        bdist_msdeploy_opt,
         ('webpi-cache=', 'c',
          "The WebPI cache to clean out. [default: {0}]".format(
              webpi_cache))]
