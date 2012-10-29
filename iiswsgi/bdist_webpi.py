@@ -27,7 +27,7 @@ from iiswsgi import clean_webpi
 logger = logging.getLogger('iiswsgi.webpi')
 
 msdeploy_url_template = (
-    'http://pypi.python.org/packages/{VERSION}/{letter}/{name}/{msdeploy_file}'
+    'http://pypi.python.org/packages/{py_version_short}/{letter}/{name}/{msdeploy_file}'
     )
 
 
