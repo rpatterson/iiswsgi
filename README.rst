@@ -12,8 +12,37 @@ Installer`_ (WebPI).
 
 .. contents::
 
+
 Quick Start
 ===========
+
+Quick Start for Users
+---------------------
+
+The ``iiswsgi`` distribution includes two sample IIS apps which can be
+installed through WebPI once the custom feed has been added:
+
+#. Install and Launch `Web Platform Installer`_
+
+#. Use the search box in the upper-right to search for `Web Matrix`
+
+#. Click add next to the most recent `Web Matrix` entry, then
+   `Install` in the lower-right and follow the instructions
+
+#. Open the `Options` dialog by clicking the link on the lower-right
+
+#. Under `Custom Feeds`, add the URL for latest ``*.webpi.xml`` file
+   from the `iiswsgi downloads`_
+
+#. Click `Add feed` and then `OK`
+
+#. Use the search box in the upper-right to search for `pyramid`
+
+#. Click add next to `Pyramid Application` then `Install` in the
+   lower-right and follow the instructions
+
+Quick Start for Distributors
+----------------------------
 
 Assuming an existing `Python`_ distribution with a `Setup Script`_ using
 `setuptools`_ and a `WSGI`_ ``*.ini`` `Paste config file`_, roughly
@@ -588,6 +617,8 @@ WebPI getting cached feeds and MSDeploy packages
 .. _`egg:iiswsgi#iis`: `iiswsgi FCGI Gateway`_
 .. _`build_msdeploy`: `Build MSDeploy Package`_
 .. _`web.config.in`: `IIS Web Config`_
+
+.. _`iiswsgi downloads`: https://github.com/rpatterson/iiswsgi/downloads
 
 .. _`Python`: http://python.org
 .. _`os.environ`: http://docs.python.org/2/library/os.html#os.environ
