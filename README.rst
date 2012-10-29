@@ -469,7 +469,6 @@ much more fragile and opaque than on any other OS.  Here's some of
 what `iiswsgi` does to try and address that.
 
 Graceful Degredation on non-Windows
-
     Fist and foremost, `iiswsgi` tries to degrade gracefully when run
     on non-windows platforms.  Specifically, when some executable,
     environment variable, or other Windows specific piece of the
@@ -481,7 +480,6 @@ Graceful Degredation on non-Windows
     when running *on Windows*, so check your output carefully.
 
 Logging
-
     Finding information about what went wrong when some part of the
     process fails can be a lot more difficult on Windows than it is on
     other platforms.  See the sections of `How it Works`_ for where to
@@ -492,7 +490,6 @@ Known Issues
 ============
 
 ``System.IO.FileNotFoundException: Could not find file '\\?\C:\...``
-
     I've run into this error on Windows 7 on two different machines
     and multiple installs, one OEM and one vanilla Windows 7 Extreme.
     When this happens, it seems to happen when the "Web Platform
@@ -500,12 +497,9 @@ Known Issues
     rebooting the machine in between.  To workaround this, you may
     have to reboot the machine.  See the stack overflow question `MS
     WebPI package runCommand not working in Manifest.xml`_ for more
-    information.
-
-    As such, it's not advisable to exit and re-launch WebPI.
-    As such, the best way to get feed changes to take effect in WebPI may
-    be to:
-    
+    information.  As such, it's not advisable to exit and re-launch
+    WebPI.  As such, the best way to get feed changes to take effect
+    in WebPI may be to:
     * Click on the `options` link in the bottom right of WebPI
     * Click the `X` next to your feed to remove it
     * Click `OK` and wait for WebPI to finish updating the remaining feeds
@@ -513,11 +507,9 @@ Known Issues
     * Click on the `options` link again in WebPI
     * Enter the feed URL and click `Add Feed` to restore the feed
     * Click `OK` and wait for WebPI again
-    
     Now your feed changes should be reflected in WebPI.
 
 ``<fastCgi><application>`` doesn't take effect in ``web.config``
-
     It should be possible to register a FCGI application in the
     ``web.config`` file but that doesn't work.  Hence
     ``install_msdeploy`` works around this by reading the
@@ -527,7 +519,6 @@ Known Issues
     request about this.
 
 Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
-
     The current method of searching for the  is far too fragile and it would
     be vastly preferable if MSDeploy or WebPI set the
     APPL_PHYSICAL_PATH environment variable for ``runCommand``.
@@ -535,7 +526,6 @@ Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
     this.
 
 ``System.IO.FileNotFoundException: Could not load file or assembly``
-
     This error happens when using WebPI to install on full IIS, IOW
     when not using IIS Express and Web Matrix.  It can be worked
     around by installing the "Web Deploy Tool" in WebPI.  The
@@ -550,16 +540,13 @@ Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
            at Microsoft.Web.PlatformInstaller.UI.AppSitePage.GetApplicationName(MSDeployPackage package, String& appName)
            at Microsoft.Web.PlatformInstaller.UI.AppSitePage.InitializeComponent()
 
-
 ``retrieving the com class factory for remote component CLSID 2b72133b-3f5b-4602-8952-803546CE3344 error 80040154``
-
     This error happens when using WebPI to install on full IIS, IOW
     when not using IIS Express and Web Matrix.  It can be worked
     around by installing the "IIS Management Console" in WebPI
     dependency
 
 WebPI Errors May be Burried
-
     On occasion, WebPI may burry error messages behind the WebPI
     window.  So if WebPI has been hung for a long time, try using
     ``Alt-TAB`` to see if there's an error window hidden behind the
