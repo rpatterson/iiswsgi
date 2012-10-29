@@ -78,6 +78,8 @@ class install_msdeploy(cmd.Command):
 
         self.write_web_config()
 
+        self.run_command('test_msdeploy')
+
         # TODO clean_msdeploy
         if not self.skip_fcgi_app_install:
             fcgi.install_fcgi_app()
