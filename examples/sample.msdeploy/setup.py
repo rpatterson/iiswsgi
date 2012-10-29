@@ -24,6 +24,5 @@ with Microsoft Web Deploy.""",
       icon_url='http://www.python.org/community/logos/python-powered-h-100x130.png',
       # TODO get the custom commands to work without iiswsgi installed
       # in the python
-      setup_requires=['setuptools-git',
-                      'iiswsgi'],
+      setup_requires=['iiswsgi'],
       )

@@ -81,8 +81,7 @@ setup(name='PyramidIISApp',
       install_requires=['iiswsgi', 'pyramid'],
       # TODO get the custom commands to work without iiswsgi installed
       # in the python
-      setup_requires=['setuptools-git',
-                      'iiswsgi'],
+      setup_requires=['iiswsgi'],
       install_msdeploy=['virtualenv'],
       cmdclass=dict(install_msdeploy=install_pyramid_msdeploy),
       )
