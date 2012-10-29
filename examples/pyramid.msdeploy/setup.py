@@ -8,7 +8,7 @@ from setuptools import setup
 
 from iiswsgi import install_msdeploy
 
-version = '0.1'
+version = '0.2'
 
 
 class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):

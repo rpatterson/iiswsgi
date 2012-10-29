@@ -4,7 +4,7 @@ import os
 name = 'iiswsgi'
 
 setup(name=name,
-      version='0.3',
+      version='0.4',
       title="WSGI on IIS",
       description="Serve WSGI apps using IIS's modified FastCGI support.",
       long_description=(
