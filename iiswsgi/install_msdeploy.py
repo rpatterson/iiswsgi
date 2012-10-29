@@ -179,7 +179,7 @@ class Installer(object):
                     'scripts', vars=dict(base=os.curdir)),
                     'easy_install' + sysconfig.get_config_var('EXE'))),
                        '--find-links', distutils.sysconfig.get_python_lib(),
-                       'iiswsgi']
+                       'PasteScript', 'iiswsgi']
                 self.logger.info('Installing iiswsgi into virtualenv:\n{0}'
                                  .format(' '.join(cmd)))
                 subprocess.check_call(cmd)
