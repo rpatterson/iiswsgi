@@ -509,13 +509,13 @@ Known Issues
     information.  As such, it's not advisable to exit and re-launch
     WebPI.  As such, the best way to get feed changes to take effect
     in WebPI may be to:
-    * Click on the `options` link in the bottom right of WebPI
-    * Click the `X` next to your feed to remove it
-    * Click `OK` and wait for WebPI to finish updating the remaining feeds
-    * Run `iiswsgi_webpi.exe`
-    * Click on the `options` link again in WebPI
-    * Enter the feed URL and click `Add Feed` to restore the feed
-    * Click `OK` and wait for WebPI again
+        * Click on the `options` link in the bottom right of WebPI
+        * Click the `X` next to your feed to remove it
+        * Click `OK` and wait for WebPI to finish updating the remaining feeds
+        * Run `iiswsgi_webpi.exe`
+        * Click on the `options` link again in WebPI
+        * Enter the feed URL and click `Add Feed` to restore the feed
+        * Click `OK` and wait for WebPI again
     Now your feed changes should be reflected in WebPI.
 
 ``<fastCgi><application>`` doesn't take effect in ``web.config``
