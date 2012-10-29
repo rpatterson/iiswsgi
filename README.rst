@@ -39,8 +39,9 @@ the following steps could be used to released to WebPI:
         def run(self):
             """Perform custom tasks."""
             os.environ['WEB_CONFIG_VAR'] = 'foo'
-            install_msdeploy.install_msdeploy.run(self)
+            self.pre_install()
             CUSTOM_SETUP
+            self.post_install()
     ...
     setup(
     ...
