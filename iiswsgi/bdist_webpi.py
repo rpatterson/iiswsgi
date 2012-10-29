@@ -123,7 +123,10 @@ default, but passing this option overrides both.  Use \
         cwd = os.getcwd()
         try:
             os.chdir(path)
-            distribution = core.run_setup('setup.py', stop_after='commandline')
+            distribution = self.distribution
+            if os.path.abspath(path) != os.path.abspath(cwd):
+                distribution = core.run_setup(
+                    'setup.py', stop_after='commandline')
 
             distribution.build = distribution.get_command_obj('build')
             distribution.build.ensure_finalized()
