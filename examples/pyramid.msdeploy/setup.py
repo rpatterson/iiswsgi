@@ -35,7 +35,7 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
 
     def run(self):
         """Add a project from a project before testing."""
-        install_msdeploy.install_msdeploy.run(self)
+        self.pre_install()
 
         logger = logging.getLogger('pyramid.iiswsgi')
         cwd = os.getcwd()
@@ -54,6 +54,8 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
             return core.run_setup('setup.py', script_args=['develop'])
         finally:
             os.chdir(cwd)
+
+        self.post_install()
 
 
 setup(name='PyramidIISApp',
