@@ -25,25 +25,25 @@ class bdist_msdeploy(sdist.sdist):
 
     def initialize_options(self):
         sdist.sdist.initialize_options(self)
-        self.build = self.distribution.get_command_obj('build_msdeploy')
         self.install = self.distribution.get_command_obj('install_msdeploy')
         self.install.skip_fcgi_app_install = True
 
     def finalize_options(self):
         sdist.sdist.finalize_options(self)
         self.formats = ['zip']
-        self.build.ensure_finalized()
         self.install.ensure_finalized()
         options.ensure_verbosity(self)
 
     def run(self):
-        self.build.run()
+        self.run_command('build_msdeploy')
         if not os.path.exists(self.manifest_filename):
             raise errors.DistutilsFileError(
                 'No Web Deploy manifest found at {0}'.format(
                     self.manifest_filename))
 
-        self.install.run()
+        if self.install not in self.distribution.have_run:
+            self.install.run()
+            self.distribution.have_run[self.install] = 1
 
         sdist.sdist.run(self)
 
