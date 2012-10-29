@@ -32,8 +32,6 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
         install_msdeploy.install_msdeploy.finalize_options(self)
         if self.scaffold == '__msdeploy_scaffold__':
             self.scaffold = 'starter'
-        if self.project == '__msdeploy_project__':
-            self.project = 'MyProject'
 
     def run(self):
         """Add a project from a project before testing."""
