@@ -252,7 +252,7 @@ declare what will be in the package.
 MSDeploy Manifest
 -----------------
 
-Use the ``Manifest.xml.in`` template to generate the `MSDeploy
+Use the ``Manifest.xml.in`` template to generate the `Web Deploy
 manifest`_.  When using `iiswsgi`_, it contains a `runCommand`_
 provider that invokes the ``iswsgi_install.exe`` `MSDeploy Install
 Bootstrap`_ script.  Most packages will want to install into a
@@ -570,64 +570,64 @@ WebPI getting cached feeds and MSDeploy packages
     download the stale WebPI resources in IE.
 
 
-.. _special files: Web Deploy Package Contents_
-.. _bdist_webpi: Build WebPI Feed Distribution_
-.. _iiswsgi_install.exe: MSDeploy Install Bootstrap_
-.. _install_msdeploy: Install MSDeploy_
-.. _test_msdeploy: Test MSDeploy_
-.. _egg:iiswsgi#iis: iiswsgi FCGI Gateway_
-.. _build_msdeploy: Build MSDeploy Package_
-.. _web.config.in: IIS Web Config_
+.. _`special files`: `Web Deploy Package Contents`_
+.. _`bdist_webpi`: `Build WebPI Feed Distribution`_
+.. _`clean_webpi`: `Clean WebPI Caches`_
+.. _`iiswsgi_install.exe`: `MSDeploy Install Bootstrap`_
+.. _`install_msdeploy`: `Install MSDeploy`_
+.. _`test_msdeploy`: `Test MSDeploy`_
+.. _`egg:iiswsgi#iis`: `iiswsgi FCGI Gateway`_
+.. _`build_msdeploy`: `Build MSDeploy Package`_
+.. _`web.config.in`: `IIS Web Config`_
 
-.. _iiswsgi: https://github.com/rpatterson/iiswsgi#iiswsgi
-.. _Python: http://python.org
-.. _os.environ: http://docs.python.org/2/library/os.html#os.environ
-.. _shlex.split: http://docs.python.org/2/library/shlex.html#shlex.split
-.. _distutils: http://docs.python.org/distutils/
-.. _setup.cfg: http://docs.python.org/distutils/configfile.html
-.. _cmdclass: http://docs.python.org/distutils/extending.html#integrating-new-commands
-.. _Python string.format(): http://docs.python.org/2/library/string.html#formatstrings
-.. _PyPI: http://pypi.python.org/pypi
-.. _setuptools: http://packages.python.org/distribute
-.. _entry points: http://packages.python.org/distribute/setuptools.html#entry-points
-.. _setup kwargs: http://packages.python.org/distribute/setuptools.html#adding-setup-arguments
-.. _extras_require: http://packages.python.org/distribute/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies
-.. _MANIFEST.in: http://docs.python.org/distutils/sourcedist.html#the-manifest-in-template
-.. _WSGI: http://wsgi.readthedocs.org/en/latest/
-.. _Paste config file: http://pythonpaste.org/deploy/#config-format
-.. _PasteDeploy INI configuration file: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
-.. _PasteScript: http://pythonpaste.org/script/#paster-serve
-.. _paster: PasteScript_
-.. _paster serve: PasteScript_
-.. _paster request: http://pythonpaste.org/modules/request.html
-.. _app_factory entry point: http://pythonpaste.org/deploy/#paste-app-factory
-.. _paste.server_runner: http://pythonpaste.org/deploy/#paste-server-runner
-.. _paste.server_factory: http://pythonpaste.org/deploy/#paste-server-factory
-.. _flup's WSGI to FCGI gateway: http://trac.saddi.com/flup/wiki/FlupServers
-.. _virtualenv: http://www.virtualenv.org
+.. _`Python`: http://python.org
+.. _`os.environ`: http://docs.python.org/2/library/os.html#os.environ
+.. _`shlex.split`: http://docs.python.org/2/library/shlex.html#shlex.split
+.. _`distutils`: http://docs.python.org/distutils/
+.. _`setup.cfg`: http://docs.python.org/distutils/configfile.html
+.. _`cmdclass`: http://docs.python.org/distutils/extending.html#integrating-new-commands
+.. _`Python string.format()`: http://docs.python.org/2/library/string.html#formatstrings
+.. _`PyPI`: http://pypi.python.org/pypi
+.. _`setuptools`: http://packages.python.org/distribute
+.. _`entry points`: http://packages.python.org/distribute/setuptools.html#entry-points
+.. _`setup kwargs`: http://packages.python.org/distribute/setuptools.html#adding-setup-arguments
+.. _`extras_require`: http://packages.python.org/distribute/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies
+.. _`MANIFEST.in`: http://docs.python.org/distutils/sourcedist.html#the-manifest-in-template
+.. _`WSGI`: http://wsgi.readthedocs.org/en/latest/
+.. _`Paste config file`: http://pythonpaste.org/deploy/#config-format
+.. _`PasteDeploy INI configuration file`: http://pythonpaste.org/deploy/index.html?highlight=loadapp#introduction
+.. _`PasteScript`: http://pythonpaste.org/script/#paster-serve
+.. _`paster`: `PasteScript`_
+.. _`paster serve`: `PasteScript`_
+.. _`paster request`: http://pythonpaste.org/modules/request.html
+.. _`app_factory entry point`: http://pythonpaste.org/deploy/#paste-app-factory
+.. _`paste.server_runner`: http://pythonpaste.org/deploy/#paste-server-runner
+.. _`paste.server_factory`: http://pythonpaste.org/deploy/#paste-server-factory
+.. _`flup's WSGI to FCGI gateway`: http://trac.saddi.com/flup/wiki/FlupServers
+.. _`virtualenv`: http://www.virtualenv.org
 
-.. _IIS: http://www.iis.net
-.. _Microsoft Web Deploy: http://www.iis.net/downloads/microsoft/web-deploy
-.. _Web Platform Installer: http://www.microsoft.com/web/downloads/platform.aspx
-.. _WebPI feed: http://technet.microsoft.com/en-us/library/ee424348(v=ws.10).aspx
-.. _WebPI caches: http://www.iis.net/learn/troubleshoot/web-platform-installer-issues/troubleshooting-problems-with-microsoft-web-platform-installer
-.. _Install fciv.exe: http://support.microsoft.com/kb/841290
-.. _MSDeploy manifest: http://www.iis.net/learn/develop/windows-web-application-gallery/reference-for-the-web-application-package
-.. _Manifest.xml: MSDeploy manifest_
-.. _Parameters.xml: MSDeploy manifest_
-.. _MSDeploy package: MSDeploy manifest_
-.. _runCommand: http://technet.microsoft.com/en-us/library/ee619740(v=ws.10).aspx
-.. _runcommand option attributes: runCommand_
-.. _IIS site configuration file: http://technet.microsoft.com/en-us/library/cc754617(v=ws.10).aspx
-.. _web.config: IIS site configuration file_
-.. _fastCgi: http://www.iis.net/configreference/system.webserver/fastcgi
-.. _<application...: http://www.iis.net/configreference/system.webserver/fastcgi/application
-.. _MS WebPI package runCommand not working in Manifest.xml: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
-.. _register a FCGI application in the web.config: http://stackoverflow.com/questions/12525508/system-webserver-fastcgi-application-not-working-in-web-config
+.. _`IIS`: http://www.iis.net
+.. _`Microsoft Web Deploy`: http://www.iis.net/downloads/microsoft/web-deploy
+.. _`Web Platform Installer`: http://www.microsoft.com/web/downloads/platform.aspx
+.. _`WebPI feed`: http://technet.microsoft.com/en-us/library/ee424348(v=ws.10).aspx
+.. _`WebPI caches`: http://www.iis.net/learn/troubleshoot/web-platform-installer-issues/troubleshooting-problems-with-microsoft-web-platform-installer
+.. _`Install fciv.exe`: http://support.microsoft.com/kb/841290
+.. _`Web Deploy manifest`: http://www.iis.net/learn/develop/windows-web-application-gallery/reference-for-the-web-application-package
+.. _`Manifest.xml`: `Web Deploy manifest`_
+.. _`Parameters.xml`: `Web Deploy manifest`_
+.. _`MSDeploy package`: `Web Deploy manifest`_
+.. _`runCommand`: http://technet.microsoft.com/en-us/library/ee619740(v=ws.10).aspx
+.. _`runcommand option attributes`: `runCommand`_
+.. _`IIS site configuration file`: http://technet.microsoft.com/en-us/library/cc754617(v=ws.10).aspx
+.. _`web.config`: `IIS site configuration file`_
+.. _`fastCgi`: http://www.iis.net/configreference/system.webserver/fastcgi
+.. _`<application...`: http://www.iis.net/configreference/system.webserver/fastcgi/application
+.. _`MS WebPI package runCommand not working in Manifest.xml`: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
+.. _`register a FCGI application in the web.config`: http://stackoverflow.com/questions/12525508/system-webserver-fastcgi-application-not-working-in-web-config
 
-.. _AppCmd.exe: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
-.. _IIS FastCGI Reference: http://www.iis.net/ConfigReference/system.webServer/fastCgi
-.. _FastCGI protocol: http://www.fastcgi.com/drupal/
-.. _STDIN_FILENO: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
-.. _Windows named pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
+.. _`AppCmd.exe`: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
+.. _`IIS FastCGI Reference`: http://www.iis.net/ConfigReference/system.webServer/fastCgi
+.. _`FastCGI protocol`: http://www.fastcgi.com/drupal/
+.. _`STDIN_FILENO`: http://www.fastcgi.com/drupal/node/6?q=node/22#S2.2
+.. _`Windows named pipe`: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
 
