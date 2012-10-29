@@ -498,6 +498,22 @@ Logging
 Known Issues
 ============
 
+Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
+    The current method of searching for the  is far too fragile and it would
+    be vastly preferable if MSDeploy or WebPI set the
+    APPL_PHYSICAL_PATH environment variable for ``runCommand``.
+    Anyone with a MS support contract, please submit a request about
+    this.
+
+``<fastCgi><application>`` doesn't take effect in ``web.config``
+    It should be possible to `register a FCGI application in the
+    web.config`_ file but that doesn't work.  Hence
+    ``install_msdeploy`` works around this by reading the
+    ``web.config`` and using `AppCmd.exe`_ to do the actually FCGI app
+    installation.  It would be much better if ``web.config`` worked as
+    it should.  Anyone with a MS support contract, please submit a
+    request about this.
+
 ``System.IO.FileNotFoundException: Could not find file '\\?\C:\...``
     I've run into this error on Windows 7 on two different machines
     and multiple installs, one OEM and one vanilla Windows 7 Extreme.
@@ -517,22 +533,6 @@ Known Issues
         #. Enter the feed URL and click `Add Feed` to restore the feed
         #. Click `OK` and wait for WebPI again
     Now your feed changes should be reflected in WebPI.
-
-``<fastCgi><application>`` doesn't take effect in ``web.config``
-    It should be possible to `register a FCGI application in the
-    web.config`_ file but that doesn't work.  Hence
-    ``install_msdeploy`` works around this by reading the
-    ``web.config`` and using `AppCmd.exe`_ to do the actually FCGI app
-    installation.  It would be much better if ``web.config`` worked as
-    it should.  Anyone with a MS support contract, please submit a
-    request about this.
-
-Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
-    The current method of searching for the  is far too fragile and it would
-    be vastly preferable if MSDeploy or WebPI set the
-    APPL_PHYSICAL_PATH environment variable for ``runCommand``.
-    Anyone with a MS support contract, please submit a request about
-    this.
 
 ``System.IO.FileNotFoundException: Could not load file or assembly``
     This error happens when using WebPI to install on full IIS, IOW
