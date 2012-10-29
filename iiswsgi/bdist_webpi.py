@@ -169,7 +169,7 @@ default, but passing this option overrides both.  Use \
         kwargs = sysconfig.get_config_vars()
         kwargs.update(distribution.metadata.__dict__)
         distribution.msdeploy_url = msdeploy_url_template.format(
-            letter=distribution.msdeploy_file[0].lower(),
+            letter=distribution.msdeploy_file[0],
             msdeploy_file=distribution.msdeploy_file,
             msdeploy_package=distribution.msdeploy_package,
             msdeploy_package_url=distribution.msdeploy_package_url,
