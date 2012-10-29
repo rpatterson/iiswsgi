@@ -498,6 +498,15 @@ Logging
 Known Issues
 ============
 
+FCGI Process not launching under IIS
+    The sample app will deploy just fine to IISExpress/Web Matrix, but
+    when switched over to full IIS, it reports that the FCGI process
+    exited prematurely.  Even after instrumenting the very top of the
+    script with writes to a file followed by ``flush()`` and
+    ``fsync()`` the file still has nothing in it.  So it seems like
+    IIS is never actually launching the processs.  If anyone can test
+    this and give some insight, it would be greatly appreciated.
+
 Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
     The current method of searching for the  is far too fragile and it would
     be vastly preferable if MSDeploy or WebPI set the
