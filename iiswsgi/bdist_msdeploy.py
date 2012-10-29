@@ -64,7 +64,7 @@ class bdist_msdeploy(sdist.sdist):
                                  owner=self.owner, group=self.group)
         archive_files.append(file)
         pyversion = sysconfig.get_python_version()
-        self.distribution.dist_files.append(('msdeploy', pyversion, file))
+        self.distribution.dist_files.append(('bdist_dumb', pyversion, file))
 
         self.archive_files = archive_files
 

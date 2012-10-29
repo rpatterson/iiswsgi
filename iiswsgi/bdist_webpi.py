@@ -115,7 +115,7 @@ default, but passing this option overrides both.  Use \
         self.mkpath(self.dist_dir)
         self.write_feed(dist_feed)
         pyversion = sysconfig.get_python_version()
-        self.distribution.dist_files.append(('webpi', pyversion, dist_feed))
+        self.distribution.dist_files.append(('bdist_dumb', pyversion, dist_feed))
         logger.info('Local Web Platform Installer feed URL:\n{0}'.format(
             urlparse.urlunsplit(('file', '', urllib.pathname2url(
                 os.path.abspath(dist_feed)), '', ''))))
