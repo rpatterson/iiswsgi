@@ -561,6 +561,14 @@ WebPI Errors May be Burried
     ``Alt-TAB`` to see if there's an error window hidden behind the
     WebPI window.
 
+WebPI getting cached feeds and MSDeploy packages
+    Despite the `clean_webpi`_ helper and manually clearing all the
+    caches under ``%LOCALAPPDATA%\Microsoft/Web Platform Installer``,
+    there have been several times when WebPI has still gotten stale
+    content causing validation errors against the SHA1 in the feed and
+    other problems.  When this happens, a workaround may be to
+    download the stale WebPI resources in IE.
+
 
 .. _special files: Web Deploy Package Contents_
 .. _bdist_webpi: Build WebPI Feed Distribution_
