@@ -23,7 +23,7 @@ logger = logging.getLogger('iiswsgi.install')
 
 # Default to running this command: ['install_msdeploy']
 command = __name__.rsplit('.', 1)[1]
-setup_args = [command]
+setup_args = [command, 'test_msdeploy']
 
 
 class install_msdeploy(cmd.Command):

@@ -44,6 +44,7 @@ setup(name=name,
             "install_msdeploy = iiswsgi.install_msdeploy:install_msdeploy",
             "bdist_msdeploy = iiswsgi.bdist_msdeploy:bdist_msdeploy",
             "bdist_webpi = iiswsgi.bdist_webpi:bdist_webpi",
+            "test_msdeploy = iiswsgi.test_msdeploy:test_msdeploy",
             "clean_webpi = iiswsgi.clean_webpi:clean_webpi"],
           "distutils.setup_keywords": [
             "title = iiswsgi.options:assert_string",

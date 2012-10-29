@@ -5,9 +5,4 @@
       path="%SystemDrive%\Python27\Scripts\iiswsgi_install.exe -vv -a %DIST_NAME%"
       waitAttempts="10" successReturnCodes="0x0"
       MSDeploy.MSDeployKeyAttributeName="path" />
-  <!-- Test the WSGI app -->
-  <runCommand
-      path="%SystemDrive%\Python27\Scripts\paster.exe request -vv &quot;%APPL_PHYSICAL_PATH%\iis_fcgi.ini&quot; /"
-      successReturnCodes="0x0"
-      MSDeploy.MSDeployKeyAttributeName="path" />
 </msDeploy.iisApp>
