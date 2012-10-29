@@ -114,7 +114,8 @@ default, but passing this option overrides both.  Use \
             options.get_egg_name(self.distribution) + '.webpi.xml')
         self.mkpath(self.dist_dir)
         self.write_feed(dist_feed)
-        self.distribution.dist_files.append(('webpi', '', dist_feed))
+        pyversion = sysconfig.get_python_version()
+        self.distribution.dist_files.append(('webpi', pyversion, dist_feed))
         logger.info('Local Web Platform Installer feed URL:\n{0}'.format(
             urlparse.urlunsplit(('file', '', urllib.pathname2url(
                 os.path.abspath(dist_feed)), '', ''))))

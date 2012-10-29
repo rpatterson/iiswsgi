@@ -2,6 +2,7 @@
 
 import os
 import zipfile
+import sysconfig
 
 from distutils.command import sdist
 from distutils import archive_util
@@ -62,7 +63,8 @@ class bdist_msdeploy(sdist.sdist):
         file = self.make_archive(base_name, 'zip', base_dir=base_dir,
                                  owner=self.owner, group=self.group)
         archive_files.append(file)
-        self.distribution.dist_files.append(('msdeploy', '', file))
+        pyversion = sysconfig.get_python_version()
+        self.distribution.dist_files.append(('msdeploy', pyversion, file))
 
         self.archive_files = archive_files
 
