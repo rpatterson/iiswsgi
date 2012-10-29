@@ -13,6 +13,8 @@ version = '0.1'
 
 
 class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
+    # NameError under distutils.core.run_setup
+    install_msdeploy = install_msdeploy
 
     scaffold = 'starter'
     project = 'MyProject'
