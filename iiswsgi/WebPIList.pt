@@ -2,8 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       tal:define="view nocall:options/view;">
-  <webpiFile version="4.0.1.0"
-             tal:attributes="version view/get_version;"/>
+  <webpiFile version="4.0.1.0" />
 
   <title tal:content="python:getattr(view, 'title', None) or view.get_name()"
          >WebPI Feed Title</title>
