@@ -95,14 +95,9 @@
          tal:content="screenshot_url"
          >http://www.python.org/community/logos/python-powered-h-100x130.png</screenshot>
     </images>
-    <discoveryHint>
+    <discoveryHint tal:condition="not:dist/msdeploy_url|nothing">
       <file>
         <filePath
-           tal:condition="dist/msdeploy_url|nothing"
-           tal:content="python:getattr(dist, 'discovery_file', None) or '%APPL_PHYSICAL_PATH%'"
-           >%APPL_PHYSICAL_PATH%</filePath>
-        <filePath
-           tal:condition="not:dist/msdeploy_url|nothing"
            tal:content="string:%SystemDrive%\Python27\Lib\site-packages\${dist/get_name}-${dist/get_version}-py2.7.egg-info\PKG-INFO"
            >%SystemDrive%\Python27\Lib\site-packages\name-version-pyver.egg-info\PKG-INFO</filePath>
       </file>
