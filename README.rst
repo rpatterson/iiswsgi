@@ -32,9 +32,10 @@ installed through WebPI once the custom feed has been added:
 #. Open the `Options` dialog by clicking the link on the lower-right
 
 #. Under `Custom Feeds`, add the URL for latest ``*.webpi.xml`` file
-   from the `iiswsgi downloads`_
+   from the `iiswsgi downloads`_ and click `Add feed`
 
-#. Click `Add feed` and then `OK`
+#. Under `Which Web Server...?`, check `IIS Express` and then click
+   `OK`
 
 #. Use the search box in the upper-right to search for `pyramid`
 
