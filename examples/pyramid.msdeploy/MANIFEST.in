@@ -3,7 +3,4 @@ include *.py
 include web.config.in
 include iis_install.stamp
 
-recursive-include Lib\site-packages *
-recursive-include lib/python*/site-packages *
-
 global-exclude *.pyc *.pyo *~
