@@ -27,6 +27,7 @@ class bdist_msdeploy(sdist.sdist):
         sdist.sdist.initialize_options(self)
         self.build = self.distribution.get_command_obj('build_msdeploy')
         self.install = self.distribution.get_command_obj('install_msdeploy')
+        self.install.skip_fcgi_app_install = True
 
     def finalize_options(self):
         sdist.sdist.finalize_options(self)
