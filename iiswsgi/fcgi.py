@@ -4,7 +4,6 @@ import multiprocessing
 import subprocess
 import argparse
 import pprint
-import re
 
 from xml.dom import minidom
 
