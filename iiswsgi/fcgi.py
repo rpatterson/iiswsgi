@@ -150,7 +150,6 @@ def install_fcgi_app(appcmd_exe=None,
         for app in apps)
 
     # Check for duplicates
-    # TODO Normalize path uppercase letters in args
     for app in get_appcmd_apps():
         scriptProcessor = '{0}|{1}'.format(app['fullPath'], app['arguments'])
         if scriptProcessor in scriptProcessors:
