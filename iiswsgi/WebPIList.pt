@@ -23,13 +23,6 @@
       <culture>en</culture>
       <!-- included in file -->
     </resources>
-    <tal:comment replace="nothing">
-      TODO add other languages
-    <resources>
-      <culture>de</culture>
-      <url>http://www.microsoft.com/web/webpi/3.0/resources/WebApplicationList_de.xml</url>
-    </resources>
-    </tal:comment>
   </resourcesList>
   <!-- if loaded through a parent XML file then our languages list
        must be a subset of theirs -->
