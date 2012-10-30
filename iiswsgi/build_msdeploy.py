@@ -71,7 +71,6 @@ class build_msdeploy(cmd.Command):
         self.write_manifest()
 
     def write_manifest(self):
-        # TODO Seems not to be working the first time for pyramid
         manifest_template = self.manifest_filename + '.in'
         if not os.path.exists(manifest_template):
             self.logger.warn(
