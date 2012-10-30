@@ -129,8 +129,6 @@ class IISWSGIServer(fcgi_single.WSGIServer):
         super(IISWSGIServer, self).__init__(*args, **kw)
         self._jobClass = IISConnection
 
-        # XXX conflict between single and connnection class on the
-        # timeout argument
         self._jobArgs = self._jobArgs + (None,)
 
         self.fcgi_listensock_fileno = sys.stdin.fileno()
