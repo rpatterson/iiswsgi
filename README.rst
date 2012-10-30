@@ -277,7 +277,15 @@ Python Manifest
 ---------------
 
 Use Python's source distribution `MANIFEST.in`_ template format to
-declare what will be in the package.
+declare what will be in the package.  Distributions installing into a
+`virtualenv`_ with a lot of dependencies may want to include the eggs
+in the virtualenv's ``site-packages`` in the MSDeploy package such
+that the one download will included all the needed eggs greatly
+reducing network activity and install time::
+
+    recursive-include lib/site-packages *
+    recursive-include Lib\site-packages *
+    global-exclude *.pyc *.pyo
 
 MSDeploy Manifest
 -----------------
