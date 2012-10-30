@@ -22,7 +22,5 @@ with Microsoft Web Deploy.""",
       license='GPL version 3',
       license_url='http://www.gnu.org/licenses/gpl.txt',
       icon_url='http://www.python.org/community/logos/python-powered-h-100x130.png',
-      # TODO get the custom commands to work without iiswsgi installed
-      # in the python
       setup_requires=['iiswsgi'],
       )
