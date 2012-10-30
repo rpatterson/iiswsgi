@@ -4,21 +4,19 @@ import logging
 import subprocess
 import sysconfig
 
-from setuptools import setup
+from distutils import cmd
 
-from iiswsgi import install_msdeploy
+from setuptools import setup
 
 version = '0.2'
 
 
-class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
-    # NameError under distutils.core.run_setup
-    from iiswsgi import install_msdeploy
+class install_pyramid(cmd.Command):
 
     scaffold = 'starter'
     project = 'MyProject'
 
-    user_options = install_msdeploy.install_msdeploy.user_options + [
+    user_options = [
         ('scaffold', 's',
          'The Pyramid scaffold to use to create the project. [default: {0}]'
          .format(scaffold)),
@@ -26,16 +24,16 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
          'The name of the project to create. [default: {0}]'
          .format(project))]
 
+    def initialize_options(self):
+        self.scaffold = None
+
     def finalize_options(self):
         """Handle unreplaced parameters when testing locally."""
-        install_msdeploy.install_msdeploy.finalize_options(self)
-        if self.scaffold == '__msdeploy_scaffold__':
+        if not self.scaffold or self.scaffold == '__msdeploy_scaffold__':
             self.scaffold = 'starter'
 
     def run(self):
-        """Add a project from a project before testing."""
-        self.pre_install()
-
+        """Add a project from a scaffold."""
         logger = logging.getLogger('pyramid.iiswsgi')
         cwd = os.getcwd()
 
@@ -55,8 +53,6 @@ class install_pyramid_msdeploy(install_msdeploy.install_msdeploy):
             subprocess.check_call(cmd)
         finally:
             os.chdir(cwd)
-
-        self.post_install()
 
 
 setup(name='PyramidIISApp',
@@ -81,5 +77,5 @@ setup(name='PyramidIISApp',
       install_requires=['iiswsgi', 'pyramid'],
       setup_requires=['iiswsgi'],
       install_msdeploy=['virtualenv'],
-      cmdclass=dict(install_msdeploy=install_pyramid_msdeploy),
+      cmdclass=dict(install_pyramid=install_pyramid),
       )

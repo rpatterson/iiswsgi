@@ -54,27 +54,6 @@ class install_msdeploy(cmd.Command):
         """
         Run all post-MSDeploy tasks as appropriate.
 
-        `self.pre_install()`
-
-            Run install tasks before custom setup.
-
-        `self.post_install()`
-
-            Run install tasks after custom setup.
-
-        To excercise custom control over installation, override this
-        method in a subclass and use:
-
-            setup(...
-                cmdclass=dict(install_msdeploy=<install_msdeploy_subclass>)...
-        """
-        self.pre_install()
-        self.post_install()
-
-    def pre_install(self):
-        """
-        Run install tasks before custom setup.
-
         `setyp.py develop`:
 
             Install any requirements using easy_install.
@@ -82,22 +61,19 @@ class install_msdeploy(cmd.Command):
         `self.write_web_config()`:
 
             Write variable substitutions into `web.config`.
-        """
-        self.run_command('develop')
-        self.write_web_config()
-
-    def post_install(self):
-        """
-        Run install tasks after custom setup.
-
-        `setup.py test_msdeploy`:
-
-            Test a WSGI app prior to completing installation.
 
         `iiswsgi.fcgi.install_fcgi_app()`:
 
             Install an IIS FastCGI application.
+
+        To excercise custom control over installation, override this
+        method in a subclass and use:
+
+            setup(...
+                cmdclass=dict(install_msdeploy=<install_msdeploy_subclass>)...
         """
+        self.run_command('develop')
+        self.write_web_config()
         if not self.skip_fcgi_app_install:
             fcgi.install_fcgi_app()
 
