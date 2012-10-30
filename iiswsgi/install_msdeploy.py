@@ -1,7 +1,5 @@
 """Run post-install tasks for a MS Web Deploy package."""
 
-# TODO uninstall fastCgi apps
-
 import sys
 import os
 import subprocess
@@ -100,7 +98,6 @@ class install_msdeploy(cmd.Command):
 
             Install an IIS FastCGI application.
         """
-        # TODO clean_msdeploy
         if not self.skip_fcgi_app_install:
             fcgi.install_fcgi_app()
 
