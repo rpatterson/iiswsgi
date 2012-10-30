@@ -536,92 +536,13 @@ Logging
 Known Issues
 ============
 
-FCGI Process not launching under IIS
-    The sample app will deploy just fine to IISExpress/Web Matrix, but
-    when switched over to full IIS, it reports that the FCGI process
-    exited prematurely.  Even after instrumenting the very top of the
-    script with writes to a file followed by ``flush()`` and
-    ``fsync()`` the file still has nothing in it.  So it seems like
-    IIS is never actually launching the processs.  If anyone can test
-    this and give some insight, it would be greatly appreciated.
-
-Can't access ``APPL_PHYSICAL_PATH`` in ``runCommand`` provider
-    The current method of searching for the  is far too fragile and it would
-    be vastly preferable if MSDeploy or WebPI set the
-    APPL_PHYSICAL_PATH environment variable for ``runCommand``.
-    Anyone with a MS support contract, please submit a request about
-    this.
-
-``<fastCgi><application>`` doesn't take effect in ``web.config``
-    It should be possible to `register a FCGI application in the
-    web.config`_ file but that doesn't work.  Hence
-    ``install_msdeploy`` works around this by reading the
-    ``web.config`` and using `AppCmd.exe`_ to do the actually FCGI app
-    installation.  It would be much better if ``web.config`` worked as
-    it should.  Anyone with a MS support contract, please submit a
-    request about this.
-
-``System.IO.FileNotFoundException: Could not find file '\\?\C:\...``
-    I've run into this error on Windows 7 on two different machines
-    and multiple installs, one OEM and one vanilla Windows 7 Extreme.
-    When this happens, it seems to happen when the "Web Platform
-    Installer" has been run, then exited, and then run again without
-    rebooting the machine in between.  To workaround this, you may
-    have to reboot the machine.  See the stack overflow question `MS
-    WebPI package runCommand not working in Manifest.xml`_ for more
-    information.  As such, it's not advisable to exit and re-launch
-    WebPI.  As such, the best way to get feed changes to take effect
-    in WebPI may be to:
-
-        #. Click on the `options` link in the bottom right of WebPI
-        #. Click the `X` next to your feed to remove it
-        #. Click `OK` and wait for WebPI to finish updating the remaining feeds
-        #. Run `iiswsgi_webpi.exe`
-        #. Click on the `options` link again in WebPI
-        #. Enter the feed URL and click `Add Feed` to restore the feed
-        #. Click `OK` and wait for WebPI again
-
-    Now your feed changes should be reflected in WebPI.
-
-``System.IO.FileNotFoundException: Could not load file or assembly``
-    This error happens when using WebPI to install on full IIS, IOW
-    when not using IIS Express and Web Matrix.  It can be worked
-    around by installing the "Web Deploy Tool" in WebPI.  The
-    `bdist_webpi`_ command works around this by adding it as a
-    dependency for all MSDeploy packages.  Here's the error from the
-    logs::
-
-        DownloadManager Error: 0 : System.IO.FileNotFoundException: Could not load file or assembly 'Microsoft.Web.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its dependencies. The system cannot find the file specified.
-        File name: 'Microsoft.Web.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-           at Microsoft.Web.PlatformInstaller.MSDeployProxy.GetDeclaredParameters()
-           at Microsoft.Web.PlatformInstaller.MSDeployPackage.get_DeclaredParameters()
-           at Microsoft.Web.PlatformInstaller.UI.AppSitePage.GetApplicationName(MSDeployPackage package, String& appName)
-           at Microsoft.Web.PlatformInstaller.UI.AppSitePage.InitializeComponent()
-
-``retrieving the com class factory for remote component CLSID 2b72133b-3f5b-4602-8952-803546CE3344 error 80040154``
-    This error happens when using WebPI to install on full IIS, IOW
-    when not using IIS Express and Web Matrix.  It can be worked
-    around by installing the "IIS Management Console" in WebPI
-    dependency
-
-WebPI Errors May be Burried
-    On occasion, WebPI may burry error messages behind the WebPI
-    window.  So if WebPI has been hung for a long time, try using
-    ``Alt-TAB`` to see if there's an error window hidden behind the
-    WebPI window.
-
-WebPI getting cached feeds and MSDeploy packages
-    Despite the `clean_webpi`_ helper and manually clearing all the
-    caches under ``%LOCALAPPDATA%\Microsoft/Web Platform Installer``,
-    there have been several times when WebPI has still gotten stale
-    content causing validation errors against the SHA1 in the feed and
-    other problems.  When this happens, a workaround may be to
-    download the stale WebPI resources in IE.
+Moved to `GitHub issues`_.  In particular, please see if `you can
+help`_.  If you're running into an issue that isn't described in one
+of the open `GitHub issues`_, try looking through the `closed issues`_.
 
 
 .. _`special files`: `Web Deploy Package Contents`_
 .. _`bdist_webpi`: `Build WebPI Feed Distribution`_
-.. _`clean_webpi`: `Clean WebPI Caches`_
 .. _`iiswsgi_install.exe`: `MSDeploy Install Bootstrap`_
 .. _`install_msdeploy`: `Install MSDeploy`_
 .. _`test_msdeploy`: `Test MSDeploy`_
@@ -630,6 +551,9 @@ WebPI getting cached feeds and MSDeploy packages
 .. _`web.config.in`: `IIS Web Config`_
 
 .. _`iiswsgi downloads`: https://github.com/rpatterson/iiswsgi/downloads
+.. _`GitHub issues`: https://github.com/rpatterson/iiswsgi/issues
+.. _`you can help`: https://github.com/rpatterson/iiswsgi/issues?labels=help+wanted&page=1&state=open
+.. _`closed issues`: https://github.com/rpatterson/iiswsgi/issues?state=closed&page=1
 
 .. _`Python`: http://python.org
 .. _`os.environ`: http://docs.python.org/2/library/os.html#os.environ
@@ -673,8 +597,6 @@ WebPI getting cached feeds and MSDeploy packages
 .. _`web.config`: `IIS site configuration file`_
 .. _`fastCgi`: http://www.iis.net/configreference/system.webserver/fastcgi
 .. _`<application...`: http://www.iis.net/configreference/system.webserver/fastcgi/application
-.. _`MS WebPI package runCommand not working in Manifest.xml`: http://stackoverflow.com/questions/12485887/ms-webpi-package-runcommand-not-working-in-manifest-xml/12820574#12820574
-.. _`register a FCGI application in the web.config`: http://stackoverflow.com/questions/12525508/system-webserver-fastcgi-application-not-working-in-web-config
 
 .. _`AppCmd.exe`: http://learn.iis.net/page.aspx/114/getting-started-with-appcmdexe
 .. _`IIS FastCGI Reference`: http://www.iis.net/ConfigReference/system.webServer/fastCgi
