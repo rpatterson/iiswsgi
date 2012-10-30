@@ -64,7 +64,6 @@ class clean_webpi(cmd.Command):
             self.delete_installer_cache(distribution)
             self.delete_stamp_files(distribution)
         self.delete_feed_cache()
-        # TODO DL all new resources in IE?
 
     def delete_installer_cache(self, distribution):
         """Delete old Web Deploy packages from the WebPI cache."""
