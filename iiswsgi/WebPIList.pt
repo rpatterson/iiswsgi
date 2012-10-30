@@ -41,9 +41,6 @@
   </languages>
 
 
-  <tal:comment replace="nothing">
-    TODO get iiswsgi and virtualenv installation to stick
-  </tal:comment>
   <entry type="application"
          tal:repeat="dist view/dists"
          tal:attributes="type python:getattr(dist, 'msdeploy_url', None) and 'application';">
