@@ -6,7 +6,8 @@ name = 'iiswsgi'
 setup(name=name,
       version='0.4',
       title="WSGI on IIS",
-      description="Serve WSGI apps using IIS's modified FastCGI support.",
+      description=(
+          "Serve and deploy WSGI apps on Web Platform Installer and IIS."),
       long_description=(
           open(os.path.join(os.path.dirname(__file__),
                             "README.rst")).read() + '\n\n' +
