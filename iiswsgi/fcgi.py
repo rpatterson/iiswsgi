@@ -2,7 +2,6 @@ import os
 import logging
 import multiprocessing
 import subprocess
-import argparse
 import pprint
 
 from xml.dom import minidom
@@ -178,68 +177,3 @@ def install_fcgi_app(appcmd_exe=None,
         else:
             logger.info('IIS AppCmd.exe does not exist: {0}'.format(
                 appcmd_exe))
-
-
-def install_fcgi_app_console(args=None):
-    """
-    Install an IIS FastCGI application.
-
-    Adds a FastCGI Application to the IIS global config.  Many of the
-    options are used as attributes for the <fastCgi><application>
-    element installed.  See
-    http://www.iis.net/ConfigReference/system.webServer/fastCgi/application
-    for more details on the valid attributes and their affects.
-    """
-    logging.basicConfig(level=logging.INFO)
-    options, args = install_fcgi_app_parser.parse_args(args=args)
-    install_fcgi_app(**vars(options))
-
-
-install_fcgi_app_parser = argparse.ArgumentParser(
-    description=install_fcgi_app_console.__doc__,
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-install_fcgi_app_parser.add_argument(
-    "-c", "--command",
-    default=app_attr_defaults_init['monitorChangesTo'], help="""\
-The path to a file which IIS will monitor and restart the FastCGI \
-process when the file is modified.""")
-install_fcgi_app_parser.add_argument(
-    "-m", "--monitor-changes", metavar="PATH",
-    default=app_attr_defaults_init['monitorChangesTo'], help="""\
-The path to a file which IIS will monitor and restart the FastCGI \
-process when the file is modified.""")
-install_fcgi_app_parser.add_argument(
-    "-n", "--max-instances", type=int,
-    default=app_attr_defaults_init['maxInstances'], help="""\
-The maximum number of FastCGI processes which IIS will launch.  For a \
-production deployment, it's usually best to set this to \
-%%NUMBER_OF_PROCESSORS%%.""")
-install_fcgi_app_parser.add_argument(
-    "-t", "--activity-timeout", type=int,
-    default=app_attr_defaults_init['activityTimeout'], help="""\
-Specifies the maximum time, in seconds, that a FastCGI process can \
-take to process. Acceptable values are in the range from 10 through \
-3600.""")
-install_fcgi_app_parser.add_argument(
-    "-i", "--idle-timeout", type=int,
-    default=app_attr_defaults_init['idleTimeout'], help="""\
-Specifies the maximum amount of time, in seconds, that a FastCGI \
-process can be idle before the process is shut down. Acceptable values \
-are in the range from 10 through 604800.""")
-install_fcgi_app_parser.add_argument(
-    "-r", "--request-timeout", type=int,
-    default=app_attr_defaults_init['requestTimeout'],
-    help="""\
-Specifies the maximum time, in seconds, that a FastCGI process request \
-can take. Acceptable values are in the range from 10 through 604800. \
-[default: %(default)s]""")
-install_fcgi_app_parser.add_argument(
-    "-f", "--full-path", metavar="EXECUTABLE",
-    default=app_attr_defaults_init['fullPath'], help="""\
-The path to the executable to be launched as the FastCGI process by \
-IIS.  This is usually the path to the Python executable.""")
-install_fcgi_app_parser.add_argument(
-    "-a", "--arguments", default=app_attr_defaults_init['arguments'],
-    help="""\
-The arguments to be given the executable when invoked as the FastCGI \
-process by IIS.""")

@@ -37,8 +37,7 @@ setup(name=name,
       entry_points={
           'console_scripts':
           ['iiswsgi = iiswsgi.server:run',
-           'iiswsgi_install = iiswsgi.install_msdeploy:install_console',
-           'iiswsgi_install_fcgi_app = iiswsgi.fcgi:install_fcgi_app_console'],
+           'iiswsgi_install = iiswsgi.install_msdeploy:install_console'],
           'paste.app_factory': ['test_app = iiswsgi.server:make_test_app'],
           "distutils.commands": [
             "build_msdeploy = iiswsgi.build_msdeploy:build_msdeploy",
